@@ -22,13 +22,12 @@ class UsuarioController
         $this->renderer->render("registroUsuario");
     }
 
-    public function login()
-    {
+    public function login(){
         $resultado = $this->model->getUserWith($_POST["nombreUsuario"], $_POST["contrasenia"]);
 
         if (sizeof($resultado) > 0) {
-            $_SESSION["nombreUsuario"] = $_POST["usuario"];
-            $this->renderer->render("lobby");
+            $_SESSION["usuarioLogueado"] = $resultado[0];
+            $this->renderer->render("lobby", ["usuarioLogueado" => $_SESSION["usuarioLogueado"]]);
             exit();
         } else {
             $this->renderer->render("login", ["error" => "Usuario o clave incorrecta"]);

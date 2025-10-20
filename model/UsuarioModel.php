@@ -13,12 +13,11 @@ class UsuarioModel
         $this->conexion = $conexion;
     }
 
-    public function getUserWith($nombreUsuario, $contrasenia)
-    {
-        $sql = "SELECT * FROM usuario WHERE nombreUsuario = '$nombreUsuario' AND contrasenia = '$contrasenia'";
+    public function getUserWith($nombreUsuario, $contrasenia){
+        $sql = "SELECT nombreUsuario, nombre, apellido, cantidadTrampas, idSexo, fotoPerfil, 
+       idTipoUsuario, fechaRegistro, idNivel, latitud, longitud, ciudad, pais FROM usuario WHERE nombreUsuario = '$nombreUsuario' AND contrasenia = '$contrasenia'";
         $result = $this->conexion->query($sql);
-        return $result ?? [];
-    }
+        return $result ?? [];}
 
     public function nuevo($nombreUsuario, $mail, $nombre, $apellido, $anioNacimiento, $sexo, $contrasenia, $fileFotoPerfil, $latitud, $longitud) {
         if($this->verificarNombreUsuarioDuplicado($nombreUsuario) && $this->verificarMailDuplicado($mail)){
