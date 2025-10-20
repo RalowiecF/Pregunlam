@@ -1,0 +1,94 @@
+<form method="POST" action="{{BASE_URL}}usuario/nuevo" enctype="multipart/form-data" class="w3-card w3-white w3-padding w3-content" style="max-width:900px;" onsubmit="return validarFormulario()">
+
+    <!-- Cargar estilos desde W3.CSS y Leaflet directamente -->
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    {{#error}}
+    <div class="w3-panel w3-red w3-display-container">
+        <span onclick="this.parentElement.style.display='none'" class="w3-button w3-large w3-display-topright">&times;</span>
+        <p>{{error}}</p>
+    </div>
+    {{/error}}
+
+    <style>
+        #map { height: 300px; margin-top: 8px; }
+    </style>
+
+    <div class="w3-row-padding">
+        <!-- Columna 1 -->
+        <div class="w3-half">
+            <p><label>Nombre de Usuario</label>
+                <input class="w3-input w3-border" type="text" name="nombreUsuario" maxlength="50" required></p>
+            <p><label>Mail</label>
+                <input class="w3-input w3-border" type="email" name="mail" maxlength="50" required></p>
+            <p><label>Nombre</label>
+                <input class="w3-input w3-border" type="text" name="nombre" maxlength="50" required></p>
+            <p><label>Apellido</label>
+                <input class="w3-input w3-border" type="text" name="apellido" maxlength="50" required></p>
+            <p><label>Año de Nacimiento</label>
+                <input class="w3-input w3-border" type="number" name="anioNacimiento" min="1901" max="2025" required></p>
+            <p><label>Sexo</label><br>
+                <input class="w3-radio" type="radio" name="sexo" value="Femenino"> Femenino<br>
+                <input class="w3-radio" type="radio" name="sexo" value="Masculino"> Masculino<br>
+                <input class="w3-radio" type="radio" name="sexo" value="Indefinido" checked> Prefiero no cargarlo
+            </p>
+        </div>
+
+        <!-- Columna 2 -->
+        <div class="w3-half">
+            <p><label>Contraseña</label>
+                <input class="w3-input w3-border" type="password" name="contrasenia" id="contraseña" maxlength="50" required></p>
+            <p><label>Confirmar Contraseña</label>
+                <input class="w3-input w3-border" type="password" id="confirmarContraseña" maxlength="50" required></p>
+            <p><label>Foto de Perfil</label>
+                <input class="w3-input w3-border" type="file" name="fotoPerfil" accept="image/*"></p>
+            <p><label>Ubicación (clic en el mapa)</label></p>
+            <div id="map" class="w3-border" style="height: 250px;"></div>
+            <input type="hidden" name="latitud" id="latitud">
+            <input type="hidden" name="longitud" id="longitud">
+        </div>
+    </div>
+
+    <p class="w3-center">
+        <button class="w3-button w3-green" type="submit">Guardar</button>
+        <a class="w3-button w3-blue" href="{{BASE_URL}}">Volver</a>
+
+    </p>
+
+    <!-- SCRIPTS: validación y mapa -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Validar contraseña
+        function validarFormulario() {
+            const pass = document.getElementById("contraseña").value;
+            const confirm = document.getElementById("confirmarContraseña").value;
+            if (pass !== confirm) {
+                alert("Las contraseñas no coinciden.");
+                return false;
+            }
+            return true;
+        }
+
+        // Iniciar mapa
+        const map = L.map('map').setView([-34.6037, -58.3816], 9); // Buenos Aires
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        let marker;
+        map.on('click', function(e) {
+            const lat = e.latlng.lat.toFixed(6);
+            const lng = e.latlng.lng.toFixed(6);
+            document.getElementById('latitud').value = lat;
+            document.getElementById('longitud').value = lng;
+
+            if (marker) {
+                marker.setLatLng(e.latlng);
+            } else {
+                marker = L.marker(e.latlng).addTo(map);
+            }
+        });
+    </script>
+</form>
