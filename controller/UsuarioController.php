@@ -2,7 +2,6 @@
 
 class UsuarioController
 {
-
     private $model;
     private $renderer;
 
@@ -17,22 +16,36 @@ class UsuarioController
         $this->login();
     }
 
-    public function registroUsuarioForm()
-    {
-        $this->renderer->render("registroUsuario");
-    }
-
     public function login(){
+        if (!isset($_POST["nombreUsuario"]) || !isset($_POST["contrasenia"])) {
+            $this->renderer->render("login");
+            exit();
+        }
         $resultado = $this->model->getUserWith($_POST["nombreUsuario"], $_POST["contrasenia"]);
 
         if (sizeof($resultado) > 0) {
-            $_SESSION["usuarioLogueado"] = $resultado[0];
+            $_SESSION["usuarioLogueado"] = $resultado;
             $this->renderer->render("lobby", ["usuarioLogueado" => $_SESSION["usuarioLogueado"]]);
             exit();
         } else {
             $this->renderer->render("login", ["error" => "Usuario o clave incorrecta"]);
             exit();
         }
+    }
+
+    public function registroUsuarioForm()
+    {
+        $this->renderer->render("registroUsuario");
+    }
+
+    public function lobby()
+    {
+        $this->renderer->render("lobby");
+    }
+
+    public function paginaProhibida()
+    {
+        $this->renderer->render("paginaProhibida");
     }
 
     public function nuevo()
@@ -119,15 +132,10 @@ class UsuarioController
     }
 
     public function validarSexo($sexo): string {
-        switch ($sexo) {
-            case 'Femenino':
-                return 'Femenino';
-                break;
-                case 'Masculino':
-                    return 'Masculino';
-                    break;
-            default: return "Indefinido";
-        }
+        $sexosValidos = $this->model->getSexoList();
+        if (in_array($sexo, $sexosValidos[0])) {
+            return $sexo;
+        } else return 'Indefinido';
     }
 
     function validarImagen($archivo): bool {

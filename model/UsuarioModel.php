@@ -13,11 +13,29 @@ class UsuarioModel
         $this->conexion = $conexion;
     }
 
-    public function getUserWith($nombreUsuario, $contrasenia){
-        $sql = "SELECT nombreUsuario, nombre, apellido, cantidadTrampas, idSexo, fotoPerfil, 
-       idTipoUsuario, fechaRegistro, idNivel, latitud, longitud, ciudad, pais FROM usuario WHERE nombreUsuario = '$nombreUsuario' AND contrasenia = '$contrasenia'";
-        $result = $this->conexion->query($sql);
-        return $result ?? [];}
+    public function getUserWith($nombreUsuario, $contrasenia) {
+        $sql = "SELECT 
+                u.nombreUsuario, u.nombre, u.apellido, u.cantidadTrampas, s.descripcion AS sexo, u.fotoPerfil, 
+                t.descripcion AS tipoUsuario, u.fechaRegistro,  n.descripcion AS nivel, u.latitud, u.longitud, 
+                u.ciudad, u.pais, e.descripcion AS entorno FROM usuario AS u
+            JOIN sexo AS s ON u.idSexo = s.idSexo
+            JOIN tipousuario AS t ON u.idTipoUsuario = t.idTipoUsuario
+            JOIN nivel AS n ON u.idNivel = n.idNivel
+            LEFT JOIN entorno AS e ON u.idEntorno = e.idEntorno
+            WHERE u.nombreUsuario = ? AND u.contrasenia = ?";
+
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->bind_param("ss", $nombreUsuario, $contrasenia);
+        $stmt->execute();
+
+        $resultado = $stmt->get_result();
+
+        if ($resultado && $resultado->num_rows > 0) {
+            return $resultado->fetch_assoc();
+        }
+
+        return [];
+    }
 
     public function nuevo($nombreUsuario, $mail, $nombre, $apellido, $anioNacimiento, $sexo, $contrasenia, $fileFotoPerfil, $latitud, $longitud) {
         if($this->verificarNombreUsuarioDuplicado($nombreUsuario) && $this->verificarMailDuplicado($mail)){
@@ -36,7 +54,7 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $stmt = $this->conexion->prepare($sql);
 
             $stmt->bind_param(
-                "ssssiissddsss", // <- "d" para latitud y longitud
+                "ssssiissddsss",
                 $nombreUsuario,  // s
                 $mail,           // s
                 $nombre,         // s
@@ -57,6 +75,11 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         } else return false;
     }
 
+    public function getSexoList(){
+        $sql = "SELECT descripcion FROM sexo";
+        return $result = $this->conexion->query($sql);
+    }
+
     public function verificarNombreUsuarioDuplicado($nombreUsuario): bool {
         $sql = "SELECT * FROM usuario WHERE nombreUsuario = ?";
         $stmt = $this->conexion->prepare($sql);
@@ -66,7 +89,6 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             return false;
         }
 
-        // 's' indica que el parámetro es de tipo string
         $stmt->bind_param("s", $nombreUsuario);
         $stmt->execute();
 
@@ -98,7 +120,6 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         return true;
     }
 
-
     function obtenerIdSexo($sexo): int {
         $sql = "SELECT idSexo FROM sexo WHERE descripcion = ?";
         $stmt = $this->conexion->prepare($sql);
@@ -116,7 +137,6 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             return (int)$fila['idSexo'];
         }
     }
-
 
     function obtenerCiudadPais($lat, $lng): array{
         $latlng = urlencode($lat . ',' . $lng);

@@ -2,8 +2,6 @@
 
 class NewRouter
 {
-
-
     private $configFactory;
     private $defaultController;
     private $defaultMethod;

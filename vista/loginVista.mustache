@@ -1,13 +1,39 @@
 <div class="w3-container w3-center w3-margin">
-    <form method="POST" action="{{BASE_URL}}usuario/login" class="w3-card w3-padding w3-light-grey w3-display-inline-block" style="min-width:300px">
-        {{#error}}
-            <div class='w3-panel w3-red'>{{error}}</div>
-        {{/error}}
-        <p><input class="w3-input w3-border" type="text" name="nombreUsuario" placeholder="Usuario"></p>
-        <p><input class="w3-input w3-border" type="password" name="contrasenia" placeholder="Password"></p>
-        <p><input class="w3-button w3-blue" type="submit" value="Ingresar"></p>
-    </form>
-    <a href="{{BASE_URL}}usuario/registroUsuarioForm">
-    <button class="w3-button w3-blue" value="Registrate">Registrate</button>
-    </a>
+
+    <img src="/PregUNLaM/imagenes/Isologotipo.png" alt="Logo PregUNLaM"
+         style="max-width: 160px; height: auto;" class="w3-margin-bottom">
+
+    <div style="max-width: 400px; margin: 0 auto;">
+        <form method="POST" action="{{BASE_URL}}usuario/login"
+              class="w3-card w3-padding w3-light-grey">
+
+            {{#error}}
+                <div class="w3-panel w3-red">{{error}}</div>
+            {{/error}}
+
+            <p>
+                <input class="w3-input w3-border" type="text" name="nombreUsuario" placeholder="Usuario">
+            </p>
+            <p>
+                <input class="w3-input w3-border" type="password" name="contrasenia" placeholder="Password">
+            </p>
+            <p>
+                <input class="w3-button w3-blue w3-block" type="submit" value="Ingresar">
+            </p>
+        </form>
+    </div>
+
+    <div class="w3-margin-top">
+        <p>¿No tenés cuenta?</p>
+        <a href="{{BASE_URL}}usuario/registroUsuarioForm">
+            <button class="w3-button w3-blue">Registrate</button>
+        </a>
+    </div>
+
+    <!-- Visitar como invitado -->
+    <div class="w3-margin-top">
+        <a href="{{BASE_URL}}usuario/lobby">
+            <button class="w3-button w3-grey">Entrar como invitado</button>
+        </a>
+    </div>
 </div>

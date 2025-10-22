@@ -1,10 +1,7 @@
 <?php
 include_once("helper/MyConexion.php");
-include_once("helper/IncludeFileRenderer.php");
 include_once("helper/NewRouter.php");
-include_once("controller/PokemonController.php");
 include_once("controller/UsuarioController.php");
-include_once("model/PokemonModel.php");
 include_once("model/UsuarioModel.php");
 include_once('vendor/mustache/src/Mustache/Autoloader.php');
 include_once ("helper/MustacheRenderer.php");
@@ -30,9 +27,7 @@ class ConfigFactory
 
         $this->renderer = new MustacheRenderer("vista");
 
-        $this->objetos["router"] = new NewRouter($this, "UsuarioController", "base");
-
-        $this->objetos["PokemonController"] = new PokemonController(new PokemonModel($this->conexion), $this->renderer);
+        $this->objetos["router"] = new NewRouter($this, "UsuarioController", "lobby");
 
         $this->objetos["UsuarioController"] = new UsuarioController(new UsuarioModel($this->conexion), $this->renderer);
 
