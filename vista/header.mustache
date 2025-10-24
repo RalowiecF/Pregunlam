@@ -5,11 +5,61 @@
     <title>PregUNLaM</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
+
 <body class="w3-light-grey" style="display: flex; flex-direction: column; min-height: 100vh; margin: 0;">
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-<header class="w3-container w3-center w3-padding" style="background-image: url('/PregUNLaM/imagenes/BannerFondo.png');
-                                                                 background-size: cover;
-                                                                 background-position: center;
-                                                                 height: 100px;">
-    <h1></h1>
+
+<header class="w3-container w3-padding w3-card"
+        style="background-image: url('/PregUNLaM/imagenes/BannerFondo.png');
+               background-size: cover;
+               background-position: center;
+               height: 100px; display: flex; align-items: center; justify-content: space-between;">
+
+    <!-- IZQUIERDA: Bienvenida -->
+    <div class="w3-text-white w3-large" style="margin-left: 10px;">
+        {{#usuarioLogueado}}
+            Bienvenido {{usuarioLogueado.nombreUsuario}}
+        {{/usuarioLogueado}}
+        {{^usuarioLogueado}}
+            Bienvenido Invitado
+        {{/usuarioLogueado}}
+    </div>
+
+    <!-- CENTRO: Logo -->
+    <div class="w3-center" style="flex-grow: 1;">
+        <img src="/PregUNLaM/imagenes/IsologotipoApaisado.png"
+             alt="Logo PregUNLaM"
+             style="max-height: 180px; width: auto;">
+    </div>
+
+    <!-- DERECHA: Controles -->
+    <div class="w3-right-align" style="margin-right: 10px;">
+        <!-- Botón de música -->
+        <button class="w3-button w3-green w3-round"
+                style="margin-right: 5px;"
+                onclick="toggleMusic()">🎵 Música</button>
+
+        <!-- Si NO está logueado -->
+        {{^usuarioLogueado}}
+            <a class="w3-button w3-blue w3-round" href="{{BASE_URL}}usuario/login">Login</a>
+        {{/usuarioLogueado}}
+
+        <!-- Si está logueado -->
+        {{#usuarioLogueado}}
+            <div class="w3-dropdown-hover">
+                <button class="w3-button w3-blue w3-round">Mi Cuenta ⮟</button>
+                <div class="w3-dropdown-content w3-bar-block w3-card-4 w3-animate-opacity"
+                     style="right:0; background-color: #f0f0f0;">
+                    <a href="{{BASE_URL}}usuario/verPerfil" class="w3-bar-item w3-button">Ver mi perfil</a>
+                    <a href="{{BASE_URL}}usuario/logout" class="w3-bar-item w3-button w3-text-red">Cerrar sesión</a>
+                </div>
+            </div>
+        {{/usuarioLogueado}}
+    </div>
 </header>
+
+<script>
+    function toggleMusic() {
+        alert("Funcionalidad de música aún no implementada 🎶");
+    }
+</script>

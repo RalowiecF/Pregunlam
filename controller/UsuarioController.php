@@ -40,7 +40,9 @@ class UsuarioController
 
     public function lobby()
     {
-        $this->renderer->render("lobby");
+        if(isset($_SESSION["usuarioLogueado"])) {
+            $this->renderer->render("lobby", ["usuarioLogueado" => $_SESSION["usuarioLogueado"]]);
+        }else $this->renderer->render("lobby");
     }
 
     public function paginaProhibida()
@@ -74,6 +76,7 @@ class UsuarioController
     public function logout()
     {
         session_destroy();
+        unset($this->usuarioLogueado);
         $this->redirectToIndex();
     }
 

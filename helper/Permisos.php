@@ -12,12 +12,12 @@ public function __construct(){
         ],
         'Jugador' => [
             '' => [''],
-            'usuario' => ['', 'login', 'registroUsuarioForm', 'nuevo'],
+            'usuario' => ['', 'logout', 'registroUsuarioForm', 'nuevo'],
             'pregunta' => ['editar', 'listar'],
         ],
         'Editor' => [
             '' => [''],
-            'usuario' => ['', 'login', 'registroUsuarioForm', 'nuevo'],
+            'usuario' => ['', 'logout', 'registroUsuarioForm', 'nuevo'],
             'pregunta' => ['editar', 'listar'],
         ],
         'Administrador' => [
