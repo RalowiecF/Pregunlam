@@ -17,7 +17,7 @@ class UsuarioModel
         $sql = "SELECT 
                 u.nombreUsuario, u.nombre, u.apellido, u.cantidadTrampas, s.descripcion AS sexo, u.fotoPerfil, 
                 t.descripcion AS tipoUsuario, u.fechaRegistro,  n.descripcion AS nivel, u.latitud, u.longitud, 
-                u.ciudad, u.pais, e.descripcion AS entorno FROM usuario AS u
+                u.ciudad, u.pais, e.descripcion AS entorno, u.puntaje FROM usuario AS u
             JOIN sexo AS s ON u.idSexo = s.idSexo
             JOIN tipousuario AS t ON u.idTipoUsuario = t.idTipoUsuario
             JOIN nivel AS n ON u.idNivel = n.idNivel
@@ -31,9 +31,9 @@ class UsuarioModel
         $resultado = $stmt->get_result();
 
         if ($resultado && $resultado->num_rows > 0) {
-            return $resultado->fetch_assoc();
+            $usuario = $resultado->fetch_assoc();
+            return $this->validarEditorYAdmin($usuario);
         }
-
         return [];
     }
 
@@ -203,6 +203,15 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             echo "Error al enviar el mensaje: {$mail->ErrorInfo}";
             return false;
         }
+    }
+
+    public function validarEditorYAdmin($usuario) {
+        if ($usuario['tipoUsuario'] == "Administrador") {
+            $usuario['isAdmin'] = true;
+        } elseif ($usuario['tipoUsuario'] == "Editor") {
+            $usuario['isEditor'] = true;
+        }
+        return $usuario;
     }
 
 }
