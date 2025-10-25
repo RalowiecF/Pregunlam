@@ -13,7 +13,7 @@ class UsuarioController
 
     public function base()
     {
-        $this->login();
+        $this->lobby();
     }
 
     public function login(){
@@ -45,11 +45,6 @@ class UsuarioController
         }else $this->renderer->render("lobby");
     }
 
-    public function paginaProhibida()
-    {
-        $this->renderer->render("paginaProhibida");
-    }
-
     public function nuevo()
     {
         $this->validarTexto($_POST['nombreUsuario'], 1, 50);
@@ -78,6 +73,13 @@ class UsuarioController
         session_destroy();
         unset($this->usuarioLogueado);
         $this->redirectToIndex();
+    }
+
+    public function ranking()
+    {
+        if(isset($_SESSION["usuarioLogueado"])) {
+        $this->renderer->render("tablaUsuarios", ["usuarios" => $this->model->getRanking(), "tabla" => "RANKING", "usuarioLogueado" => $_SESSION["usuarioLogueado"]]);
+        }else $this->renderer->render("tablaUsuario", ["usuarios" => $this->model->getRanking(), "tabla" => "RANKING"]);
     }
 
     public function redirectToIndex()

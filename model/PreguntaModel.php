@@ -1,6 +1,6 @@
 <?php
 
-class PartidaModel
+class PreguntaModel
 {
     private $conexion;
 

@@ -75,6 +75,13 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         } else return false;
     }
 
+    public function getRanking(){
+        $sql = "SELECT u.idUsuario, u.nombreUsuario, u.puntaje, MAX(p.fechaPartida) AS fechaUltimaPartida FROM usuario u 
+    LEFT JOIN usuario_juega_partida ujp ON u.idUsuario = ujp.idUsuario
+    LEFT JOIN partida p ON ujp.idPartida = p.idPartida GROUP BY u.idUsuario, u.nombreUsuario, u.puntaje ORDER BY u.puntaje desc;";
+        return $this->conexion->query($sql);
+    }
+
     public function getSexoList(){
         $sql = "SELECT descripcion FROM sexo";
         return $result = $this->conexion->query($sql);

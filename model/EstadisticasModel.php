@@ -1,6 +1,6 @@
 <?php
 
-class PartidaModel
+class EstadisticasModel
 {
     private $conexion;
 
