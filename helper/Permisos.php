@@ -8,17 +8,19 @@ public function __construct(){
     $this->permisos = [
         'Anonimo' => [
             '' => [''],
-            'usuario' => ['', 'login', 'registroUsuarioForm', 'nuevo'],
+            'usuario' => ['', 'login', 'registroUsuarioForm', 'nuevo', 'ranking'],
         ],
         'Jugador' => [
             '' => [''],
-            'usuario' => ['', 'logout', 'registroUsuarioForm', 'nuevo'],
-            'pregunta' => ['editar', 'listar'],
+            'usuario' => ['', 'logout', 'registroUsuarioForm', 'nuevo', 'ranking'],
+            'pregunta' => ['', 'registroPregunta', 'listar'],
+            'partida' => ['', 'seleccionPartida', 'comenzarPartida'],
         ],
         'Editor' => [
             '' => [''],
-            'usuario' => ['', 'logout', 'registroUsuarioForm', 'nuevo'],
-            'pregunta' => ['editar', 'listar'],
+            'usuario' => ['', 'logout', 'registroUsuarioForm', 'nuevo', 'ranking'],
+            'pregunta' => ['', 'registroPregunta', 'listar'],
+            'partida' => ['', 'seleccionPartida', 'comenzarPartida'],
         ],
         'Administrador' => [
             '*' => ['*'] // acceso total

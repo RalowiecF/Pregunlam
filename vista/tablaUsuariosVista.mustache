@@ -1,0 +1,122 @@
+<div class="w3-light-grey w3-center"
+      style="min-height:70vh;display:flex;flex-direction:column;justify-content:flex-start;align-items:center;margin:0;padding-top:10px;">
+
+<!-- Título -->
+<h2 class="w3-text-blue" style="color:#005DF0;margin:10px 0;">{{tabla}}</h2>
+
+<!-- Contenedor de la tabla -->
+<div class="w3-card-4 w3-white w3-round-large"
+     style="width:90%;max-width:1000px;overflow:hidden;margin-bottom:5px;">
+    <table class="w3-table w3-bordered w3-hoverable w3-centered" id="usuariosTabla" style="margin:0;">
+        <thead style="background-color:#00EF48;color:white;">
+        <tr>
+            <th>#</th>
+            <th>Usuario</th>
+            <th>Puntaje Total</th>
+            <th>Último Juego</th>
+            <th>Ver Perfil</th>
+            <th>Acción</th>
+        </tr>
+        </thead>
+        <tbody id="tablaBody">
+        {{#usuarios}}
+            <tr>
+                <td></td> <!-- se rellena con número dinámico -->
+                <td>{{nombreUsuario}}</td>
+                <td>{{puntaje}}</td>
+                <td>{{fechaUltimaPartida}}</td>
+                <td>
+                    <a class="w3-text-blue w3-hover-text-green"
+                       style="font-weight:bold;text-decoration:none;"
+                       href="{{BASE_URL}}usuario/verPerfil/{{id}}">
+                        Ver Perfil
+                    </a>
+                </td>
+                <td>
+                    {{#usuarioLogueado}}
+                        <a class="w3-text-blue w3-hover-text-green duelo-btn"
+                           style="font-weight:bold;text-decoration:none;"
+                           data-id="{{id}}" href="{{BASE_URL}}partida/duelo/{{id}}">
+                            Retar a un duelo
+                        </a>
+                    {{/usuarioLogueado}}
+                    {{^usuarioLogueado}}
+                        <a href="#" class="w3-text-blue w3-hover-text-green duelo-btn"
+                           style="font-weight:bold;text-decoration:none;" onclick="mostrarMensaje('Ingresá al sitio para Jugar')">
+                            Retar a un duelo
+                        </a>
+                    {{/usuarioLogueado}}
+                </td>
+            </tr>
+        {{/usuarios}}
+        </tbody>
+    </table>
+</div>
+
+<!-- Paginación -->
+<div class="w3-margin-top" style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;">
+    <button id="prevPage" class="w3-button" style="background-color:#005DF0;color:white;">Anterior</button>
+    <span id="pageInfo" class="w3-text-black"></span>
+    <button id="nextPage" class="w3-button" style="background-color:#005DF0;color:white;">Siguiente</button>
+</div>
+
+<!-- Contenedor inferior con botón Lobby -->
+<div style="width:100%;display:flex;justify-content:flex-start;">
+    <a href="{{BASE_URL}}usuario/lobby"
+       class="w3-button w3-round-large"
+       style="background-color:#26F0EC;color:black;font-weight:bold;text-decoration:none;margin:0 0 20px 20px;">
+        Lobby
+    </a>
+</div>
+
+    <!-- Mensaje temporal -->
+    <div id="mensaje"
+         class="w3-panel w3-red w3-round w3-animate-opacity w3-hide"
+         style="position:fixed;bottom:70px;left:50%;transform:translateX(-50%);
+            z-index:10;min-width:250px;text-align:center;">
+    </div>
+
+<!-- Script de paginación, numeración y mensaje -->
+<script>
+    // ===== PAGINACIÓN =====
+    const rowsPerPage = 10;
+    const tablaBody = document.getElementById('tablaBody');
+    const rows = Array.from(tablaBody.querySelectorAll('tr'));
+    let currentPage = 1;
+    const totalPages = Math.ceil(rows.length / rowsPerPage);
+    const pageInfo = document.getElementById('pageInfo');
+
+    function numerarFilas() {
+        rows.forEach((row, i) => {
+            row.cells[0].textContent = i + 1; // primera celda = número
+        });
+    }
+
+    function mostrarPagina(page) {
+        rows.forEach((row, i) => {
+            row.style.display = (i >= (page - 1) * rowsPerPage && i < page * rowsPerPage) ? '' : 'none';
+        });
+        pageInfo.textContent = `Página ${page} de ${totalPages}`;
+    }
+
+    document.getElementById('nextPage').onclick = () => {
+        if (currentPage < totalPages) mostrarPagina(++currentPage);
+    };
+
+    document.getElementById('prevPage').onclick = () => {
+        if (currentPage > 1) mostrarPagina(--currentPage);
+    };
+
+    numerarFilas();
+    mostrarPagina(currentPage);
+
+    // ===== MENSAJE SI NO HAY LOGIN =====
+    function mostrarMensaje(texto) {
+        const msg = document.getElementById('mensaje');
+        msg.textContent = texto;
+        msg.classList.remove('w3-hide');
+        clearTimeout(msg.dataset.timeout);
+        msg.dataset.timeout = setTimeout(() => msg.classList.add('w3-hide'), 3000);
+    }
+</script>
+</div>

@@ -31,12 +31,12 @@
             <div class="w3-card w3-hover-shadow w3-round-large w3-padding"
                  style="cursor:pointer; max-width:350px; width:100%; margin:auto; background-color:#a8f0b1;"
                 {{#usuarioLogueado}}
-                 onclick="window.location='{{BASE_URL}}partida/jugar'"
+                 onclick="window.location='{{BASE_URL}}partida/seleccionPartida'"
                 {{/usuarioLogueado}}
                 {{^usuarioLogueado}}
                  onclick="mostrarMensaje('Ingresá al sitio para Jugar')"
                 {{/usuarioLogueado}}>
-                <img src="/PregUNLaM/imagenes/Jugar.png" alt="Jugar" style="width:100%; border-radius:8px;">
+                <img src="{{BASE_URL}}imagenes/Jugar.png" alt="Jugar" style="width:100%; border-radius:8px;">
                 <h2 class="w3-text-black" style="text-shadow: 1px 1px #fff;">JUGAR</h2>
             </div>
 
@@ -45,7 +45,7 @@
                 {{#usuarioLogueado}}
                     <button class="w3-button w3-blue w3-round-large w3-hover-green"
                             style="width: 100%; max-width: 350px;"
-                            onclick="window.location='{{BASE_URL}}pregunta/registroPreguntaForm'">
+                            onclick="window.location='{{BASE_URL}}pregunta/registroPregunta'">
                         Sugerir pregunta
                     </button>
                 {{/usuarioLogueado}}
@@ -72,7 +72,7 @@
                  style="cursor:pointer; max-width:350px; width:100%; height:100%; background-color:#bcdcff; display:flex; flex-direction:column; justify-content:center;"
                  onclick="window.location='{{BASE_URL}}usuario/ranking'">
                 <h2 class="w3-text-black" style="text-shadow: 1px 1px #fff;">RANKING</h2>
-                <img src="/PregUNLaM/imagenes/Ranking.png" alt="Ranking" style="width:100%; border-radius:8px;">
+                <img src="{{BASE_URL}}imagenes/Ranking.png" alt="Ranking" style="width:100%; border-radius:8px;">
             </div>
         </div>
 

@@ -13,12 +13,14 @@ class PartidaController
 
     public function base()
     {
-        $this->lobby();
+        $this->seleccionPartida();
     }
 
-    public function registroUsuarioForm()
+    public function seleccionPartida()
     {
-        $this->renderer->render("registroUsuario");
+        if(isset($_SESSION["usuarioLogueado"])) {
+            $this->renderer->render("seleccionPartida", ["usuarioLogueado" => $_SESSION["usuarioLogueado"]]);
+        }else $this->renderer->render("seleccionPartida");
     }
 
     public function login(){
