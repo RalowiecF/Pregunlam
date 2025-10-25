@@ -178,4 +178,50 @@ class UsuarioController
         return true;
     }
 
+    public function editarPerfil(){
+        if(!isset($_SESSION["usuarioLogueado"])){
+            $this->redirectToIndex();
+        }
+        $this->renderer->render("registroUsuario", ["usuarioLogueado" => $_SESSION["usuarioLogueado"]]);
+    }
+
+    public function editarPerfilForm(){
+        if(!isset($_SESSION["usuarioLogueado"])){
+            $this->redirectToIndex();
+        }
+        $this->validarTexto($_POST['nombreUsuario'], 1, 50);
+        $this->validarMail($_POST['mail']);
+        $this->validarTexto($_POST['nombre'], 1, 50);
+        $this->validarTexto($_POST['apellido'], 1, 50);
+        $this->validarAnioNacimiento($_POST['anioNacimiento']);
+        $sexo = $this->validarSexo($_POST['sexo']);
+        $this->validarTexto($_POST['contrasenia'], 1, 50);
+//        $this->validarImagen($_FILES['fotoPerfil']);
+        $this->validarCoordenadas($_POST['latitud'], $_POST['longitud']);
+
+        $idUsuario = $_SESSION["usuarioLogueado"]["idUsuario"];
+
+        if ($this->model->actualizar(
+            $idUsuario,
+            $_POST["nombreUsuario"],
+            $_POST["mail"],
+            $_POST["nombre"],
+            $_POST["apellido"],
+            $_POST["anioNacimiento"],
+            $sexo,
+            $_POST["contrasenia"],
+            $_FILES['fotoPerfil'],
+            $_POST["latitud"],
+            $_POST["longitud"]
+        )) {
+            $_SESSION["usuarioLogueado"] = $this->model->getUserWith($_POST["nombreUsuario"], $_POST["contrasenia"]);
+            $this->redirectToIndex();
+        } else {
+            $error = $_SESSION["error"];
+            unset($_SESSION["error"]);
+            $this->renderer->render("registroUsuario", ["error" => $error, "usuarioLogueado" => $_SESSION["usuarioLogueado"]]);
+            exit();
+        }
+    }
+
 }

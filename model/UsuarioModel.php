@@ -13,9 +13,10 @@ class UsuarioModel
         $this->conexion = $conexion;
     }
 
-    public function getUserWith($nombreUsuario, $contrasenia) {
+    public function getUserWith($nombreUsuario, $contrasenia)
+    {
         $sql = "SELECT 
-                u.nombreUsuario, u.nombre, u.apellido, u.cantidadTrampas, s.descripcion AS sexo, u.fotoPerfil, 
+                u.idUsuario,u.nombreUsuario,u.mail,u.anioNacimiento,u.fotoPerfil, u.nombre, u.apellido, u.cantidadTrampas, s.descripcion AS sexo, u.fotoPerfil, 
                 t.descripcion AS tipoUsuario, u.fechaRegistro,  n.descripcion AS nivel, u.latitud, u.longitud, 
                 u.ciudad, u.pais, e.descripcion AS entorno, u.puntaje FROM usuario AS u
             JOIN sexo AS s ON u.idSexo = s.idSexo
@@ -37,16 +38,17 @@ class UsuarioModel
         return [];
     }
 
-    public function nuevo($nombreUsuario, $mail, $nombre, $apellido, $anioNacimiento, $sexo, $contrasenia, $fileFotoPerfil, $latitud, $longitud) {
-        if($this->verificarNombreUsuarioDuplicado($nombreUsuario) && $this->verificarMailDuplicado($mail)){
-        $idSexo = $this->obtenerIdSexo($sexo);
-        $latitud = (float) $latitud;
-        $longitud = (float) $longitud;
-        $ciudadPais = $this->obtenerCiudadPais($latitud, $longitud);
-        $ciudad = $ciudadPais['ciudad'];
-        $pais = $ciudadPais['pais'];
-        $fotoPerfil = $this->guardarFotoPerfil($fileFotoPerfil, $nombreUsuario);
-        $tokenVerificacion = bin2hex(random_bytes(32));
+    public function nuevo($nombreUsuario, $mail, $nombre, $apellido, $anioNacimiento, $sexo, $contrasenia, $fileFotoPerfil, $latitud, $longitud)
+    {
+        if ($this->verificarNombreUsuarioDuplicado($nombreUsuario) && $this->verificarMailDuplicado($mail)) {
+            $idSexo = $this->obtenerIdSexo($sexo);
+            $latitud = (float)$latitud;
+            $longitud = (float)$longitud;
+            $ciudadPais = $this->obtenerCiudadPais($latitud, $longitud);
+            $ciudad = $ciudadPais['ciudad'];
+            $pais = $ciudadPais['pais'];
+            $fotoPerfil = $this->guardarFotoPerfil($fileFotoPerfil, $nombreUsuario);
+            $tokenVerificacion = bin2hex(random_bytes(32));
             $sql = "INSERT INTO usuario 
 (nombreUsuario, mail, nombre, apellido, anioNacimiento, idSexo, contrasenia, fotoPerfil, latitud, longitud, ciudad, pais, tokenVerificacion)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -71,7 +73,7 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             );
             $stmt->execute();
             $this->enviarMailVerificacion($mail, $nombreUsuario, $tokenVerificacion);
-        return true;
+            return true;
         } else return false;
     }
 
@@ -87,7 +89,8 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         return $result = $this->conexion->query($sql);
     }
 
-    public function verificarNombreUsuarioDuplicado($nombreUsuario): bool {
+    public function verificarNombreUsuarioDuplicado($nombreUsuario): bool
+    {
         $sql = "SELECT * FROM usuario WHERE nombreUsuario = ?";
         $stmt = $this->conexion->prepare($sql);
 
@@ -107,7 +110,8 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         return true;
     }
 
-    public function verificarMailDuplicado($mail): bool {
+    public function verificarMailDuplicado($mail): bool
+    {
         $sql = "SELECT * FROM usuario WHERE mail = ?";
         $stmt = $this->conexion->prepare($sql);
 
@@ -127,7 +131,8 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         return true;
     }
 
-    function obtenerIdSexo($sexo): int {
+    function obtenerIdSexo($sexo): int
+    {
         $sql = "SELECT idSexo FROM sexo WHERE descripcion = ?";
         $stmt = $this->conexion->prepare($sql);
         $stmt->bind_param("s", $sexo);
@@ -145,7 +150,8 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         }
     }
 
-    function obtenerCiudadPais($lat, $lng): array{
+    function obtenerCiudadPais($lat, $lng): array
+    {
         $latlng = urlencode($lat . ',' . $lng);
         $url = "https://nominatim.openstreetmap.org/reverse?lat=$lat&lon=$lng&format=json&accept-language=es";
 
@@ -172,13 +178,15 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         return ['ciudad' => $ciudad, 'pais' => $pais];
     }
 
-    public function guardarFotoPerfil($fileFotoPerfil, $nombreUsuario){
-        $fotoPerfil =  'imagenes/avatares/' . $nombreUsuario . '.png';
+    public function guardarFotoPerfil($fileFotoPerfil, $nombreUsuario)
+    {
+        $fotoPerfil = 'imagenes/avatares/' . $nombreUsuario . '.png';
         move_uploaded_file($fileFotoPerfil["tmp_name"], $fotoPerfil);
         return $fotoPerfil;
     }
 
-    public function enviarMailVerificacion($mailDestinatario, $nombreUsuario, $tokenVerificacion){
+    public function enviarMailVerificacion($mailDestinatario, $nombreUsuario, $tokenVerificacion)
+    {
         $mail = new PHPMailer(true);
 
         try {
@@ -212,13 +220,68 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         }
     }
 
-    public function validarEditorYAdmin($usuario) {
+    public function validarEditorYAdmin($usuario)
+    {
         if ($usuario['tipoUsuario'] == "Administrador") {
             $usuario['isAdmin'] = true;
         } elseif ($usuario['tipoUsuario'] == "Editor") {
             $usuario['isEditor'] = true;
         }
         return $usuario;
+    }
+
+    public function actualizar($idUsuario, $nombreUsuario, $mail, $nombre, $apellido, $anioNacimiento, $sexo, $contrasenia, $fileFotoPerfil, $latitud, $longitud)
+    {
+        if ($this->verificarNombreUsuarioDuplicado($nombreUsuario) && $this->verificarMailDuplicado($mail)) {
+            $idSexo = $this->obtenerIdSexo($sexo);
+            $latitud = (float)$latitud;
+            $longitud = (float)$longitud;
+            $ciudadPais = $this->obtenerCiudadPais($latitud, $longitud);
+            $ciudad = $ciudadPais['ciudad'];
+            $pais = $ciudadPais['pais'];
+            $fotoPerfil = $this->guardarFotoPerfil($fileFotoPerfil, $nombreUsuario);
+
+            $sql = "UPDATE usuario SET 
+        nombreUsuario = ?, 
+        mail = ?, 
+        nombre = ?, 
+        apellido = ?, 
+        anioNacimiento = ?, 
+        idSexo = ?, 
+        contrasenia = ?, 
+        fotoPerfil = ?, 
+        latitud = ?, 
+        longitud = ?, 
+        ciudad = ?, 
+        pais = ? 
+        WHERE idUsuario = ?";
+
+            $stmt = $this->conexion->prepare($sql);
+
+            $stmt->bind_param(
+                "sssssiissddsi",
+                $nombreUsuario,   // s
+                $mail,            // s
+                $nombre,          // s
+                $apellido,        // s
+                $anioNacimiento,  // i
+                $idSexo,          // i
+                $contrasenia,     // s
+                $fotoPerfil,      // s
+                $latitud,         // d
+                $longitud,        // d
+                $ciudad,          // s
+                $pais,            // s
+                $idUsuario        // i
+            );
+
+            if (!$stmt->execute()) {
+                $_SESSION['error'] = "Error al actualizar: " . $stmt->error;
+                return false;
+            }
+
+            return true;
+        }
     }
 
 }
