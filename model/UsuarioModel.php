@@ -284,4 +284,29 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         }
     }
 
+    public function getById($idUsuario){
+        $sql = "SELECT 
+                u.fotoPerfil, 
+                u.nombreUsuario,
+                u.pais,
+                u.latitud, 
+                u.longitud, 
+                COUNT(ujp.idPartida) AS partidas
+            FROM usuario AS u
+            LEFT JOIN usuario_juega_partida ujp ON u.idUsuario = ujp.idUsuario
+            WHERE u.idUsuario = ?
+            GROUP BY u.idUsuario, u.fotoPerfil, u.nombreUsuario, u.latitud, u.longitud";
+
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->bind_param("i", $idUsuario);
+        $stmt->execute();
+
+        $resultado = $stmt->get_result();
+
+        if ($resultado && $resultado->num_rows > 0) {
+            return $resultado->fetch_assoc();
+        }
+        return null;
+    }
+
 }

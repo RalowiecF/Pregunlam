@@ -35,12 +35,23 @@ class NewRouter
 
     private function executeMethodFromController($controller, $methodName)
     {
-        call_user_func(
-            array(
-                $controller,
-                $this->getMethodName($controller, $methodName)
-            )
-        );
+        // Extraer idUsuario si está en la URL
+        $idUsuario = null;
+        if (preg_match('/verPerfil\/(\d+)/', $_SERVER['REQUEST_URI'], $matches)) {
+            $idUsuario = $matches[1];
+        }
+
+        // Si el método es verPerfil y hay idUsuario, pásalo como argumento
+        if ($methodName === 'verPerfil' && $idUsuario !== null) {
+            call_user_func(
+                array($controller, $this->getMethodName($controller, $methodName)),
+                $idUsuario
+            );
+        } else {
+            call_user_func(
+                array($controller, $this->getMethodName($controller, $methodName))
+            );
+        }
     }
 
     public function getControllerName($controllerName)
