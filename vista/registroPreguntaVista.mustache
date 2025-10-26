@@ -1,7 +1,53 @@
-<h1>Registro de Pregunta en desarrollo</h1>
+<h1>Registro de Pregunta en desarrollo:</h1>
+<form method="POST" action="{{BASE_URL}}pregunta/sugerirPreguntaNueva"
+      enctype="multipart/form-data"
+      class="w3-card w3-white w3-padding w3-content"
+        style="width:900px;margin-top:2rem">
 
-<a href="{{BASE_URL}}usuario/lobby"
-   class="w3-button w3-round-large"
-   style="background-color:#26F0EC;color:black;font-weight:bold;text-decoration:none;margin:0 0 20px 20px;">
-    Lobby
-</a>
+    <!-- Cargar estilos desde W3.CSS y Leaflet directamente -->
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+    {{#error}}
+        <div class="w3-panel w3-red w3-display-container">
+            <span onclick="this.parentElement.style.display='none'" class="w3-button w3-large w3-display-topright">&times;</span>
+            <p>{{error}}</p>
+        </div>
+    {{/error}}
+
+
+    <div class="w3-row-padding">
+        <p><label>Enunciado Pregunta:</label>
+            <input class="w3-input w3-border" type="text" name="enunciado" required></p>
+        <p><label>Categoria:</label>
+            <select class="w3-input w3-border" name="categoria" required>
+                {{#categorias}}
+                    <option value="{{idCategoria}}">{{descripcion}}</option>
+                {{/categorias}}
+            </select>
+        </p>
+        <p><label>Nivel:</label>
+            <select class="w3-input w3-border" name="nivel" required>
+                {{#niveles}}
+                    <option value="{{idNivel}}">{{descripcion}}</option>
+                {{/niveles}}
+            </select>
+        </p>
+        <p><label>Respuesta Correcta:</label>
+            <input class="w3-input w3-border" type="text" name="respuestaCorrecta" required></p>
+        <p><label>Respuesta Incorrecta 1:</label>
+            <input class="w3-input w3-border" type="text" name="respuestaIncorrecta1" required></p>
+        <p><label>Respuesta Incorrecta 2:</label>
+            <input class="w3-input w3-border" type="text" name="respuestaIncorrecta2" required></p>
+        <p><label>Respuesta Incorrecta 3:</label>
+            <input class="w3-input w3-border" type="text" name="respuestaIncorrecta3" required></p>
+    </div>
+
+    <p class="w3-center">
+        <a class="w3-button w3-blue" href="{{BASE_URL}}">Volver</a>
+        <button class="w3-button w3-green" type="submit">
+            Sugerir Pregunta
+        </button>
+    </p>
+
+</form>

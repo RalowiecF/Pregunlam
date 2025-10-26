@@ -1,0 +1,30 @@
+<h1>preguntas sugeridas</h1>
+<div class="w3-light-grey w3-center"
+     style="min-height:70vh;display:flex;flex-direction:column;justify-content:flex-start;align-items:center;margin:0;padding-top:10px;">
+
+    <!-- Título -->
+    <h2 class="w3-text-blue" style="color:#005DF0;margin:10px 0;">{{tabla}}</h2>
+
+    <!-- Contenedor de la tabla -->
+    <div class="w3-card-4 w3-white w3-round-large"
+         style="width:90%;max-width:1000px;overflow:hidden;margin-bottom:5px;">
+        <table class="w3-table w3-bordered w3-hoverable w3-centered" id="usuariosTabla" style="margin:0;">
+            <thead style="background-color:#00EF48;color:white;">
+            <tr>
+                <th>Enunciado</th>
+                <th>Respuesta</th>
+                <th>Cambiar Estado</th>
+            </tr>
+            </thead>
+            <tbody id="tablaBody">
+            {{#preguntas}}
+                <tr>
+                    <td>{{enunciado}}</td>
+                    <td>{{respuestaCorrecta}}</td>
+
+                </tr>
+            {{/preguntas}}
+            </tbody>
+        </table>
+    </div>
+</div>

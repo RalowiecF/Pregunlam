@@ -82,12 +82,12 @@
     <div class="w3-center w3-padding" style="margin-top: 1px;">
         {{#usuarioLogueado}}
             {{#usuarioLogueado.isAdmin}}
-                <a href="{{BASE_URL}}pregunta/administracion" class="w3-button w3-green w3-round-large">
+                <a href="{{BASE_URL}}pregunta/listaPreguntas" class="w3-button w3-green w3-round-large">
                     Administrar Preguntas
                 </a>
             {{/usuarioLogueado.isAdmin}}
             {{#usuarioLogueado.isEditor}}
-                <a href="{{BASE_URL}}pregunta/administracion" class="w3-button w3-green w3-round-large">
+                <a href="{{BASE_URL}}pregunta/listaPreguntas" class="w3-button w3-green w3-round-large">
                     Administrar Preguntas
                 </a>
             {{/usuarioLogueado.isEditor}}

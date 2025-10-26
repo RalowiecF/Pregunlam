@@ -89,19 +89,27 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         return $result = $this->conexion->query($sql);
     }
 
-    public function verificarNombreUsuarioDuplicado($nombreUsuario): bool
+    public function verificarNombreUsuarioDuplicado($nombreUsuario,$idUsuario = null): bool
     {
-        $sql = "SELECT * FROM usuario WHERE nombreUsuario = ?";
-        $stmt = $this->conexion->prepare($sql);
-
-        if (!$stmt) {
-            $_SESSION['error'] = "Error al preparar la consulta.";
-            return false;
+        if ($idUsuario === null) {
+            $sql = "SELECT * FROM usuario WHERE nombreUsuario = ?";
+            $stmt = $this->conexion->prepare($sql);
+            if (!$stmt) {
+                $_SESSION['error'] = "Error al preparar la consulta.";
+                return false;
+            }
+            $stmt->bind_param("s", $nombreUsuario);
+        } else {
+            $sql = "SELECT * FROM usuario WHERE nombreUsuario = ? AND idUsuario != ?";
+            $stmt = $this->conexion->prepare($sql);
+            if (!$stmt) {
+                $_SESSION['error'] = "Error al preparar la consulta.";
+                return false;
+            }
+            $stmt->bind_param("si", $nombreUsuario, $idUsuario);
         }
 
-        $stmt->bind_param("s", $nombreUsuario);
         $stmt->execute();
-
         $resultado = $stmt->get_result();
         if ($resultado->num_rows > 0) {
             $_SESSION['error'] = "Este usuario ya existe";
@@ -110,22 +118,30 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         return true;
     }
 
-    public function verificarMailDuplicado($mail): bool
+    public function verificarMailDuplicado($mail,$idUsuario = null): bool
     {
-        $sql = "SELECT * FROM usuario WHERE mail = ?";
-        $stmt = $this->conexion->prepare($sql);
-
-        if (!$stmt) {
-            $_SESSION['error'] = "Error al preparar la consulta.";
-            return false;
+        if ($idUsuario === null) {
+            $sql = "SELECT * FROM usuario WHERE mail = ?";
+            $stmt = $this->conexion->prepare($sql);
+            if (!$stmt) {
+                $_SESSION['error'] = "Error al preparar la consulta.";
+                return false;
+            }
+            $stmt->bind_param("s", $mail);
+        } else {
+            $sql = "SELECT * FROM usuario WHERE mail = ? AND idUsuario != ?";
+            $stmt = $this->conexion->prepare($sql);
+            if (!$stmt) {
+                $_SESSION['error'] = "Error al preparar la consulta.";
+                return false;
+            }
+            $stmt->bind_param("si", $mail, $idUsuario);
         }
 
-        $stmt->bind_param("s", $mail);
         $stmt->execute();
-
         $resultado = $stmt->get_result();
         if ($resultado->num_rows > 0) {
-            $_SESSION['error'] = "Este correo electronico ya existe";
+            $_SESSION['error'] = "Este mail ya existe";
             return false;
         }
         return true;
@@ -232,7 +248,7 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     public function actualizar($idUsuario, $nombreUsuario, $mail, $nombre, $apellido, $anioNacimiento, $sexo, $contrasenia, $fileFotoPerfil, $latitud, $longitud)
     {
-        if ($this->verificarNombreUsuarioDuplicado($nombreUsuario) && $this->verificarMailDuplicado($mail)) {
+        if ($this->verificarNombreUsuarioDuplicado($nombreUsuario,$idUsuario) && $this->verificarMailDuplicado($mail,$idUsuario)) {
             $idSexo = $this->obtenerIdSexo($sexo);
             $latitud = (float)$latitud;
             $longitud = (float)$longitud;
