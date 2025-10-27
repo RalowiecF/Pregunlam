@@ -11,6 +11,10 @@ class ComposerStaticInit2185d2f99bcd56787481d9357a5972d3
         array (
             'PHPMailer\\PHPMailer\\' => 20,
         ),
+        'M' => 
+        array (
+            'Mustache\\' => 9,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
@@ -18,10 +22,47 @@ class ComposerStaticInit2185d2f99bcd56787481d9357a5972d3
         array (
             0 => __DIR__ . '/..' . '/phpmailer/phpmailer/src',
         ),
+        'Mustache\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/mustache/mustache/src',
+        ),
     );
 
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
+        'Mustache_Cache' => __DIR__ . '/..' . '/mustache/mustache/src/compat.php',
+        'Mustache_Cache_AbstractCache' => __DIR__ . '/..' . '/mustache/mustache/src/compat.php',
+        'Mustache_Cache_FilesystemCache' => __DIR__ . '/..' . '/mustache/mustache/src/compat.php',
+        'Mustache_Cache_NoopCache' => __DIR__ . '/..' . '/mustache/mustache/src/compat.php',
+        'Mustache_Compiler' => __DIR__ . '/..' . '/mustache/mustache/src/compat.php',
+        'Mustache_Context' => __DIR__ . '/..' . '/mustache/mustache/src/compat.php',
+        'Mustache_Engine' => __DIR__ . '/..' . '/mustache/mustache/src/compat.php',
+        'Mustache_Exception' => __DIR__ . '/..' . '/mustache/mustache/src/compat.php',
+        'Mustache_Exception_InvalidArgumentException' => __DIR__ . '/..' . '/mustache/mustache/src/compat.php',
+        'Mustache_Exception_LogicException' => __DIR__ . '/..' . '/mustache/mustache/src/compat.php',
+        'Mustache_Exception_RuntimeException' => __DIR__ . '/..' . '/mustache/mustache/src/compat.php',
+        'Mustache_Exception_SyntaxException' => __DIR__ . '/..' . '/mustache/mustache/src/compat.php',
+        'Mustache_Exception_UnknownFilterException' => __DIR__ . '/..' . '/mustache/mustache/src/compat.php',
+        'Mustache_Exception_UnknownHelperException' => __DIR__ . '/..' . '/mustache/mustache/src/compat.php',
+        'Mustache_Exception_UnknownTemplateException' => __DIR__ . '/..' . '/mustache/mustache/src/compat.php',
+        'Mustache_HelperCollection' => __DIR__ . '/..' . '/mustache/mustache/src/compat.php',
+        'Mustache_LambdaHelper' => __DIR__ . '/..' . '/mustache/mustache/src/compat.php',
+        'Mustache_Loader' => __DIR__ . '/..' . '/mustache/mustache/src/compat.php',
+        'Mustache_Loader_ArrayLoader' => __DIR__ . '/..' . '/mustache/mustache/src/compat.php',
+        'Mustache_Loader_CascadingLoader' => __DIR__ . '/..' . '/mustache/mustache/src/compat.php',
+        'Mustache_Loader_FilesystemLoader' => __DIR__ . '/..' . '/mustache/mustache/src/compat.php',
+        'Mustache_Loader_InlineLoader' => __DIR__ . '/..' . '/mustache/mustache/src/compat.php',
+        'Mustache_Loader_MutableLoader' => __DIR__ . '/..' . '/mustache/mustache/src/compat.php',
+        'Mustache_Loader_ProductionFilesystemLoader' => __DIR__ . '/..' . '/mustache/mustache/src/compat.php',
+        'Mustache_Loader_StringLoader' => __DIR__ . '/..' . '/mustache/mustache/src/compat.php',
+        'Mustache_Logger' => __DIR__ . '/..' . '/mustache/mustache/src/compat.php',
+        'Mustache_Logger_AbstractLogger' => __DIR__ . '/..' . '/mustache/mustache/src/compat.php',
+        'Mustache_Logger_StreamLogger' => __DIR__ . '/..' . '/mustache/mustache/src/compat.php',
+        'Mustache_Parser' => __DIR__ . '/..' . '/mustache/mustache/src/compat.php',
+        'Mustache_Source' => __DIR__ . '/..' . '/mustache/mustache/src/compat.php',
+        'Mustache_Source_FilesystemSource' => __DIR__ . '/..' . '/mustache/mustache/src/compat.php',
+        'Mustache_Template' => __DIR__ . '/..' . '/mustache/mustache/src/compat.php',
+        'Mustache_Tokenizer' => __DIR__ . '/..' . '/mustache/mustache/src/compat.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
