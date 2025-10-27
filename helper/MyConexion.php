@@ -21,6 +21,23 @@ class MyConexion
         return null;
     }
 
+    public function multy_query($sql) {
+        $data = [];
+        if ($this->conexion->multi_query($sql)) {
+            do {
+                if ($result = $this->conexion->store_result()) {
+                    $data[] = $result->fetch_all(MYSQLI_ASSOC);
+                    $result->free();
+                }
+            } while ($this->conexion->more_results() && $this->conexion->next_result());
+        } else {
+            throw new Exception("Error en multi_query: " . $this->conexion->error);
+        }
+
+        // Si hay un SELECT final (como el de idPartida)
+        return end($data) ?: null;
+    }
+
     public function prepare($sql) {
         return $this->conexion->prepare($sql);
     }

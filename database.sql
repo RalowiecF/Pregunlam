@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 24, 2025 at 03:45 AM
+-- Generation Time: Oct 27, 2025 at 12:31 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -117,7 +117,8 @@ INSERT INTO `nivel` (`idNivel`, `descripcion`) VALUES
 CREATE TABLE `partida` (
                            `idPartida` int(11) NOT NULL,
                            `fechaPartida` datetime NOT NULL DEFAULT current_timestamp(),
-                           `duracionPartida` time DEFAULT NULL
+                           `duracionPartida` time DEFAULT NULL,
+                           `puntaje` int(11) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -129,7 +130,7 @@ CREATE TABLE `partida` (
 CREATE TABLE `partida_tiene_pregunta` (
                                           `idPartida` int(11) NOT NULL,
                                           `idPregunta` int(11) NOT NULL,
-                                          `idResultado` int(11) NOT NULL
+                                          `idResultado` int(11) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -1288,7 +1289,7 @@ ALTER TABLE `nivel`
 -- AUTO_INCREMENT for table `partida`
 --
 ALTER TABLE `partida`
-    MODIFY `idPartida` int(11) NOT NULL AUTO_INCREMENT;
+    MODIFY `idPartida` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `pregunta`
@@ -1324,7 +1325,7 @@ ALTER TABLE `tipousuario`
 -- AUTO_INCREMENT for table `usuario`
 --
 ALTER TABLE `usuario`
-    MODIFY `idUsuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+    MODIFY `idUsuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- Constraints for dumped tables

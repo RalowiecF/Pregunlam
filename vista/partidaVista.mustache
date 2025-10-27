@@ -1,0 +1,92 @@
+<div class="w3-light-grey w3-center"
+     style="min-height:75vh;display:flex;flex-direction:column;justify-content:space-between;align-items:center;margin:0;padding:10px;box-sizing:border-box;">
+
+    <!-- BARRA SUPERIOR DERECHA -->
+    <div style="width:100%;display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-bottom:10px;flex-shrink:0;">
+        <div class="w3-card w3-round-large"
+             style="background-color:white;padding:6px 14px;color:#005DF0;font-weight:bold;box-shadow:0 2px 5px rgba(0,0,0,0.15);font-size:0.9rem;">
+            Cantidad de trampas: {{trampas.cantidadTrampas}}
+        </div>
+    </div>
+
+    <!-- CONTENEDOR CENTRAL -->
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;width:100%;max-width:700px;">
+
+        <!-- RECUADRO DEL ENUNCIADO -->
+        <div class="w3-card w3-round-large w3-white"
+             style="width:100%;padding:15px;box-shadow:0 3px 6px rgba(0,0,0,0.1);">
+            <h3 class="w3-text-blue"
+                style="color:#005DF0;margin-bottom:10px;font-size:1.1rem;text-align:left;">
+                Pregunta:
+            </h3>
+            <p style="margin:0;text-align:left;font-weight:bold;color:black;">{{pregunta.enunciado}}</p>
+        </div>
+
+        <!-- FORMULARIO DE RESPUESTA -->
+        <form method="POST" action="{{BASE_URL}}partida/continuarPartida"
+              class="w3-card w3-round-large w3-white"
+              style="width:100%;padding:15px;box-shadow:0 3px 6px rgba(0,0,0,0.1);">
+
+            <!-- OPCIONES (2x2) -->
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px;margin-top:10px;">
+                <label class="w3-card w3-round-large w3-white w3-hover-shadow"
+                       style="padding:10px;cursor:pointer;display:flex;align-items:center;justify-content:flex-start;gap:8px;">
+                    <input class="w3-radio" type="radio" name="opcionSeleccionada" value="1" required>
+                    <span style="font-weight:bold;color:#005DF0;">{{pregunta.opciones.opcion1}}</span>
+                </label>
+
+                <label class="w3-card w3-round-large w3-white w3-hover-shadow"
+                       style="padding:10px;cursor:pointer;display:flex;align-items:center;justify-content:flex-start;gap:8px;">
+                    <input class="w3-radio" type="radio" name="opcionSeleccionada" value="2" required>
+                    <span style="font-weight:bold;color:#005DF0;">{{pregunta.opciones.opcion2}}</span>
+                </label>
+
+                <label class="w3-card w3-round-large w3-white w3-hover-shadow"
+                       style="padding:10px;cursor:pointer;display:flex;align-items:center;justify-content:flex-start;gap:8px;">
+                    <input class="w3-radio" type="radio" name="opcionSeleccionada" value="3" required>
+                    <span style="font-weight:bold;color:#005DF0;">{{pregunta.opciones.opcion3}}</span>
+                </label>
+
+                <label class="w3-card w3-round-large w3-white w3-hover-shadow"
+                       style="padding:10px;cursor:pointer;display:flex;align-items:center;justify-content:flex-start;gap:8px;">
+                    <input class="w3-radio" type="radio" name="opcionSeleccionada" value="4" required>
+                    <span style="font-weight:bold;color:#005DF0;">{{pregunta.opciones.opcion4}}</span>
+                </label>
+            </div>
+
+            <!-- BOTONES INFERIORES DEL FORM -->
+            <div style="display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-top:20px;flex-wrap:wrap;">
+                {{#trampas.tieneTrampas}}
+                <a href="{{BASE_URL}}partida/hacerTrampa/{{partida.idPregunta}}"
+                   class="w3-button w3-round-large"
+                   style="background-color:#26F0EC;color:black;font-weight:bold;text-decoration:none;padding:8px 16px;font-size:0.9rem;">
+                    Hacer Trampa
+                </a>
+                {{/trampas.tieneTrampas}}
+                {{^trampas.tieneTrampas}}
+                {{/trampas.tieneTrampas}}
+                <button type="submit"
+                        class="w3-button w3-round-large"
+                        style="background-color:#00EF48;color:white;font-weight:bold;padding:8px 20px;font-size:0.9rem;">
+                    Responder
+                </button>
+            </div>
+        </form>
+
+    </div>
+
+    <!-- BOTONES INFERIORES IZQUIERDA -->
+    <div style="width:100%;display:flex;justify-content:flex-start;align-items:center;gap:10px;margin-top:10px;flex-shrink:0;flex-wrap:wrap;">
+        <a href="{{BASE_URL}}usuario/lobby"
+           class="w3-button w3-round-large"
+           style="background-color:#F44336;color:white;font-weight:bold;text-decoration:none;margin:0 0 5px 10px;padding:6px 14px;font-size:0.9rem;">
+            Abandonar Partida
+        </a>
+        <a href="{{BASE_URL}}pregunta/reportar/{{partida.idPregunta}}"
+           class="w3-button w3-round-large"
+           style="background-color:#9E9E9E;color:white;font-weight:bold;text-decoration:none;margin:0 0 5px 0;padding:6px 14px;font-size:0.9rem;">
+            Reportar Pregunta
+        </a>
+    </div>
+
+</div>

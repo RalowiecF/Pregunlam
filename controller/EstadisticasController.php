@@ -13,11 +13,11 @@ class EstadisticasController
 
     public function base()
     {
-        $this->seleccionPartida();
+        $this->seleccion();
     }
 
-    public function ver()
+    public function seleccion()
     {
-        $this->renderer->render("seleccionPartida");
+        $this->renderer->render("seleccionEstadistica");
     }
 }
