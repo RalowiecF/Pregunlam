@@ -39,7 +39,12 @@ class PreguntaController
 
     public function listaPreguntas(){
         if (isset($_SESSION["usuarioLogueado"])) {
-            $this->renderer->render("listaPreguntasSugeridas", ["preguntas" => $this->model->obtenerPreguntasSugeridas(), "usuarioLogueado" => $_SESSION["usuarioLogueado"]]);
+            $this->renderer->render("listaPreguntas", ["preguntasSugeridas" => $this->model->obtenerPreguntasSegunIdEstado(1),
+                                    "preguntasReportadas" => $this->model->obtenerPreguntasSegunIdEstado(3),
+                                    "preguntasVigentes" => $this->model->obtenerPreguntasSegunIdEstado(2),
+                                    "categorias" => $this->model->obtenerCategorias(),
+                                    "niveles" => $this->model->obtenerNiveles(),
+                                    "usuarioLogueado" => $_SESSION["usuarioLogueado"]]);
         } else $this->redirectToIndex();
     }
 
@@ -91,4 +96,34 @@ class PreguntaController
         $_SESSION['mensaje'] = "Estado de la pregunta actualizado correctamente.";
         $this->listaPreguntas();
     }
+
+    public function eliminarPregunta($idPregunta){
+        if (!isset($_SESSION["usuarioLogueado"])) {
+            $this->redirectToIndex();
+        }
+
+        $this->model->eliminarPregunta($idPregunta);
+        $_SESSION['mensaje'] = "Pregunta eliminada correctamente.";
+        $this->listaPreguntas();
+    }
+
+    public function editarPregunta($idPregunta){
+        if(!isset($_SESSION["usuarioLogueado"])){
+            $this->redirectToIndex();
+            return;
+        }
+        $esEdicion = true;
+        $pregunta = $this->model->obtenerPreguntaPorId($idPregunta);
+        $categorias = $this->model->obtenerCategorias();
+        $niveles = $this->model->obtenerNiveles();
+        $this->renderer->render("registroPregunta", [
+            "usuarioLogueado" => $_SESSION["usuarioLogueado"],
+            "esEdicion" => $esEdicion,
+            "pregunta" => $pregunta,
+            "categorias" => $categorias,
+            "niveles" => $niveles
+        ]);
+    }
+
+
 }

@@ -9,11 +9,18 @@ class PreguntaModel
         $this->conexion = $conexion;
     }
 
-    public function obtenerPreguntasSugeridas()
+    public function obtenerPreguntasSegunIdEstado($idEstado)
     {
-        $sql = "SELECT * FROM pregunta p WHERE p.idEstado = 1 ";
+        $sql = "SELECT * FROM pregunta p WHERE p.idEstado = $idEstado ";
         return $this->conexion->query($sql);
     }
+
+    public function obtenerRespuestasIncorrectasSegunIdPregunta($idPregunta)
+    {
+        $sql = "SELECT ri.respuestaIncorrecta FROM respuesta_incorrecta ri WHERE ri.idPregunta = $idPregunta ";
+        return $this->conexion->query($sql);
+    }
+
 
     public function obtenerCategorias()
     {
@@ -27,7 +34,8 @@ class PreguntaModel
         return $this->conexion->query($sql);
     }
 
-    public function sugerirPreguntaNueva($enunciado,$categoria,$nivel,$respuestaCorrecta,$respuestaIncorrecta1,$respuestaIncorrecta2,$respuestaIncorrecta3){
+    public function sugerirPreguntaNueva($enunciado, $categoria, $nivel, $respuestaCorrecta, $respuestaIncorrecta1, $respuestaIncorrecta2, $respuestaIncorrecta3)
+    {
         // Insertar la pregunta y obtener su id
         $sqlPregunta = "INSERT INTO pregunta (enunciado, idCategoria, idNivel, respuestaCorrecta) VALUES (?, ?, ?, ?)";
         $stmt = $this->conexion->prepare($sqlPregunta);
@@ -52,7 +60,8 @@ class PreguntaModel
         return true;
     }
 
-    public function obtenerIdUltimaPregunta() {
+    public function obtenerIdUltimaPregunta()
+    {
         // Consulta SQL para obtener el último ID de pregunta
         $sql = "SELECT idPregunta FROM pregunta ORDER BY idPregunta DESC LIMIT 1";
 
@@ -73,4 +82,31 @@ class PreguntaModel
             return null; // Si no hay preguntas, devolver null
         }
     }
+
+    public function eliminarPregunta($idPregunta)
+    {
+        $sqlEliminarRespuestas = "DELETE FROM respuesta_incorrecta WHERE idPregunta = ?";
+        $stmt = $this->conexion->prepare($sqlEliminarRespuestas);
+        $stmt->bind_param("i", $idPregunta);
+        $stmt->execute();
+
+        $sqlEliminarPregunta = "DELETE FROM pregunta WHERE idPregunta = ?";
+        $stmt = $this->conexion->prepare($sqlEliminarPregunta);
+        $stmt->bind_param("i", $idPregunta);
+        $stmt->execute();
+
+        return true;
+    }
+
+    public function obtenerPreguntaPorId($idPregunta)
+    {
+        $sql = "SELECT * FROM pregunta WHERE idPregunta = ?";
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->bind_param("i", $idPregunta);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_assoc();
+    }
+
+
 }

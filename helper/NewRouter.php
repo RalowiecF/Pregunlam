@@ -35,23 +35,57 @@ class NewRouter
 
     private function executeMethodFromController($controller, $methodName)
     {
-        // Extraer idUsuario si está en la URL
-        $idUsuario = null;
-        if (preg_match('/verPerfil\/(\d+)/', $_SERVER['REQUEST_URI'], $matches)) {
-            $idUsuario = $matches[1];
+//        // Extraer idUsuario si está en la URL
+//        $idUsuario = null;
+//        if (preg_match('/verPerfil\/(\d+)/', $_SERVER['REQUEST_URI'], $matches)) {
+//            $idUsuario = $matches[1];
+//        }
+//
+//        // Extraer idPregunta si está en la URL
+//        $idPregunta = null;
+//        if (preg_match('/eliminarPregunta\/(\d+)/', $_SERVER['REQUEST_URI'], $matches)) {
+//            $idPregunta = $matches[1];
+//        }
+//
+//        // Si el método es verPerfil y hay idUsuario, pásalo como argumento
+//        if ($methodName === 'verPerfil' && $idUsuario !== null) {
+//            call_user_func(
+//                array($controller, $this->getMethodName($controller, $methodName)),
+//                $idUsuario
+//            );
+//        }elseif ($methodName === 'eliminarPregunta' && $idPregunta !== null){
+//            call_user_func(
+//                array($controller, $this->getMethodName($controller, $methodName)),
+//                $idPregunta
+//            );
+//        } else {
+//            call_user_func(
+//                array($controller, $this->getMethodName($controller, $methodName))
+//            );
+//        }
+
+        // Extraer partes de la URL
+        $urlParts = explode('/', trim($_SERVER['REQUEST_URI'], '/'));
+        // Buscar el índice del método en la URL
+        $methodIndex = array_search($methodName, $urlParts);
+
+        $params = [];
+        if ($methodIndex !== false) {
+            // Extraer todos los parámetros después del método
+            for ($i = $methodIndex + 1; $i < count($urlParts); $i++) {
+                if (is_numeric($urlParts[$i])) {
+                    $params[] = $urlParts[$i];
+                }
+            }
         }
 
-        // Si el método es verPerfil y hay idUsuario, pásalo como argumento
-        if ($methodName === 'verPerfil' && $idUsuario !== null) {
-            call_user_func(
-                array($controller, $this->getMethodName($controller, $methodName)),
-                $idUsuario
-            );
-        } else {
-            call_user_func(
-                array($controller, $this->getMethodName($controller, $methodName))
-            );
-        }
+        call_user_func_array(
+            [ $controller, $this->getMethodName($controller, $methodName) ],
+            $params
+        );
+
+
+
     }
 
     public function getControllerName($controllerName)
