@@ -1,4 +1,7 @@
-<form method="POST" action="{{BASE_URL}}usuario/nuevo" enctype="multipart/form-data" class="w3-card w3-white w3-padding w3-content" style="max-width:900px;" onsubmit="return validarFormulario()">
+<form method="POST" action="{{#usuarioLogueado}}{{BASE_URL}}usuario/editarPerfilForm{{/usuarioLogueado}}{{^usuarioLogueado}}{{BASE_URL}}usuario/nuevo{{/usuarioLogueado}}"
+      enctype="multipart/form-data"
+      class="w3-card w3-white w3-padding w3-content"
+      style="max-width:900px; margin-top: 3rem" onsubmit="return validarFormulario()">
 
     <!-- Cargar estilos desde W3.CSS y Leaflet directamente -->
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
@@ -19,15 +22,15 @@
         <!-- Columna 1 -->
         <div class="w3-half">
             <p><label>Nombre de Usuario</label>
-                <input class="w3-input w3-border" type="text" name="nombreUsuario" maxlength="50" required></p>
+                <input class="w3-input w3-border" type="text" value="{{usuarioLogueado.nombreUsuario}}" name="nombreUsuario" maxlength="50" required></p>
             <p><label>Mail</label>
-                <input class="w3-input w3-border" type="email" name="mail" maxlength="50" required></p>
+                <input class="w3-input w3-border" type="email" value="{{usuarioLogueado.mail}}" name="mail" maxlength="50" required></p>
             <p><label>Nombre</label>
-                <input class="w3-input w3-border" type="text" name="nombre" maxlength="50" required></p>
+                <input class="w3-input w3-border" type="text" value="{{usuarioLogueado.nombre}}" name="nombre" maxlength="50" required></p>
             <p><label>Apellido</label>
-                <input class="w3-input w3-border" type="text" name="apellido" maxlength="50" required></p>
+                <input class="w3-input w3-border" type="text" value="{{usuarioLogueado.apellido}}" name="apellido" maxlength="50" required></p>
             <p><label>Año de Nacimiento</label>
-                <input class="w3-input w3-border" type="number" name="anioNacimiento" min="1901" max="2025" required></p>
+                <input class="w3-input w3-border" type="number" value="{{usuarioLogueado.anioNacimiento}}" name="anioNacimiento" min="1901" max="2025" required></p>
             <p><label>Sexo</label><br>
                 <input class="w3-radio" type="radio" name="sexo" value="Femenino"> Femenino<br>
                 <input class="w3-radio" type="radio" name="sexo" value="Masculino"> Masculino<br>
@@ -38,20 +41,22 @@
         <!-- Columna 2 -->
         <div class="w3-half">
             <p><label>Contraseña</label>
-                <input class="w3-input w3-border" type="password" name="contrasenia" id="contraseña" maxlength="50" required></p>
+                <input class="w3-input w3-border" type="password" value="{{usuarioLogueado.contrasenia}}" name="contrasenia" id="contraseña" maxlength="50" required></p>
             <p><label>Confirmar Contraseña</label>
-                <input class="w3-input w3-border" type="password" id="confirmarContraseña" maxlength="50" required></p>
+                <input class="w3-input w3-border" type="password"  id="confirmarContraseña" maxlength="50" required></p>
             <p><label>Foto de Perfil</label>
-                <input class="w3-input w3-border" type="file" name="fotoPerfil" accept="image/*"></p>
+                <input class="w3-input w3-border" type="file" value="{{usuarioLogueado.fotoPerfil}}" name="fotoPerfil" accept="image/*"></p>
             <p><label>Ubicación (clic en el mapa)</label></p>
             <div id="map" class="w3-border" style="height: 250px;"></div>
-            <input type="hidden" name="latitud" id="latitud">
-            <input type="hidden" name="longitud" id="longitud">
+            <input type="hidden" name="latitud" value="{{usuarioLogueado.latitud}}" id="latitud">
+            <input type="hidden" name="longitud" value="{{usuarioLogueado.longitud}}" id="longitud">
         </div>
     </div>
 
     <p class="w3-center">
-        <button class="w3-button w3-green" type="submit">Guardar</button>
+        <button class="w3-button w3-green" type="submit">
+            {{#usuarioLogueado}}Actualizar{{/usuarioLogueado}}{{^usuarioLogueado}}Registrar{{/usuarioLogueado}}
+        </button>
         <a class="w3-button w3-blue" href="{{BASE_URL}}">Volver</a>
 
     </p>
@@ -71,7 +76,9 @@
         }
 
         // Iniciar mapa
-        const map = L.map('map').setView([-34.6037, -58.3816], 9); // Buenos Aires
+        const lat = {{#usuarioLogueado}}{{usuarioLogueado.latitud}}{{/usuarioLogueado}}{{^usuarioLogueado}}-34.6037{{/usuarioLogueado}};
+        const lng = {{#usuarioLogueado}}{{usuarioLogueado.longitud}}{{/usuarioLogueado}}{{^usuarioLogueado}}-58.3816{{/usuarioLogueado}};
+        const map = L.map('map').setView([lat,lng], 9); // Buenos Aires
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors'

@@ -13,9 +13,9 @@ class UsuarioModel
         $this->conexion = $conexion;
     }
 
-    public function getUserWith($nombreUsuario, $contrasenia) {
+    public function getUserWith($nombreUsuario, $contrasenia){
         $sql = "SELECT 
-                u.idUsuario, u.nombreUsuario, u.nombre, u.apellido, u.cantidadTrampas, s.descripcion AS sexo, u.fotoPerfil, 
+                u.idUsuario,u.nombreUsuario,u.mail,u.anioNacimiento,u.fotoPerfil, u.nombre, u.apellido, u.cantidadTrampas, s.descripcion AS sexo, u.fotoPerfil, 
                 t.descripcion AS tipoUsuario, u.fechaRegistro,  n.descripcion AS nivel, u.latitud, u.longitud, 
                 u.ciudad, u.pais, e.descripcion AS entorno, u.puntaje FROM usuario AS u
             JOIN sexo AS s ON u.idSexo = s.idSexo
@@ -87,18 +87,26 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         return $result = $this->conexion->query($sql);
     }
 
-    public function verificarNombreUsuarioDuplicado($nombreUsuario): bool {
-        $sql = "SELECT * FROM usuario WHERE nombreUsuario = ?";
-        $stmt = $this->conexion->prepare($sql);
-
-        if (!$stmt) {
-            $_SESSION['error'] = "Error al preparar la consulta.";
-            return false;
+    public function verificarNombreUsuarioDuplicado($nombreUsuario,$idUsuario = null): bool
+    {
+        if ($idUsuario === null) {
+            $sql = "SELECT * FROM usuario WHERE nombreUsuario = ?";
+            $stmt = $this->conexion->prepare($sql);
+            if (!$stmt) {
+                $_SESSION['error'] = "Error al preparar la consulta.";
+                return false;
+            }
+            $stmt->bind_param("s", $nombreUsuario);
+        } else {
+            $sql = "SELECT * FROM usuario WHERE nombreUsuario = ? AND idUsuario != ?";
+            $stmt = $this->conexion->prepare($sql);
+            if (!$stmt) {
+                $_SESSION['error'] = "Error al preparar la consulta.";
+                return false;
+            }
+            $stmt->bind_param("si", $nombreUsuario, $idUsuario);
         }
-
-        $stmt->bind_param("s", $nombreUsuario);
         $stmt->execute();
-
         $resultado = $stmt->get_result();
         if ($resultado->num_rows > 0) {
             $_SESSION['error'] = "Este usuario ya existe";
@@ -107,18 +115,27 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         return true;
     }
 
-    public function verificarMailDuplicado($mail): bool {
-        $sql = "SELECT * FROM usuario WHERE mail = ?";
-        $stmt = $this->conexion->prepare($sql);
-
-        if (!$stmt) {
-            $_SESSION['error'] = "Error al preparar la consulta.";
-            return false;
+    public function verificarMailDuplicado($mail,$idUsuario = null): bool
+    {
+        if ($idUsuario === null) {
+            $sql = "SELECT * FROM usuario WHERE mail = ?";
+            $stmt = $this->conexion->prepare($sql);
+            if (!$stmt) {
+                $_SESSION['error'] = "Error al preparar la consulta.";
+                return false;
+            }
+            $stmt->bind_param("s", $mail);
+        } else {
+            $sql = "SELECT * FROM usuario WHERE mail = ? AND idUsuario != ?";
+            $stmt = $this->conexion->prepare($sql);
+            if (!$stmt) {
+                $_SESSION['error'] = "Error al preparar la consulta.";
+                return false;
+            }
+            $stmt->bind_param("si", $mail, $idUsuario);
         }
 
-        $stmt->bind_param("s", $mail);
         $stmt->execute();
-
         $resultado = $stmt->get_result();
         if ($resultado->num_rows > 0) {
             $_SESSION['error'] = "Este correo electronico ya existe";
@@ -219,6 +236,85 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $usuario['isEditor'] = true;
         }
         return $usuario;
+    }
+
+    public function actualizar($idUsuario, $nombreUsuario, $mail, $nombre, $apellido, $anioNacimiento, $sexo, $contrasenia, $fileFotoPerfil, $latitud, $longitud)
+    {
+        if ($this->verificarNombreUsuarioDuplicado($nombreUsuario,$idUsuario) && $this->verificarMailDuplicado($mail,$idUsuario)) {
+            $idSexo = $this->obtenerIdSexo($sexo);
+            $latitud = (float)$latitud;
+            $longitud = (float)$longitud;
+            $ciudadPais = $this->obtenerCiudadPais($latitud, $longitud);
+            $ciudad = $ciudadPais['ciudad'];
+            $pais = $ciudadPais['pais'];
+            $fotoPerfil = $this->guardarFotoPerfil($fileFotoPerfil, $nombreUsuario);
+
+            $sql = "UPDATE usuario SET 
+        nombreUsuario = ?, 
+        mail = ?, 
+        nombre = ?, 
+        apellido = ?, 
+        anioNacimiento = ?, 
+        idSexo = ?, 
+        contrasenia = ?, 
+        fotoPerfil = ?, 
+        latitud = ?, 
+        longitud = ?, 
+        ciudad = ?, 
+        pais = ? 
+        WHERE idUsuario = ?";
+
+            $stmt = $this->conexion->prepare($sql);
+
+            $stmt->bind_param(
+                "sssssiissddsi",
+                $nombreUsuario,   // s
+                $mail,            // s
+                $nombre,          // s
+                $apellido,        // s
+                $anioNacimiento,  // i
+                $idSexo,          // i
+                $contrasenia,     // s
+                $fotoPerfil,      // s
+                $latitud,         // d
+                $longitud,        // d
+                $ciudad,          // s
+                $pais,            // s
+                $idUsuario        // i
+            );
+
+            if (!$stmt->execute()) {
+                $_SESSION['error'] = "Error al actualizar: " . $stmt->error;
+                return false;
+            }
+
+            return true;
+        }
+    }
+
+    public function getById($idUsuario){
+        $sql = "SELECT 
+                u.fotoPerfil, 
+                u.nombreUsuario,
+                u.pais,
+                u.latitud, 
+                u.longitud, 
+                COUNT(ujp.idPartida) AS partidas
+            FROM usuario AS u
+            LEFT JOIN usuario_juega_partida ujp ON u.idUsuario = ujp.idUsuario
+            WHERE u.idUsuario = ?
+            GROUP BY u.idUsuario, u.fotoPerfil, u.nombreUsuario, u.latitud, u.longitud";
+
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->bind_param("i", $idUsuario);
+        $stmt->execute();
+
+        $resultado = $stmt->get_result();
+
+        if ($resultado && $resultado->num_rows > 0) {
+            return $resultado->fetch_assoc();
+        }
+        return null;
     }
 
 }

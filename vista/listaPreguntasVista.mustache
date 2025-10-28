@@ -1,0 +1,173 @@
+<div>
+    <div class="w3-sidebar w3-bar-block" style="width:15%">
+        <ul class="w3-ul w3-hoverable" style="font-size:1.3rem;cursor:pointer;">
+            <li class="w3-padding-large" onclick="mostrarSeccion('preguntasSugeridas')">Preguntas Sugeridas</li>
+            <li class="w3-padding-large" onclick="mostrarSeccion('preguntasReportadas')">Preguntas Reportadas</li>
+            <li class="w3-padding-large" onclick="mostrarSeccion('editarPreguntas')">Editar Preguntas</li>
+        </ul>
+    </div>
+
+    <div style="margin-left:auto">
+        <!-- Preguntas sugeridas -->
+        <div class="w3-light-grey w3-center seccion"
+             id="preguntasSugeridas"
+             style="min-height:70vh;display:flex;flex-direction:column;justify-content:flex-start;align-items:center;margin:0;padding-top:10px;">
+            <h2>Preguntas Sugeridas:</h2>
+            <!-- Contenedor de la tabla -->
+            <div class="w3-card-4 w3-white w3-round-large"
+                 style="width:100%;max-width:1200px;overflow:hidden;margin-bottom:5px;">
+                <table class="w3-table w3-bordered w3-hoverable w3-centered" id="usuariosTabla" style="margin:0;">
+                    <thead style="background-color:#00EF48;color:white;">
+                    <tr>
+                        <th>Enunciado</th>
+                        <th>Categoria</th>
+                        <th>Respuesta Correcta</th>
+                        <th>Respuestas Incorrectas</th>
+                        <th>Cambiar Estado</th>
+                        <th>Eliminar Pregunta</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tablaBody">
+                    {{#preguntasSugeridas}}
+                        <tr>
+                            <td>{{enunciado}}</td>
+                            <td class="categoria" data-id="{{idCategoria}}"></td>
+                            <td>{{respuestaCorrecta}}</td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                <form action="{{BASE_URL}}/pregunta/eliminarPregunta/{{idPregunta}}" method="post">
+                                    <button type="submit" style="cursor: pointer;background: none;border: none">
+                                        <i class="fa-solid fa-trash" style="color: #ed1202;"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {{/preguntasSugeridas}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Preguntas Reportadas -->
+        <div class="w3-light-grey w3-center seccion"
+             id="preguntasReportadas"
+             style="min-height:70vh;display:flex;flex-direction:column;justify-content:flex-start;align-items:center;margin:0;padding-top:10px;">
+            <h2>Preguntas Reportadas:</h2>
+            <!-- Contenedor de la tabla -->
+            <div class="w3-card-4 w3-white w3-round-large"
+                 style="width:90%;max-width:1000px;overflow:hidden;margin-bottom:5px;">
+                <table class="w3-table w3-bordered w3-hoverable w3-centered" id="usuariosTabla" style="margin:0;">
+                    <thead style="background-color:#00EF48;color:white;">
+                    <tr>
+                        <th>Enunciado</th>
+                        <th>Respuesta</th>
+                        <th>Accion</th>
+                        <th>Eliminar Pregunta</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tablaBody">
+                    {{#preguntasReportadas}}
+                        <tr>
+                            <td>{{enunciado}}</td>
+                            <td>{{respuestaCorrecta}}</td>
+                            <td></td>
+                            <td>
+                                <form action="{{BASE_URL}}/pregunta/eliminarPregunta/{{idPregunta}}" method="post">
+                                    <button type="submit" style="cursor: pointer;background: none;border: none">
+                                        <i class="fa-solid fa-trash" style="color: #ed1202;"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {{/preguntasReportadas}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- Editar Preguntas -->
+        <div class="w3-light-grey w3-center seccion"
+             id="editarPreguntas"
+             style="min-height:70vh;display:flex;flex-direction:column;justify-content:flex-start;align-items:center;margin:0;padding-top:10px;">
+            <h2>Editar Preguntas:</h2>
+            <!-- Contenedor de la tabla -->
+            <div class="w3-card-4 w3-white w3-round-large"
+                 style="width:90%;max-width:1000px;overflow:hidden;margin-bottom:5px;">
+                <table class="w3-table w3-bordered w3-hoverable w3-centered" id="usuariosTabla" style="margin:0;">
+                    <thead style="background-color:#00EF48;color:white;">
+                    <tr>
+                        <th>Enunciado</th>
+                        <th>Categoria</th>
+                        <th>Respuesta Correcta</th>
+                        <th>Editar</th>
+                        <th>Eliminar Pregunta</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tablaBody">
+                    {{#preguntasVigentes}}
+                        <tr>
+                            <td>{{enunciado}}</td>
+                            <td class="categoria" data-id="{{idCategoria}}"></td>
+                            <td>{{respuestaCorrecta}}</td>
+                            <td>
+                                <a href="{{BASE_URL}}/pregunta/editarPregunta/{{idPregunta}}">
+                                    <i class="fa-solid fa-pen-to-square"
+                                       style="cursor: pointer">
+                                    </i>
+                                </a>
+                            </td>
+                            <td>
+                                <form action="{{BASE_URL}}/pregunta/eliminarPregunta/{{idPregunta}}" method="post">
+                                    <button type="submit" style="cursor: pointer;background: none;border: none">
+                                        <i class="fa-solid fa-trash" style="color: #ed1202;"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {{/preguntasVigentes}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    const categorias = [
+        {id: 1, descripcion: "Cultura General"},
+        {id: 2, descripcion: "Geografia"},
+        {id: 3, descripcion: "Entretenimiento"},
+        {id: 4, descripcion: "Comida"},
+        {id: 5, descripcion: "Musica"},
+        {id: 6, descripcion: "Arte"},
+        {id: 7, descripcion: "Cine"},
+        {id: 8, descripcion: "Literatura"},
+        {id: 9, descripcion: "Historia"},
+        {id: 10, descripcion: "Ciencia"},
+        {id: 11, descripcion: "Naturaleza"},
+        {id: 12, descripcion: "Series"},
+        {id: 13, descripcion: "Deporte"},
+        {id: 14, descripcion: "Tecnologia"},
+    ];
+
+    document.querySelectorAll('.categoria').forEach(td => {
+        const id = td.getAttribute('data-id');
+        const cat = categorias.find(c => c.id == id);
+        td.textContent = cat ? cat.descripcion : 'Sin categoría';
+    });
+
+
+    function mostrarSeccion(id) {
+        document.querySelectorAll('.seccion').forEach(div => {
+            div.style.display = 'none';
+        });
+
+        document.getElementById(id).style.display = 'flex';
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.seccion').forEach(div => div.style.display = 'none');
+        document.getElementById('preguntasSugeridas').style.display = 'flex';
+    });
+</script>
