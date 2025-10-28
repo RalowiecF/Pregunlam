@@ -23,46 +23,48 @@ class PartidaController
         }else $this->renderer->render("seleccionPartida");
     }
 
-    public function login(){
-        $resultado = $this->model->getUserWith($_POST["nombreUsuario"], $_POST["contrasenia"]);
-
-        if (sizeof($resultado) > 0) {
-            $_SESSION["usuarioLogueado"] = $resultado[0];
-            $this->renderer->render("lobby", ["usuarioLogueado" => $_SESSION["usuarioLogueado"]]);
-            exit();
-        } else {
-            $this->renderer->render("login", ["error" => "Usuario o clave incorrecta"]);
-            exit();
-        }
+    public function nueva(){
+        $this->validarCantidadPreguntas();
+        if(isset($_SESSION["usuarioLogueado"])) {
+            $pregunta = $this->model->nuevaPartida($_POST['cantidadPreguntas']);
+            $trampas = $this->model->getTrampas();
+            $data = ["usuarioLogueado" => $_SESSION["usuarioLogueado"],
+                "pregunta"        => $pregunta,
+                "trampas"         => $trampas];
+            $this->renderer->render("partida", $data);
+        }else $this->redirectToIndex();
     }
 
-    public function nuevo()
-    {
-        $this->validarTexto($_POST['nombreUsuario'], 1, 50);
-        $this->validarMail($_POST['mail']);
-        $this->validarTexto($_POST['nombre'], 1, 50);
-        $this->validarTexto($_POST['apellido'], 1, 50);
-        $this->validarAnioNacimiento($_POST['anioNacimiento']);
-        $sexo = $this->validarSexo($_POST['sexo']);
-        $this->validarTexto($_POST['contrasenia'], 1, 50);
-        $this->validarImagen($_FILES['fotoPerfil']);
-        $this->validarCoordenadas($_POST['latitud'], $_POST['longitud']);
-
-        if ($this->model->nuevo($_POST["nombreUsuario"], $_POST["mail"], $_POST["nombre"], $_POST["apellido"],
-            $_POST["anioNacimiento"], $sexo, $_POST["contrasenia"], $_FILES['fotoPerfil'], $_POST["latitud"], $_POST["longitud"])){
-            $this->redirectToIndex();
+    public function continuarPartida(){
+        $this->validarOpcionSeleccionada();
+        $continuarPartida = $this->model->continuarPartida((INT)$_POST['opcionSeleccionada']);
+        if($continuarPartida['siguientePaso'] === 'siguientePregunta'){
+            $trampas = $this->model->getTrampas();
+            $data = ["usuarioLogueado" => $_SESSION["usuarioLogueado"],
+                "pregunta"        => $continuarPartida['pregunta'],
+                "trampas"         => $trampas];
+            $this->renderer->render("partida", $data);
         }else{
-            $error = $_SESSION["error"];
-            unset($_SESSION["error"]);
-            $this->renderer->render("registroUsuario", ["error" => $error]);
-            exit();
+            $this->renderer->render("resultado", ["victoria" => $continuarPartida['victoria']]);
         }
     }
 
-    public function redirectToIndex()
-    {
+    public function redirectToIndex(){
         header("Location: " . BASE_URL);
         exit;
+    }
+
+    public function validarCantidadPreguntas(){
+        $opcionesValidas = ['5', '10', '15'];
+        if(isset($_POST['cantidadPreguntas']) && in_array((INT)$_POST['cantidadPreguntas'], $opcionesValidas)){
+            return true;
+        }else $this->redirectToIndex();
+    }
+
+    public function validarOpcionSeleccionada(){
+        if(isset($_POST["opcionSeleccionada"]) && (1<=(INT)$_POST["opcionSeleccionada"] && (INT)$_POST['opcionSeleccionada']<=4)){
+            return true;
+        }else $this->redirectToIndex();
     }
 
 }

@@ -79,7 +79,7 @@ class UsuarioController
     {
         if(isset($_SESSION["usuarioLogueado"])) {
         $this->renderer->render("tablaUsuarios", ["usuarios" => $this->model->getRanking(), "tabla" => "RANKING", "usuarioLogueado" => $_SESSION["usuarioLogueado"]]);
-        }else $this->renderer->render("tablaUsuario", ["usuarios" => $this->model->getRanking(), "tabla" => "RANKING"]);
+        }else $this->renderer->render("tablaUsuarios", ["usuarios" => $this->model->getRanking(), "tabla" => "RANKING"]);
     }
 
     public function redirectToIndex()
@@ -88,6 +88,7 @@ class UsuarioController
         exit;
     }
 
+    //Validaciones de los tipos de datos recibidos
     public function validarTexto($texto, $minLongitud, $maxLongitud): bool {
         if (!isset($texto)) {
             $this->renderer->render("registroUsuario", ["error" => "Texto vacío"]);
@@ -171,7 +172,7 @@ class UsuarioController
     }
 
     public function validarCoordenadas($latitud, $longitud): bool {
-        if (!is_numeric($latitud) || !is_numeric($longitud)) {
+        if (!is_numeric($latitud) || !is_numeric($longitud) || $latitud<-90 || $latitud>90 || $longitud<-180 || $longitud>180) {
             $this->renderer->render("registroUsuario", ["error" => "Coordenadas invalidas"]);
             exit();
         }

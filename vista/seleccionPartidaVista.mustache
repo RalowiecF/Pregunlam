@@ -1,7 +1,70 @@
-<h1>Seleccion de partida en desarrollo</h1>
+<div class="w3-light-grey w3-center"
+     style="min-height:75vh;display:flex;flex-direction:column;justify-content:space-between;align-items:center;margin:0;padding:10px;box-sizing:border-box;">
 
-<a href="{{BASE_URL}}usuario/lobby"
-   class="w3-button w3-round-large"
-   style="background-color:#26F0EC;color:black;font-weight:bold;text-decoration:none;margin:0 0 20px 20px;">
-    Lobby
-</a>
+    <!-- BARRA SUPERIOR DERECHA -->
+    <div style="width:100%;display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-bottom:10px;flex-shrink:0;">
+        <a href="{{BASE_URL}}monetizacion/comprarTrampas"
+           class="w3-button w3-round-large"
+           style="background-color:#26F0EC;color:black;font-weight:bold;text-decoration:none;padding:6px 14px;font-size:0.9rem;">
+            Comprar Trampas
+        </a>
+        <div class="w3-card w3-round-large"
+             style="background-color:white;padding:6px 14px;color:#005DF0;font-weight:bold;box-shadow:0 2px 5px rgba(0,0,0,0.15);font-size:0.9rem;">
+            Cantidad de trampas: {{usuarioLogueado.cantidadTrampas}}
+        </div>
+    </div>
+
+    <!-- CONTENEDOR CENTRAL -->
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;width:100%;max-width:700px;">
+
+        <!-- FORMULARIO: NUEVA PARTIDA -->
+        <div class="w3-card w3-round-large w3-white"
+             style="width:100%;padding:15px;box-shadow:0 3px 6px rgba(0,0,0,0.1);display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;">
+
+            <!-- Columna izquierda (opciones) -->
+            <div style="flex:1;min-width:220px;text-align:left;">
+                <h3 class="w3-text-blue" style="color:#005DF0;margin-bottom:10px;font-size:1.1rem;">Cantidad de Preguntas</h3>
+                <form id="formNuevaPartida" method="POST" action="{{BASE_URL}}partida/nueva" class="w3-container" style="padding:0;">
+                    <p style="margin:4px 0;"><label><input class="w3-radio" type="radio" name="cantidadPreguntas" value="5" checked> 5 Preguntas</label></p>
+                    <p style="margin:4px 0;"><label><input class="w3-radio" type="radio" name="cantidadPreguntas" value="10"> 10 Preguntas</label></p>
+                    <p style="margin:4px 0;"><label><input class="w3-radio" type="radio" name="cantidadPreguntas" value="15"> 15 Preguntas</label></p>
+                </form>
+            </div>
+
+            <!-- Columna derecha (imagen + botón) -->
+            <div style="flex:1;min-width:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                <img src="{{BASE_URL}}imagenes/ComenzarPartida.png" alt="Comenzar Partida"
+                     style="width:70%;max-width:160px;margin-bottom:6px;">
+                <button type="submit"
+                        form="formNuevaPartida"
+                        class="w3-button w3-round-large"
+                        style="background-color:#00EF48;color:white;font-weight:bold;padding:8px 20px;font-size:0.9rem;">
+                    Comenzar
+                </button>
+            </div>
+        </div>
+
+        <!-- RECTÁNGULO: DESAFIAR CONTACTO -->
+        <div onclick="window.location='{{BASE_URL}}usuario/contactos'"
+             class="w3-card w3-round-large w3-hover-shadow w3-white"
+             style="cursor:pointer;width:100%;padding:10px 15px;display:flex;align-items:center;justify-content:space-between;gap:15px;
+                    transition:transform 0.2s;box-shadow:0 3px 6px rgba(0,0,0,0.1);flex-wrap:wrap;">
+            <img src="{{BASE_URL}}imagenes/DesafiarContacto.png" alt="Desafiar Contacto"
+                 style="width:35%;max-width:140px;min-width:100px;">
+            <span class="w3-text-blue" style="font-weight:bold;color:#005DF0;font-size:1.1rem;flex:1;text-align:center;">
+                Desafiar Contacto
+            </span>
+        </div>
+
+    </div>
+
+    <!-- BOTÓN LOBBY (INFERIOR IZQUIERDA) -->
+    <div style="width:100%;display:flex;justify-content:flex-start;margin-top:10px;flex-shrink:0;">
+        <a href="{{BASE_URL}}usuario/lobby"
+           class="w3-button w3-round-large"
+           style="background-color:#26F0EC;color:black;font-weight:bold;text-decoration:none;margin:0 0 5px 10px;padding:6px 14px;font-size:0.9rem;">
+            Lobby
+        </a>
+    </div>
+
+</div>
