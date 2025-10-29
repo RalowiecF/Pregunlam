@@ -82,10 +82,13 @@ class PreguntaController
         }
     }
 
-    public function cambiarEstadoPregunta($idPregunta,$nuevoEstado){
+    public function cambiarEstadoPregunta(){
         if (!isset($_SESSION["usuarioLogueado"])) {
             $this->redirectToIndex();
         }
+
+        $idPregunta = $_GET['idPregunta'];
+        $nuevoEstado = $_GET["nuevoEstado"];
 
         $preguntaObtenida = $this->model->obtenerPregunta($idPregunta);
         if($preguntaObtenida == null){
@@ -97,32 +100,73 @@ class PreguntaController
         $this->listaPreguntas();
     }
 
-    public function eliminarPregunta($idPregunta){
+    public function eliminarPregunta(){
         if (!isset($_SESSION["usuarioLogueado"])) {
             $this->redirectToIndex();
         }
+
+        $idPregunta = $_GET['idPregunta'];
 
         $this->model->eliminarPregunta($idPregunta);
         $_SESSION['mensaje'] = "Pregunta eliminada correctamente.";
         $this->listaPreguntas();
     }
 
-    public function editarPregunta($idPregunta){
+    public function editarPregunta(){
         if(!isset($_SESSION["usuarioLogueado"])){
             $this->redirectToIndex();
             return;
         }
+        $idPregunta = $_GET['idPregunta'];
         $esEdicion = true;
         $pregunta = $this->model->obtenerPreguntaPorId($idPregunta);
+        $respuestasIncorrectas = $this->model->obtenerRespuestasIncorrectasPorIdPregunta($idPregunta);
         $categorias = $this->model->obtenerCategorias();
         $niveles = $this->model->obtenerNiveles();
         $this->renderer->render("registroPregunta", [
             "usuarioLogueado" => $_SESSION["usuarioLogueado"],
             "esEdicion" => $esEdicion,
             "pregunta" => $pregunta,
+            "respuestasIncorrectas" => $respuestasIncorrectas,
             "categorias" => $categorias,
             "niveles" => $niveles
         ]);
+    }
+
+    public function editarPreguntaForm()
+    {
+//        echo "<pre>";
+//        print_r($_POST);
+//        echo "</pre>";
+//        exit;
+        if(!isset($_SESSION["usuarioLogueado"])){
+            $this->redirectToIndex();
+            return;
+        }
+        $idPregunta =$_POST["idPregunta"];
+        $enunciado = $_POST["enunciado"];
+        $categoria = $_POST["categoria"];
+        $nivel = $_POST["nivel"];
+        $respuestaCorrecta = $_POST["respuestaCorrecta"];
+
+        $this->model->editarPregunta(
+            $idPregunta,
+            $enunciado,
+            $categoria,
+            $nivel,
+            $respuestaCorrecta
+        );
+
+        $idRespuestas = $_POST["idRespuestaIncorrecta"];
+        $respuestas = $_POST["respuestaIncorrecta"];
+
+        foreach ($idRespuestas as $i => $idRespuestaIncorrecta) {
+            $texto = $respuestas[$i];
+            $this->model->editarRespuestasIncorrectas($idRespuestaIncorrecta, $texto);
+        }
+
+        $this->listaPreguntas();
+
     }
 
 

@@ -21,6 +21,9 @@
     <div class="w3-row-padding">
         <!-- Columna 1 -->
         <div class="w3-half">
+            {{#esEdicion}}
+                <input type="hidden" name="id" value="{{pregunta.id}}">
+            {{/esEdicion}}
             <p><label>Nombre de Usuario</label>
                 <input class="w3-input w3-border" type="text" value="{{usuarioLogueado.nombreUsuario}}" name="nombreUsuario" maxlength="50" required></p>
             <p><label>Mail</label>

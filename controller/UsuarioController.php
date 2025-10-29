@@ -1,4 +1,8 @@
 <?php
+require_once __DIR__ . '/../vendor/autoload.php';
+
+use Endroid\QrCode\QrCode;
+use Endroid\QrCode\Writer\PngWriter;
 
 class UsuarioController
 {
@@ -16,7 +20,8 @@ class UsuarioController
         $this->lobby();
     }
 
-    public function login(){
+    public function login()
+    {
         if (!isset($_POST["nombreUsuario"]) || !isset($_POST["contrasenia"])) {
             $this->renderer->render("login");
             exit();
@@ -40,9 +45,9 @@ class UsuarioController
 
     public function lobby()
     {
-        if(isset($_SESSION["usuarioLogueado"])) {
+        if (isset($_SESSION["usuarioLogueado"])) {
             $this->renderer->render("lobby", ["usuarioLogueado" => $_SESSION["usuarioLogueado"]]);
-        }else $this->renderer->render("lobby");
+        } else $this->renderer->render("lobby");
     }
 
     public function nuevo()
@@ -58,9 +63,9 @@ class UsuarioController
         $this->validarCoordenadas($_POST['latitud'], $_POST['longitud']);
 
         if ($this->model->nuevo($_POST["nombreUsuario"], $_POST["mail"], $_POST["nombre"], $_POST["apellido"],
-            $_POST["anioNacimiento"], $sexo, $_POST["contrasenia"], $_FILES['fotoPerfil'], $_POST["latitud"], $_POST["longitud"])){
+            $_POST["anioNacimiento"], $sexo, $_POST["contrasenia"], $_FILES['fotoPerfil'], $_POST["latitud"], $_POST["longitud"])) {
             $this->redirectToIndex();
-        }else{
+        } else {
             $error = $_SESSION["error"];
             unset($_SESSION["error"]);
             $this->renderer->render("registroUsuario", ["error" => $error]);
@@ -77,9 +82,9 @@ class UsuarioController
 
     public function ranking()
     {
-        if(isset($_SESSION["usuarioLogueado"])) {
-        $this->renderer->render("tablaUsuarios", ["usuarios" => $this->model->getRanking(), "tabla" => "RANKING", "usuarioLogueado" => $_SESSION["usuarioLogueado"]]);
-        }else $this->renderer->render("tablaUsuarios", ["usuarios" => $this->model->getRanking(), "tabla" => "RANKING"]);
+        if (isset($_SESSION["usuarioLogueado"])) {
+            $this->renderer->render("tablaUsuarios", ["usuarios" => $this->model->getRanking(), "tabla" => "RANKING", "usuarioLogueado" => $_SESSION["usuarioLogueado"]]);
+        } else $this->renderer->render("tablaUsuarios", ["usuarios" => $this->model->getRanking(), "tabla" => "RANKING"]);
     }
 
     public function redirectToIndex()
@@ -89,7 +94,8 @@ class UsuarioController
     }
 
     //Validaciones de los tipos de datos recibidos
-    public function validarTexto($texto, $minLongitud, $maxLongitud): bool {
+    public function validarTexto($texto, $minLongitud, $maxLongitud): bool
+    {
         if (!isset($texto)) {
             $this->renderer->render("registroUsuario", ["error" => "Texto vacío"]);
             exit();
@@ -114,37 +120,41 @@ class UsuarioController
         return true;
     }
 
-    function validarMail($email): bool {
-        if (!isset($email) && !filter_var($email, FILTER_VALIDATE_EMAIL)){
+    function validarMail($email): bool
+    {
+        if (!isset($email) && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $this->renderer->render("registroUsuario", ["error" => "No es una dirección de correo electrónico valida."]);
             exit();
         }
         return true;
     }
 
-    function validarAnioNacimiento($anioNacimiento): bool {
+    function validarAnioNacimiento($anioNacimiento): bool
+    {
         if (!isset($anioNacimiento) || !is_numeric($anioNacimiento)) {
             $this->renderer->render("registroUsuario", ["error" => "No ingresó un número valido."]);
             exit();
         }
 
-        $anioActual = (int) date("Y");
+        $anioActual = (int)date("Y");
 
-        if ($anioNacimiento <= 1900 || $anioNacimiento >= $anioActual){
+        if ($anioNacimiento <= 1900 || $anioNacimiento >= $anioActual) {
             $this->renderer->render("registroUsuario", ["error" => "No ingresó un año valido."]);
             exit();
         }
         return true;
     }
 
-    public function validarSexo($sexo): string {
+    public function validarSexo($sexo): string
+    {
         $sexosValidos = $this->model->getSexoList();
         if (in_array($sexo, $sexosValidos[0])) {
             return $sexo;
         } else return 'Indefinido';
     }
 
-    function validarImagen($archivo): bool {
+    function validarImagen($archivo): bool
+    {
         if (!isset($archivo) || $archivo['error'] !== UPLOAD_ERR_OK) {
             $this->renderer->render("registroUsuario", ["error" => "No se recibió ninguna imagen o hubo un error al subirla."]);
             exit();
@@ -171,23 +181,26 @@ class UsuarioController
         return true;
     }
 
-    public function validarCoordenadas($latitud, $longitud): bool {
-        if (!is_numeric($latitud) || !is_numeric($longitud) || $latitud<-90 || $latitud>90 || $longitud<-180 || $longitud>180) {
+    public function validarCoordenadas($latitud, $longitud): bool
+    {
+        if (!is_numeric($latitud) || !is_numeric($longitud) || $latitud < -90 || $latitud > 90 || $longitud < -180 || $longitud > 180) {
             $this->renderer->render("registroUsuario", ["error" => "Coordenadas invalidas"]);
             exit();
         }
         return true;
     }
 
-    public function editarPerfil(){
-        if(!isset($_SESSION["usuarioLogueado"])){
+    public function editarPerfil()
+    {
+        if (!isset($_SESSION["usuarioLogueado"])) {
             $this->redirectToIndex();
         }
         $this->renderer->render("registroUsuario", ["usuarioLogueado" => $_SESSION["usuarioLogueado"]]);
     }
 
-    public function editarPerfilForm(){
-        if(!isset($_SESSION["usuarioLogueado"])){
+    public function editarPerfilForm()
+    {
+        if (!isset($_SESSION["usuarioLogueado"])) {
             $this->redirectToIndex();
         }
         $this->validarTexto($_POST['nombreUsuario'], 1, 50);
@@ -225,17 +238,36 @@ class UsuarioController
         }
     }
 
-    public function verPerfil($idUsuario){
+    public function verPerfil()
+    {
+        $idUsuario = $_GET['idUsuario'];
         $usuario = $this->model->getById($idUsuario);
-        if(!$usuario){
+        if (!$usuario) {
             $this->renderer->render("error", ["mensaje" => "El usuario no existe."]);
             exit();
         }
-        if(isset($_SESSION["usuarioLogueado"])) {
+        if (isset($_SESSION["usuarioLogueado"])) {
             $this->renderer->render("verPerfilUsuario", ["usuario" => $usuario, "usuarioLogueado" => $_SESSION["usuarioLogueado"]]);
-        }else{
+        } else {
             $this->renderer->render("verPerfilUsuario", ["usuario" => $usuario]);
         }
+    }
+
+    public function verPerfilPropio()
+    {
+        if (!isset($_SESSION["usuarioLogueado"])) {
+            $this->redirectToIndex();
+        }
+        $usuario = $_SESSION["usuarioLogueado"];
+        $perfilUrl = 'https://pregunlam.infinityfreeapp.com' . BASE_URL . 'usuario/verPerfil?idUsuario=' . $usuario['idUsuario'];
+        $qrCode = new QrCode($perfilUrl);
+        $writer = new PngWriter();
+        $result = $writer->write($qrCode);
+        $qrBase64 = base64_encode($result->getString());
+        $this->renderer->render("perfilPropio", [
+            "usuarioLogueado" => $usuario,
+            "qrBase64" => $qrBase64
+        ]);
     }
 
 }
