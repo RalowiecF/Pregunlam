@@ -1,10 +1,84 @@
-<p>Pagina de resultado en desarrollo</p>
+<div class="w3-container w3-animate-opacity"
+     style="display:flex;
+            flex-direction:column;
+            align-items:center;
+            justify-content:center;
+            text-align:center;
+            height:calc(100vh - 175px);
+            padding:10px 20px;
+            box-sizing:border-box;
+            position:relative;">
 
+    <!-- Título principal -->
+    {{#victoria}}
+        <h1 class="w3-text-green"
+            style="font-size:2rem;
+                   font-weight:bold;
+                   text-shadow:1px 1px #fff;
+                   margin-bottom:10px;">
+            ¡Felicidades! ¡Ganaste la partida!
+        </h1>
+    {{/victoria}}
 
-<div style="width:100%;display:flex;justify-content:flex-start;">
-    <a href="{{BASE_URL}}usuario/lobby"
-       class="w3-button w3-round-large"
-       style="background-color:#26F0EC;color:black;font-weight:bold;text-decoration:none;margin:0 0 20px 20px;">
-        Lobby
-    </a>
+    {{^victoria}}
+        <h1 class="w3-text-red"
+            style="font-size:2rem;
+                   font-weight:bold;
+                   text-shadow:1px 1px #fff;
+                   margin-bottom:10px;">
+            Lo sentimos... perdiste la partida.
+        </h1>
+    {{/victoria}}
+
+    <!-- Imagen central -->
+    <div class="w3-card w3-round-large w3-white w3-hover-shadow"
+         style="max-width:380px;
+                width:85%;
+                background-color:#f5f5f5;
+                padding:8px;
+                margin:0 auto;">
+        {{#victoria}}
+            <img src="{{BASE_URL}}imagenes/Festejo.png" alt="Victoria"
+                 style="width:100%;
+                        max-height:240px;
+                        object-fit:contain;
+                        border-radius:10px;">
+        {{/victoria}}
+
+        {{^victoria}}
+            <img src="{{BASE_URL}}imagenes/Derrota.png" alt="Derrota"
+                 style="width:100%;
+                        max-height:240px;
+                        object-fit:contain;
+                        border-radius:10px;">
+        {{/victoria}}
+    </div>
+
+    <!-- Puntaje -->
+    <div class="w3-panel w3-round-large w3-light-grey"
+         style="margin-top:10px;
+                padding:8px 16px;
+                font-size:1rem;
+                font-weight:bold;
+                color:#000;">
+        El puntaje resultante fue <span class="w3-text-blue">{{puntaje}}</span> puntos.
+    </div>
+
+    <!-- Botón Volver al Lobby -->
+    <div style="width:100%;
+                display:flex;
+                justify-content:flex-start;
+                margin-top:8px;">
+        <a href="{{BASE_URL}}usuario/lobby"
+           class="w3-button w3-round-large"
+           style="background-color:#26F0EC;
+                  color:black;
+                  font-weight:bold;
+                  text-decoration:none;
+                  margin:0 0 5px 10px;
+                  padding:6px 14px;
+                  font-size:0.9rem;">
+            Lobby
+        </a>
+    </div>
 </div>

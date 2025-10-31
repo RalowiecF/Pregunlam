@@ -16,7 +16,7 @@ class UsuarioModel
     public function getUserWith($nombreUsuario, $contrasenia){
         $sql = "SELECT 
                 u.idUsuario,u.nombreUsuario,u.mail,u.anioNacimiento,u.fotoPerfil, u.nombre, u.apellido, u.cantidadTrampas, s.descripcion AS sexo, u.fotoPerfil, 
-                t.descripcion AS tipoUsuario, u.fechaRegistro,  n.descripcion AS nivel, u.latitud, u.longitud, 
+                t.descripcion AS tipoUsuario, u.fechaRegistro, u.idNivel, n.descripcion AS nivel, u.latitud, u.longitud, 
                 u.ciudad, u.pais, e.descripcion AS entorno, u.puntaje FROM usuario AS u
             JOIN sexo AS s ON u.idSexo = s.idSexo
             JOIN tipousuario AS t ON u.idTipoUsuario = t.idTipoUsuario
