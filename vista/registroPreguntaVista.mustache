@@ -1,5 +1,5 @@
 <h1>{{#esEdicion}}Editar Pregunta{{/esEdicion}}{{^esEdicion}} Registro de Pregunta:{{/esEdicion}}</h1>
-<form method="POST" action="{{BASE_URL}}pregunta/sugerirPreguntaNueva"
+<form method="POST" action="{{#esEdicion}}{{BASE_URL}}pregunta/editarPreguntaForm/{{pregunta.id}}{{/esEdicion}}{{^esEdicion}}{{BASE_URL}}pregunta/sugerirPreguntaNueva{{/esEdicion}}"
       enctype="multipart/form-data"
       class="w3-card w3-white w3-padding w3-content"
         style="width:900px;margin-top:2rem">
@@ -17,10 +17,13 @@
 
 
     <div class="w3-row-padding">
+        {{#esEdicion}}
+            <input type="hidden" name="idPregunta" value="{{pregunta.idPregunta}}">
+        {{/esEdicion}}
         <p><label>Enunciado Pregunta:</label>
-            <input class="w3-input w3-border" type="text" name="enunciado" required></p>
+            <input class="w3-input w3-border" type="text" value="{{pregunta.enunciado}}" name="enunciado" required></p>
         <p><label>Categoria:</label>
-            <select class="w3-input w3-border" name="categoria" required>
+            <select class="w3-input w3-border"  name="categoria" required>
                 {{#categorias}}
                     <option value="{{idCategoria}}">{{descripcion}}</option>
                 {{/categorias}}
@@ -34,19 +37,30 @@
             </select>
         </p>
         <p><label>Respuesta Correcta:</label>
-            <input class="w3-input w3-border" type="text" name="respuestaCorrecta" required></p>
-        <p><label>Respuesta Incorrecta 1:</label>
-            <input class="w3-input w3-border" type="text" name="respuestaIncorrecta1" required></p>
-        <p><label>Respuesta Incorrecta 2:</label>
-            <input class="w3-input w3-border" type="text" name="respuestaIncorrecta2" required></p>
-        <p><label>Respuesta Incorrecta 3:</label>
-            <input class="w3-input w3-border" type="text" name="respuestaIncorrecta3" required></p>
+            <input class="w3-input w3-border" type="text" value="{{pregunta.respuestaCorrecta}}" name="respuestaCorrecta" required></p>
+        {{#esEdicion}}
+            {{#respuestasIncorrectas}}
+                <p>
+                    <label>Respuesta Incorrecta {{index}}:</label>
+                    <input class="w3-input w3-border" type="text" name="respuestaIncorrecta[]" value="{{respuestaIncorrecta}}" required>
+                    <input type="hidden" name="idRespuestaIncorrecta[]" value="{{idRespuestaIncorrecta}}">
+                </p>
+            {{/respuestasIncorrectas}}
+        {{/esEdicion}}
+        {{^esEdicion}}
+            <p><label>Respuesta Incorrecta 1:</label>
+                <input class="w3-input w3-border" type="text" name="respuestaIncorrecta1" required></p>
+            <p><label>Respuesta Incorrecta 2:</label>
+                <input class="w3-input w3-border" type="text" name="respuestaIncorrecta2" required></p>
+            <p><label>Respuesta Incorrecta 3:</label>
+                <input class="w3-input w3-border" type="text" name="respuestaIncorrecta3" required></p>
+        {{/esEdicion}}
     </div>
 
     <p class="w3-center">
         <a class="w3-button w3-blue" href="{{BASE_URL}}">Volver</a>
         <button class="w3-button w3-green" type="submit">
-            Sugerir Pregunta
+            {{#esEdicion}}Editar Pregunta{{/esEdicion}}{{^esEdicion}} Sugerir Pregunta{{/esEdicion}}
         </button>
     </p>
 

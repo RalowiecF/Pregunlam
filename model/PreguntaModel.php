@@ -108,5 +108,33 @@ class PreguntaModel
         return $result->fetch_assoc();
     }
 
+    public function obtenerRespuestasIncorrectasPorIdPregunta($idPregunta)
+    {
+        $sql = "SELECT * FROM respuesta_incorrecta WHERE idPregunta = ?";
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->bind_param("i", $idPregunta);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public function editarPregunta($idPregunta, $enunciado, $categoria, $nivel, $respuestaCorrecta)
+    {
+        $sqlActualizarPregunta = "UPDATE pregunta SET enunciado = ?, idCategoria = ?, idNivel = ?, respuestaCorrecta = ? WHERE idPregunta = ?";
+        $stmt = $this->conexion->prepare($sqlActualizarPregunta);
+        $stmt->bind_param("siisi", $enunciado, $categoria, $nivel, $respuestaCorrecta, $idPregunta);
+        $stmt->execute();
+        return true;
+    }
+
+    public function editarRespuestasIncorrectas($idRespuestaIncorrecta,$respuestaIncorrecta)
+    {
+        $sqlActualizarRespuesta = "UPDATE respuesta_incorrecta SET respuestaIncorrecta = ? WHERE idRespuestaIncorrecta = ?";
+        $stmt = $this->conexion->prepare($sqlActualizarRespuesta);
+        $stmt->bind_param("si", $respuestaIncorrecta, $idRespuestaIncorrecta);
+        $stmt->execute();
+        return true;
+    }
+
 
 }
