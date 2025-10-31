@@ -7,7 +7,7 @@ include_once("controller/PreguntaController.php");
 include_once("controller/EstadisticasController.php");
 include_once("model/UsuarioModel.php");
 include_once("model/PartidaModel.php");
-include_once("model/preguntaModel.php");
+include_once("model/PreguntaModel.php");
 include_once("model/EstadisticasModel.php");
 include_once('vendor/mustache/src/Mustache/Autoloader.php');
 include_once ("helper/MustacheRenderer.php");

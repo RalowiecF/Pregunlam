@@ -19,32 +19,43 @@
         {{/usuarioLogueado.isAdmin}}
     {{/usuarioLogueado}}
 
-    <!-- Contenedor principal centrado verticalmente dentro del área -->
+    <!-- Cartel de error persistente -->
+    {{#error}}
+        <div class="w3-panel w3-red w3-round w3-animate-opacity"
+             style="position:absolute; top:60px; left:50%; transform:translateX(-50%);
+                    z-index:20; min-width:280px; text-align:center;">
+            {{error}}
+        </div>
+    {{/error}}
+
+    <!-- Contenedor principal -->
     <div class="w3-row-padding"
-         style="display: flex; justify-content: center; align-items: center; flex: 1; height: 100%;">
+         style="display: flex; justify-content: center; align-items: stretch; flex-wrap: wrap; gap: 40px; flex: 1; height: 100%;">
 
-        <!-- Columna izquierda (JUGAR + SUGERIR PREGUNTA) -->
+        <!-- Columna izquierda -->
         <div class="w3-half w3-center w3-padding"
-             style="min-width:300px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px;">
+             style="min-width:350px; flex:1 1 400px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:25px;">
 
-            <!-- Recuadro grande para JUGAR -->
-            <div class="w3-card w3-hover-shadow w3-round-large w3-padding"
-                 style="cursor:pointer; max-width:350px; width:100%; margin:auto; background-color:#a8f0b1;"
+            <!-- Recuadro JUGAR -->
+            <div class="w3-card w3-hover-shadow w3-round-large"
+                 style="cursor:pointer; max-width:450px; width:100%; height:300px; background-color:#a8f0b1;
+                        display:flex; flex-direction:column; justify-content:space-between; align-items:center; padding:15px;"
                 {{#usuarioLogueado}}
                  onclick="window.location='{{BASE_URL}}partida/seleccionPartida'"
                 {{/usuarioLogueado}}
                 {{^usuarioLogueado}}
                  onclick="mostrarMensaje('Ingresá al sitio para Jugar')"
                 {{/usuarioLogueado}}>
-                <img src="{{BASE_URL}}imagenes/Jugar.png" alt="Jugar" style="width:100%; border-radius:8px;">
-                <h2 class="w3-text-black" style="text-shadow: 1px 1px #fff;">JUGAR</h2>
+                <h2 class="w3-text-black" style="text-shadow: 1px 1px #fff; margin:5px 0;">JUGAR</h2>
+                <img src="{{BASE_URL}}imagenes/Jugar.png" alt="Jugar"
+                     style="width:100%; max-height:220px; object-fit:cover; border-radius:8px;">
             </div>
 
             <!-- Botón Sugerir Pregunta -->
             <div>
                 {{#usuarioLogueado}}
                     <button class="w3-button w3-blue w3-round-large w3-hover-green"
-                            style="width: 100%; max-width: 350px;"
+                            style="width: 100%; max-width: 450px; height:50px;"
                             onclick="window.location='{{BASE_URL}}pregunta/registroPregunta'">
                         Sugerir pregunta
                     </button>
@@ -52,14 +63,14 @@
 
                 {{^usuarioLogueado}}
                     <button class="w3-button w3-blue w3-round-large w3-hover-green"
-                            style="width: 100%; max-width: 350px;"
+                            style="width: 100%; max-width: 450px; height:50px;"
                             onclick="mostrarMensaje('Ingresá al sitio para sugerir preguntas')">
                         Sugerir pregunta
                     </button>
                 {{/usuarioLogueado}}
             </div>
 
-            <!-- Contenedor de mensajes -->
+            <!-- Mensaje dinámico -->
             <div id="mensaje" class="w3-panel w3-red w3-round w3-animate-opacity w3-hide"
                  style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
                   z-index: 10; min-width: 250px; text-align:center;"></div>
@@ -67,18 +78,19 @@
 
         <!-- Columna derecha (RANKING) -->
         <div class="w3-half w3-center w3-padding"
-             style="min-width:300px; display:flex; align-items:center; justify-content:center;">
-            <div class="w3-card w3-hover-shadow w3-round-large w3-padding"
-                 style="cursor:pointer; max-width:350px; width:100%; height:100%; background-color:#bcdcff; display:flex; flex-direction:column; justify-content:center;"
+             style="min-width:350px; flex:1 1 400px; display:flex; align-items:center; justify-content:center;">
+            <div class="w3-card w3-hover-shadow w3-round-large"
+                 style="cursor:pointer; max-width:450px; width:100%; height:300px; background-color:#bcdcff;
+                        display:flex; flex-direction:column; justify-content:space-between; align-items:center; padding:15px;"
                  onclick="window.location='{{BASE_URL}}usuario/ranking'">
-                <h2 class="w3-text-black" style="text-shadow: 1px 1px #fff;">RANKING</h2>
-                <img src="{{BASE_URL}}imagenes/Ranking.png" alt="Ranking" style="width:100%; border-radius:8px;">
+                <h2 class="w3-text-black" style="text-shadow: 1px 1px #fff; margin:5px 0;">RANKING</h2>
+                <img src="{{BASE_URL}}imagenes/Ranking.png" alt="Ranking"
+                     style="width:100%; max-height:220px; object-fit:cover; border-radius:8px;">
             </div>
         </div>
-
     </div>
 
-    <!-- Botón Administrar Preguntas (debajo del contenido principal) -->
+    <!-- Botón Administrar Preguntas -->
     <div class="w3-center w3-padding" style="margin-top: 1px;">
         {{#usuarioLogueado}}
             {{#usuarioLogueado.isAdmin}}

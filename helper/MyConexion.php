@@ -8,13 +8,15 @@ class MyConexion
     public function __construct($server, $user, $pass, $database)
     {
         $this->conexion = new mysqli($server, $user, $pass, $database);
+        mysqli_set_charset($this->conexion, 'utf8mb4');
         if ($this->conexion->error) { die("Error en la conexión: " . $this->conexion->error); }
     }
 
-    public function query($sql)
-    {
+    public function query($sql){
         $result = $this->conexion->query($sql);
-
+        if ($result === false || $result === true) {
+            return null;
+        }
         if ($result->num_rows > 0) {
             return $result->fetch_all(MYSQLI_ASSOC);
         }
