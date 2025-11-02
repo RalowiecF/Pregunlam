@@ -1,0 +1,87 @@
+<div class="w3-light-grey w3-center"
+     style="min-height:75vh;display:flex;flex-direction:column;justify-content:space-between;align-items:center;
+            margin:0;padding:10px;box-sizing:border-box;overflow:hidden;">
+
+    <!-- Título principal -->
+    <h2 class="w3-text-blue"
+        style="color:#005DF0;font-weight:bold;margin:10px 0 20px 0;">
+        Reglas del Juego
+    </h2>
+
+    <!-- CONTENEDOR DE REGLAS EN DOS COLUMNAS -->
+    <div class="w3-card w3-round-large w3-white"
+         style="width:100%;max-width:900px;display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-start;
+                gap:20px;padding:15px;box-shadow:0 3px 6px rgba(0,0,0,0.1);flex:1;overflow:auto;">
+
+        <!-- Columna 1: Cómo se suman los puntos -->
+        <div class="w3-half"
+             style="flex:1 1 400px;min-width:280px;text-align:left;">
+            <h4 class="w3-text-green" style="color:#00EF48;font-weight:bold;margin-bottom:10px;">
+                <i class="fa fa-plus-circle" aria-hidden="true"></i> Cómo se suman los puntos
+            </h4>
+            <ul style="list-style:none;padding:0;margin:0;font-size:0.9rem;line-height:1.4;">
+                <li><i class="fa fa-check-circle" style="color:#00EF48;"></i> Cada respuesta correcta suma puntos.</li>
+                <li><i class="fa fa-star" style="color:#005DF0;"></i> Nivel 1: Muy fáciles → 1 punto</li>
+                <li><i class="fa fa-star" style="color:#005DF0;"></i> Nivel 2: Fáciles → 2 puntos</li>
+                <li><i class="fa fa-star" style="color:#005DF0;"></i> Nivel 3: Normales → 3 puntos</li>
+                <li><i class="fa fa-star" style="color:#005DF0;"></i> Nivel 4: Difíciles → 4 puntos</li>
+                <li><i class="fa fa-star" style="color:#005DF0;"></i> Nivel 5: Muy difíciles → 5 puntos</li>
+            </ul>
+        </div>
+
+        <!-- Columna 2: Cómo se determina el nivel -->
+        <div class="w3-half"
+             style="flex:1 1 400px;min-width:280px;text-align:left;">
+            <h4 class="w3-text-blue" style="color:#005DF0;font-weight:bold;margin-bottom:10px;">
+                <i class="fa fa-signal" aria-hidden="true"></i> Cómo se determina tu nivel
+            </h4>
+            <ul style="list-style:none;padding:0;margin:0;font-size:0.9rem;line-height:1.4;">
+                <li><i class="fa fa-check-circle" style="color:#00EF48;"></i> Según tu desempeño.</li>
+                <li><i class="fa fa-user" style="color:#00EF48;"></i> Nivel 1: Hasta 10% de aciertos</li>
+                <li><i class="fa fa-user" style="color:#00EF48;"></i> Nivel 2: Entre 10 y 30%</li>
+                <li><i class="fa fa-user" style="color:#00EF48;"></i> Nivel 3: Entre 30 y 70%</li>
+                <li><i class="fa fa-user" style="color:#00EF48;"></i> Nivel 4: Entre 70 y 90%</li>
+                <li><i class="fa fa-user" style="color:#00EF48;"></i> Nivel 5: Más de 90%</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Bloque inferior: penalizaciones y trampas -->
+    <div class="w3-card w3-round-large w3-white"
+         style="width:100%;max-width:900px;margin-top:15px;padding:10px 15px;text-align:left;font-size:0.9rem;
+                box-shadow:0 3px 6px rgba(0,0,0,0.1);">
+        <p style="margin:4px 0;"><i class="fa fa-times-circle" style="color:red;"></i>
+            Si respondés mal, perdés la partida y se te restan <b>3 puntos</b>.</p>
+        <p style="margin:4px 0;"><i class="fa fa-clock-o" style="color:red;"></i>
+            También perdés si <b>abandonás</b> o si <b>se termina el tiempo (10 segundos por pregunta)</b>.</p>
+        <p style="margin:4px 0;"><i class="fa fa-magic" style="color:#26F0EC;"></i>
+            Usar trampas cuenta como acierto, pero tenés un <b>límite de 3</b> por partida.</p>
+    </div>
+
+    <!-- Título Desafío 1vs1 -->
+    <h4 class="w3-text-blue" style="color:#005DF0;font-weight:bold;margin-top:15px;margin-bottom:5px;">
+        Reglas Desafío 1vs1
+    </h4>
+    <p style="font-size:0.9rem;color:#333;margin-bottom:5px;">
+        (Próximamente)
+    </p>
+
+    <!-- BOTONES INFERIORES -->
+    <div style="width:100%;display:flex;justify-content:space-between;align-items:center;margin-top:10px;flex-shrink:0;">
+        <!-- Botón Lobby -->
+        <a href="{{BASE_URL}}usuario/lobby"
+           class="w3-button w3-round-large"
+           style="background-color:#26F0EC;color:black;font-weight:bold;text-decoration:none;
+                  margin:0 0 5px 10px;padding:6px 14px;font-size:0.9rem;">
+            <i class="fa fa-home" style="margin-right:5px;"></i>Lobby
+        </a>
+        <!-- Botón Jugar -->
+        <a href="{{BASE_URL}}partida/seleccionPartida"
+           class="w3-button w3-round-large"
+           style="background-color:#00EF48;color:white;font-weight:bold;text-decoration:none;
+                  margin:0 10px 5px 0;padding:6px 14px;font-size:0.9rem;">
+            Jugar
+        </a>
+    </div>
+
+</div>

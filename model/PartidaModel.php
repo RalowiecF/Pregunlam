@@ -11,13 +11,18 @@ class PartidaModel
 
     public function nuevaPartida($cantidadPreguntas){
         $this->setPreguntasEnSession($cantidadPreguntas);
+        $_SESSION['contadorDeTrampasPorPartida'] = 0;
         $_SESSION['preguntaEnCurso'] = 0;
         $_SESSION['cantidadPreguntas'] = $cantidadPreguntas;
         $_SESSION['idPartidaEnCurso'] = $this->crearPartida();
+        $_SESSION['horaEntregaPregunta'] = time();
         $pregunta = $this->getPreguntaOpcionesCategoriaId((INT)$_SESSION['idsPreguntas'][$_SESSION['preguntaEnCurso']]);
         $this->setPreguntaEnPartida($pregunta['idPregunta']);
         $this->actualizarContadoresEntregaPreguntas($pregunta['idPregunta']);
-        return $pregunta;
+        $trampas = $this->getTrampas();
+        return ["usuarioLogueado" => $_SESSION['usuarioLogueado'],
+            "pregunta" => $pregunta,
+            "trampas" => $trampas];
     }
 
     public function continuarPartida($opcionSeleccionada): array{
@@ -26,14 +31,37 @@ class PartidaModel
             && (INT)$_SESSION['preguntaEnCurso'] < ((INT)$_SESSION['cantidadPreguntas'])-1){
             $this->actualizarResultadoPreguntaEnPartida($idPreguntaEnCurso, (INT)$_SESSION['idPartidaEnCurso'], 'Correcta');
             $this->actualizarContadoresAciertos($idPreguntaEnCurso, (INT)$_SESSION['usuarioLogueado']['idUsuario']);
-            return $this->continuarSiguientePregunta($opcionSeleccionada);
+            $trampas = $this->getTrampas();
+            $pregunta = $this->continuarSiguientePregunta();
+            return ["usuarioLogueado" => $_SESSION['usuarioLogueado'],
+                "pregunta" => $pregunta,
+                "trampas" => $trampas,
+                'siguientePaso' => 'siguientePregunta'];
         }else {
-            $_SESSION['partidaEnCurso'] = false;
             if ($opcionSeleccionada === (int)$_SESSION['posicionRespuestaCorrecta']) {
-                return $this->finalizarPartida(true, $idPreguntaEnCurso);
+                $this->actualizarResultadoPreguntaEnPartida($idPreguntaEnCurso, (INT)$_SESSION['idPartidaEnCurso'], 'Correcta');
+                $this->actualizarContadoresAciertos($idPreguntaEnCurso, (INT)$_SESSION['usuarioLogueado']['idUsuario']);
+                return $this->finalizarPartida(true);
             } else {
-                return $this->finalizarPartida(false, $idPreguntaEnCurso);
+                $this->actualizarResultadoPreguntaEnPartida($idPreguntaEnCurso, (INT)$_SESSION['idPartidaEnCurso'], 'Incorrecta');
+                return $this->finalizarPartida(false);
             }
+        }
+    }
+
+    public function hacerTrampa($idPreguntaEnCurso){
+        $this->actualizarResultadoPreguntaEnPartida($idPreguntaEnCurso, (INT)$_SESSION['idPartidaEnCurso'], 'Salteada con trampa');
+        $this->actualizarCantidadTrampasDelUsuario();
+        $_SESSION['contadorDeTrampasPorPartida']++;
+        if((INT)$_SESSION['preguntaEnCurso'] < ((INT)$_SESSION['cantidadPreguntas'])-1){
+            $pregunta = $this->continuarSiguientePregunta();
+            $trampas = $this->getTrampas();
+            return ["usuarioLogueado" => $_SESSION['usuarioLogueado'],
+                "pregunta" => $pregunta,
+                "trampas" => $trampas,
+                'siguientePaso' => 'siguientePregunta'];
+        } else {
+            return $this->finalizarPartida(true);
         }
     }
 
@@ -42,7 +70,7 @@ class PartidaModel
         if (sizeof($resultado) > 0) {
             $idPreguntaPendiente = $resultado[0]['idPregunta'];
             $idPartidaPendiente = $resultado[0]['idPartida'];
-            $this->cerrarPartidaAbandonada($idPreguntaPendiente, $idPartidaPendiente);
+            return $this->cerrarPartidaAbandonada($idPreguntaPendiente, $idPartidaPendiente);
         } else return true;
     }
 
@@ -61,7 +89,18 @@ class PartidaModel
             return true;
         } else {
             $idPartidaPendiente = (int) $_SESSION['idPartidaEnCurso'];
-            $this->cerrarPartidaAbandonada($idPreguntaPendiente, $idPartidaPendiente);
+            return $this->cerrarPartidaAbandonada($idPreguntaPendiente, $idPartidaPendiente);
+        }
+    }
+
+    public function  verificarTiempoDeRespuesta($idPreguntaPendiente): bool{
+        $tiempoEntrega = (INT)$_SESSION['horaEntregaPregunta'];
+        $tiempoRecepcion = time();
+        if( ($tiempoRecepcion - $tiempoEntrega) > 12){
+            return $this->cerrarPartidaAbandonada($idPreguntaPendiente, $_SESSION['idPartidaEnCurso']);
+        } else {
+            $_SESSION['horaEntregaPregunta'] = time();
+            return true;
         }
     }
 
@@ -74,6 +113,13 @@ class PartidaModel
         $this->unsetearVariablesSessionPartida();
         $_SESSION['error'] = "Abandonaste una partida. El resultado fue " . $puntaje . " puntos.";
         return false;
+    }
+
+    public function actualizarCantidadTrampasDelUsuario(){
+        $idUsuario = (INT)$_SESSION['usuarioLogueado']['idUsuario'];
+        $sql = "update usuario set cantidadTrampas = (cantidadTrampas - 1) where idUsuario = $idUsuario";
+        $this->conexion->query($sql);
+        (INT)$_SESSION['usuarioLogueado']['cantidadTrampas']--;
     }
 
     public function actualizarPuntajePartidaUsuario($idPartidaPendiente, $puntaje){
@@ -121,13 +167,13 @@ class PartidaModel
     public function calcularPuntajePartida($idPartida):int{
         $puntajeTotal = 0;
         $puntajesPorNivel = [
-            'Muy facil' => 2,
-            'Facil' => 3,
-            'Normal' => 4,
-            'Dificil' => 5,
-            'Muy dificil' => 6,
+            'Muy facil' => 1,
+            'Facil' => 2,
+            'Normal' => 3,
+            'Dificil' => 4,
+            'Muy dificil' => 5,
         ];
-        $resultadosQueSumanPuntos = ['Correcta', 'Salteada Con Trampa'];
+        $resultadosQueSumanPuntos = ['Correcta', 'Salteada con trampa'];
         $sql1 = "SELECT n.descripcion AS nivel, r.descripcion AS resultado FROM nivel AS n JOIN pregunta AS p ON n.idNivel = p.idNivel 
              JOIN partida_tiene_pregunta AS ptp ON p.idPregunta = ptp.idPregunta JOIN resultado AS r ON ptp.idResultado = r.idResultado 
              WHERE ptp.idPartida = $idPartida";
@@ -140,7 +186,7 @@ class PartidaModel
                 if (in_array($resultado, $resultadosQueSumanPuntos)) {
                     $puntajeTotal += $puntajesPorNivel[$nivel] ?? 0;
                 } else {
-                    $puntajeTotal -= 4;
+                    $puntajeTotal -= 3;
                 }
             }
         }
@@ -149,7 +195,7 @@ class PartidaModel
 
     public function getPreguntasPendientes(){
         $idUsuario = (int)$_SESSION['usuarioLogueado']['idUsuario'];
-        $sql = "select ptp.idPregunta, max(p.fechaPartida) as fechaPartida, ptp.idPartida from Resultado as r join partida_tiene_pregunta as ptp 
+        $sql = "select ptp.idPregunta, max(p.fechaPartida) as fechaPartida, ptp.idPartida from resultado as r join partida_tiene_pregunta as ptp 
         on r.idResultado = ptp.idResultado join partida as p on ptp.idPartida = p.idPartida join usuario_juega_partida as ujp 
         on p.idPartida = ujp.idPartida where ujp.idUsuario = $idUsuario and r.descripcion = 'Pendiente' HAVING fechaPartida IS NOT NULL";
         $resultado = $this->conexion->query($sql);
@@ -165,12 +211,16 @@ class PartidaModel
     }
 
     public function getTrampas(): array{
-        $idUsuario = (INT)$_SESSION['usuarioLogueado']['idUsuario'];
-        $sql = "select cantidadTrampas from usuario where idUsuario = $idUsuario;";
-        $resultado = $this->conexion->query($sql);
-        $cantidadTrampas = (int)$resultado[0]['cantidadTrampas'];
-        $tieneTrampas = $cantidadTrampas>0;
-        return ['cantidadTrampas' => $cantidadTrampas, 'tieneTrampas' => $tieneTrampas];
+        if((INT)$_SESSION['contadorDeTrampasPorPartida'] === 3){
+            return ['tieneTrampas' => false];
+        } else {
+            $idUsuario = (int)$_SESSION['usuarioLogueado']['idUsuario'];
+            $sql = "select cantidadTrampas from usuario where idUsuario = $idUsuario;";
+            $resultado = $this->conexion->query($sql);
+            $cantidadTrampas = (int)$resultado[0]['cantidadTrampas'];
+            $tieneTrampas = $cantidadTrampas > 0;
+            return ['cantidadTrampas' => $cantidadTrampas, 'tieneTrampas' => $tieneTrampas];
+        }
     }
 
     public function setPreguntasEnSession($cantidad) {
@@ -235,7 +285,6 @@ where ujp.idUsuario = $idUsuario) order by rand() limit $cantidad;";
         ];
     }
 
-
     public function getPreguntaRespuestaCategoriaId($idPregunta){
         $sql = "select p.idPregunta, p.enunciado, p.respuestaCorrecta, c.descripcion from pregunta as p join categoria as c
     on p.idCategoria = c.idCategoria where p.idPregunta = $idPregunta;";
@@ -270,24 +319,16 @@ where ujp.idUsuario = $idUsuario) order by rand() limit $cantidad;";
         $this->conexion->multy_query($sql);
     }
 
-    public function continuarSiguientePregunta($opcionSeleccionada): array{
+    public function continuarSiguientePregunta(): array{
         $_SESSION['preguntaEnCurso']++;
         $pregunta = $this->getPreguntaOpcionesCategoriaId((INT)$_SESSION['idsPreguntas'][(INT)$_SESSION['preguntaEnCurso']]);
         $this->setPreguntaEnPartida((INT)$_SESSION['idsPreguntas'][(INT)$_SESSION['preguntaEnCurso']]);
         $this->actualizarContadoresEntregaPreguntas($pregunta['idPregunta']);
-        return ['siguientePaso' => 'siguientePregunta',
-            'pregunta'      => $pregunta];
+        return $pregunta;
     }
 
-    public function finalizarPartida($resultadoFinal, $idPreguntaEnCurso): array{
+    public function finalizarPartida($resultadoFinal): array{
         $idPartida = (INT)$_SESSION['idPartidaEnCurso'];
-        $idUsuario = $_SESSION['usuarioLogueado']['idUsuario'];
-        if ($resultadoFinal) {
-            $this->actualizarResultadoPreguntaEnPartida($idPreguntaEnCurso, $idPartida, 'Correcta');
-            $this->actualizarContadoresAciertos($idPreguntaEnCurso, $idUsuario);
-        } else {
-            $this->actualizarResultadoPreguntaEnPartida($idPreguntaEnCurso, $idPartida, 'Incorrecta');
-        }
         $puntaje = $this->calcularPuntajePartida($idPartida);
         $this->actualizarPuntajePartidaUsuario($idPartida, $puntaje);
         $this->actualizarDuracionPartida($idPartida);
@@ -296,12 +337,14 @@ where ujp.idUsuario = $idUsuario) order by rand() limit $cantidad;";
         if($resultadoFinal){
             return ['siguientePaso' => 'finalizar',
                 'victoria' => true,
-                'puntaje' => $puntaje];
+                'puntaje' => $puntaje,
+                'usuarioLogueado' => $_SESSION["usuarioLogueado"]];
         }else {
             return [
                 'siguientePaso' => 'finalizar',
                 'victoria' => false,
-                'puntaje' => $puntaje];
+                'puntaje' => $puntaje,
+                'usuarioLogueado' => $_SESSION["usuarioLogueado"]];
         }
     }
 
@@ -348,6 +391,8 @@ where ujp.idUsuario = $idUsuario) order by rand() limit $cantidad;";
         unset($_SESSION['idsPreguntas']);
         unset($_SESSION['cantidadPreguntas']);
         unset($_SESSION['posicionRespuestaCorrecta']);
+        unset($_SESSION['contadorDeTrampasPorPartida']);
+        unset($_SESSION['horaEntregaPregunta']);
     }
 
 }
