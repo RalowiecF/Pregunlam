@@ -14,13 +14,13 @@ public function __construct(){
             '' => [''],
             'usuario' => ['', 'logout', 'registroUsuarioForm', 'nuevo', 'ranking'],
             'pregunta' => ['', 'registroPregunta', 'listar'],
-            'partida' => ['', 'seleccionPartida', 'nueva', 'continuarPartida'],
+            'partida' => ['', 'seleccionPartida', 'nueva', 'continuarPartida', 'verReglas'],
         ],
         'Editor' => [
             '' => [''],
             'usuario' => ['', 'logout', 'registroUsuarioForm', 'nuevo', 'ranking'],
             'pregunta' => ['', 'registroPregunta', 'listar'],
-            'partida' => ['', 'seleccionPartida', 'nueva', 'continuarPartida'],
+            'partida' => ['', 'seleccionPartida', 'nueva', 'continuarPartida', 'verReglas'],
         ],
         'Administrador' => [
             '*' => ['*'] // acceso total

@@ -27,11 +27,7 @@ class PartidaController
         $usuarioLogueado = $_SESSION["usuarioLogueado"];
         if($this->model->verificarPartidaInconclusa()) {
             $this->validarCantidadPreguntas();
-                $pregunta = $this->model->nuevaPartida((INT)$_POST['cantidadPreguntas']);
-                $trampas = $this->model->getTrampas();
-                $data = ["usuarioLogueado" => $usuarioLogueado,
-                    "pregunta" => $pregunta,
-                    "trampas" => $trampas];
+                $data = $this->model->nuevaPartida((INT)$_POST['cantidadPreguntas']);
                 $this->renderer->render("partida", $data);
         }else {
             $error = $_SESSION["error"];
@@ -42,27 +38,32 @@ class PartidaController
     }
 
     public function continuarPartida(){
-        $usuarioLogueado = $_SESSION["usuarioLogueado"];
-        if($this->model->verificarPreguntaInconclusa((INT)$_POST['idPregunta'] ?? 0)) {
-        $this->validarOpcionSeleccionada();
-        $continuarPartida = $this->model->continuarPartida((INT)$_POST['opcionSeleccionada']);
-        if($continuarPartida['siguientePaso'] === 'siguientePregunta'){
-            $trampas = $this->model->getTrampas();
-            $data = ["usuarioLogueado" => $_SESSION["usuarioLogueado"],
-                "pregunta"        => $continuarPartida['pregunta'],
-                "trampas"         => $trampas];
-            $this->renderer->render("partida", $data);
-        }else{
-            $this->renderer->render("resultado", ['usuarioLogueado' => $usuarioLogueado,
-                                                    "victoria" => $continuarPartida['victoria'],
-                                                    'puntaje' => $continuarPartida['puntaje'],]);
-        }
+        $idPregunta = isset($_POST['idPregunta']) ? (int)$_POST['idPregunta'] : 0;
+        if($this->model->verificarPreguntaInconclusa($idPregunta) && $this->model->verificarTiempoDeRespuesta($idPregunta)) {
+            if(isset($_POST['hacerTrampa'])){
+                $continuarPartida = $this->model->hacerTrampa($idPregunta);
+            } else {
+                $this->validarOpcionSeleccionada();
+                $continuarPartida = $this->model->continuarPartida((INT)$_POST['opcionSeleccionada']);
+            }
+            if($continuarPartida['siguientePaso'] === 'siguientePregunta'){
+                $this->renderer->render("partida", $continuarPartida);
+                }else{
+                    $this->renderer->render("resultado", $continuarPartida);
+                }
         } else {
                 $error = $_SESSION["error"];
                 unset($_SESSION["error"]);
-                return $this->renderer->render("lobby", ["usuarioLogueado" => $usuarioLogueado,
-                    "error" => $error,]);
+                return $this->renderer->render("lobby", ["usuarioLogueado" => $_SESSION["usuarioLogueado"],
+                                                            "error" => $error,]);
             }
+    }
+
+    public function verReglas()
+    {
+        if(isset($_SESSION["usuarioLogueado"])) {
+            $this->renderer->render("reglas", ["usuarioLogueado" => $_SESSION["usuarioLogueado"]]);
+        }else $this->renderer->render("seleccionPartida");
     }
 
     public function redirectToIndex(){

@@ -58,13 +58,25 @@
 
     </div>
 
-    <!-- BOTÓN LOBBY (INFERIOR IZQUIERDA) -->
-    <div style="width:100%;display:flex;justify-content:flex-start;margin-top:10px;flex-shrink:0;">
+    <!-- BOTONES INFERIORES -->
+    <div style="width:100%;display:flex;justify-content:space-between;align-items:center;margin-top:10px;flex-shrink:0;">
+
+        <!-- Botón Lobby (izquierda) -->
         <a href="{{BASE_URL}}usuario/lobby"
            class="w3-button w3-round-large"
-           style="background-color:#26F0EC;color:black;font-weight:bold;text-decoration:none;margin:0 0 5px 10px;padding:6px 14px;font-size:0.9rem;">
-            Lobby
+           style="background-color:#26F0EC;color:black;font-weight:bold;text-decoration:none;
+                  margin:0 0 5px 10px;padding:6px 14px;font-size:0.9rem;">
+            <i class="fa fa-home" style="margin-right:5px;"></i>Lobby
+        </a>
+
+        <!-- Botón Reglas (derecha) -->
+        <a href="{{BASE_URL}}partida/verReglas"
+           class="w3-button w3-round-large"
+           style="background-color:#005DF0;color:white;font-weight:bold;text-decoration:none;
+                  margin:0 10px 5px 0;padding:6px 14px;font-size:0.9rem;">
+            Reglas
         </a>
     </div>
 
 </div>
+

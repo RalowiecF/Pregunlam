@@ -2,12 +2,29 @@
      style="min-height:75vh;display:flex;flex-direction:column;justify-content:space-between;align-items:center;margin:0;padding:10px;box-sizing:border-box;">
 
     <!-- BARRA SUPERIOR DERECHA -->
-    <div style="width:100%;display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-bottom:10px;flex-shrink:0;">
-        <div class="w3-card w3-round-large"
-             style="background-color:white;padding:6px 14px;color:#005DF0;font-weight:bold;box-shadow:0 2px 5px rgba(0,0,0,0.15);font-size:0.9rem;">
-            Cantidad de trampas: {{trampas.cantidadTrampas}}
+    {{#trampas.tieneTrampas}}
+        <div style="width:100%;display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px;flex-shrink:0;flex-wrap:wrap;">
+            <!-- TIMER VISUAL -->
+            <div id="timerBox" class="w3-card w3-round-large"
+                 style="background-color:white;padding:6px 14px;color:#F44336;font-weight:bold;box-shadow:0 2px 5px rgba(0,0,0,0.15);font-size:0.9rem;">
+                Tiempo restante: <span id="timer">10</span> s
+            </div>
+
+            <div class="w3-card w3-round-large"
+                 style="background-color:white;padding:6px 14px;color:#005DF0;font-weight:bold;box-shadow:0 2px 5px rgba(0,0,0,0.15);font-size:0.9rem;">
+                Cantidad de trampas: {{trampas.cantidadTrampas}}
+            </div>
         </div>
-    </div>
+    {{/trampas.tieneTrampas}}
+    {{^trampas.tieneTrampas}}
+        <div style="width:100%;display:flex;justify-content:flex-start;align-items:center;gap:10px;margin-bottom:10px;flex-shrink:0;">
+            <!-- TIMER VISUAL -->
+            <div id="timerBox" class="w3-card w3-round-large"
+                 style="background-color:white;padding:6px 14px;color:#F44336;font-weight:bold;box-shadow:0 2px 5px rgba(0,0,0,0.15);font-size:0.9rem;">
+                Tiempo restante: <span id="timer">10</span> s
+            </div>
+        </div>
+    {{/trampas.tieneTrampas}}
 
     <!-- CONTENEDOR CENTRAL -->
     <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;width:100%;max-width:700px;">
@@ -53,19 +70,11 @@
                     <span style="font-weight:bold;color:#005DF0;">{{pregunta.opciones.opcion4}}</span>
                 </label>
             </div>
+
             <input type="hidden" name="idPregunta" value="{{pregunta.idPregunta}}">
 
             <!-- BOTONES INFERIORES DEL FORM -->
             <div style="display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-top:20px;flex-wrap:wrap;">
-                {{#trampas.tieneTrampas}}
-                <a href="{{BASE_URL}}partida/hacerTrampa/{{partida.idPregunta}}"
-                   class="w3-button w3-round-large"
-                   style="background-color:#26F0EC;color:black;font-weight:bold;text-decoration:none;padding:8px 16px;font-size:0.9rem;">
-                    Hacer Trampa
-                </a>
-                {{/trampas.tieneTrampas}}
-                {{^trampas.tieneTrampas}}
-                {{/trampas.tieneTrampas}}
                 <button type="submit"
                         class="w3-button w3-round-large"
                         style="background-color:#00EF48;color:white;font-weight:bold;padding:8px 20px;font-size:0.9rem;">
@@ -74,20 +83,57 @@
             </div>
         </form>
 
+        <!-- BOTON PARA HACER TRAMPA -->
+        {{#trampas.tieneTrampas}}
+            <form method="POST" action="{{BASE_URL}}partida/continuarPartida"
+                  style="width:100%;max-width:700px;display:flex;justify-content:flex-end;margin-top:-10px;">
+                <input type="hidden" name="idPregunta" value="{{pregunta.idPregunta}}">
+                <input type="hidden" name="hacerTrampa" value="true">
+                <button type="submit"
+                        class="w3-button w3-round-large"
+                        style="background-color:#26F0EC;color:black;font-weight:bold;text-decoration:none;padding:8px 16px;font-size:0.9rem;">
+                    Hacer Trampa
+                </button>
+            </form>
+        {{/trampas.tieneTrampas}}
+
     </div>
 
     <!-- BOTONES INFERIORES IZQUIERDA -->
     <div style="width:100%;display:flex;justify-content:flex-start;align-items:center;gap:10px;margin-top:10px;flex-shrink:0;flex-wrap:wrap;">
-        <a href="{{BASE_URL}}usuario/lobby"
-           class="w3-button w3-round-large"
-           style="background-color:#F44336;color:white;font-weight:bold;text-decoration:none;margin:0 0 5px 10px;padding:6px 14px;font-size:0.9rem;">
-            Abandonar Partida
-        </a>
-        <a href="{{BASE_URL}}pregunta/reportar/{{partida.idPregunta}}"
+        <form id="abandonarForm" method="POST" action="{{BASE_URL}}partida/continuarPartida">
+            <button type="submit"
+                    class="w3-button w3-round-large"
+                    style="background-color:#F44336;color:white;font-weight:bold;margin:0 0 5px 10px;padding:6px 14px;font-size:0.9rem;">
+                Abandonar Partida
+            </button>
+        </form>
+        <a href="{{BASE_URL}}pregunta/reportar/idPregunta={{partida.idPregunta}}"
            class="w3-button w3-round-large"
            style="background-color:#9E9E9E;color:white;font-weight:bold;text-decoration:none;margin:0 0 5px 0;padding:6px 14px;font-size:0.9rem;">
             Reportar Pregunta
         </a>
     </div>
-
 </div>
+
+<!-- SCRIPT DEL TIMER -->
+<script>
+    let tiempo = 10;
+    const timerElement = document.getElementById('timer');
+    const abandonarForm = document.getElementById('abandonarForm');
+
+    const countdown = setInterval(() => {
+        tiempo--;
+        timerElement.textContent = tiempo;
+
+        // Color dinámico del texto para sensación de urgencia
+        if (tiempo <= 5) {
+            timerElement.style.color = '#D50000';
+        }
+
+        if (tiempo <= 0) {
+            clearInterval(countdown);
+            abandonarForm.submit(); // Simula clic automático
+        }
+    }, 1000);
+</script>
