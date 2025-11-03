@@ -298,7 +298,8 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 u.nombreUsuario,
                 u.pais,
                 u.latitud, 
-                u.longitud, 
+                u.longitud,
+                u.puntaje,
                 COUNT(ujp.idPartida) AS partidas
             FROM usuario AS u
             LEFT JOIN usuario_juega_partida ujp ON u.idUsuario = ujp.idUsuario
@@ -315,6 +316,26 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             return $resultado->fetch_assoc();
         }
         return null;
+    }
+
+    public function getPartidasByUsuario($idUsuario){
+        $sql = "SELECT p.idPartida, p.fechaPartida, p.puntaje
+            FROM partida AS p
+            JOIN usuario_juega_partida ujp ON p.idPartida = ujp.idPartida
+            WHERE ujp.idUsuario = ?
+            ORDER BY p.fechaPartida DESC";
+
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->bind_param("i", $idUsuario);
+        $stmt->execute();
+
+        $resultado = $stmt->get_result();
+
+        $partidas = [];
+        while ($row = $resultado->fetch_assoc()) {
+            $partidas[] = $row;
+        }
+        return $partidas;
     }
 
 }

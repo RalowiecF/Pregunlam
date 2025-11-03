@@ -240,15 +240,16 @@ class UsuarioController
     public function verPerfil()
     {
         $idUsuario = $_GET['idUsuario'];
+        $partidas = $this->model->getPartidasByUsuario($idUsuario);
         $usuario = $this->model->getById($idUsuario);
         if (!$usuario) {
             $this->renderer->render("error", ["mensaje" => "El usuario no existe."]);
             exit();
         }
         if (isset($_SESSION["usuarioLogueado"])) {
-            $this->renderer->render("verPerfilUsuario", ["usuario" => $usuario, "usuarioLogueado" => $_SESSION["usuarioLogueado"]]);
+            $this->renderer->render("verPerfilUsuario", ["usuario" => $usuario,"partidas" => $partidas, "usuarioLogueado" => $_SESSION["usuarioLogueado"]]);
         } else {
-            $this->renderer->render("verPerfilUsuario", ["usuario" => $usuario]);
+            $this->renderer->render("verPerfilUsuario", ["usuario" => $usuario, "partidas" => $partidas]);
         }
     }
 

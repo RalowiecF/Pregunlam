@@ -15,14 +15,31 @@
         <!-- Columna 1 -->
         <div class="w3-half">
             <img src="/PregUNLaM/imagenes/usuario.png" alt="Foto de Perfil" style="width:150px; height:150px; object-fit:cover; border-radius:50%; display:block; margin-bottom: 1rem;border: solid">
-            <h1>{{usuario.nombreUsuario}}</h1>
+            <h1>Nombre: {{usuario.nombreUsuario}}</h1>
+            <h2>Puntaje: {{usuario.puntaje}}</h2>
             <h2><i class="fa-solid fa-globe"></i>{{usuario.pais}}</h2>
             <div id="map" class="w3-border" style="height: 250px; "></div>
         </div>
 
         <!-- Columna 2 -->
-        <div class="w3-half" style="text-align: center">
+        <div class="w3-half" style="text-align: center;padding: 1rem">
             <h2>Listado de Partidas:</h2>
+            <table class="w3-table w3-bordered w3-hoverable w3-centered" id="usuariosTabla" style="margin:0;">
+                <thead style="background-color:#00EF48;color:white;">
+                <tr>
+                    <th>Fecha</th>
+                    <th>Puntaje</th>
+                </tr>
+                </thead>
+                <tbody id="tablaBody">
+                {{#partidas}}
+                    <tr>
+                        <td>{{fechaPartida}}</td>
+                        <td>{{puntaje}}</td>
+                    </tr>
+                {{/partidas}}
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -44,7 +61,7 @@
         // Iniciar mapa
         const lat = {{#usuario.latitud}}{{usuario.latitud}}{{/usuario.latitud}}{{^usuario.latitud}}-34.6037{{/usuario.latitud}};
         const lng = {{#usuario.longitud}}{{usuario.longitud}}{{/usuario.longitud}}{{^usuario.longitud}}-58.3816{{/usuario.longitud}};
-        const map = L.map('map').setView([lat,lng], 9); // Buenos Aires
+        const map = L.map('map').setView([lat,lng], 3);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors'
