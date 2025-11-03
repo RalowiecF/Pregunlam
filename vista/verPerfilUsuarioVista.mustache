@@ -42,8 +42,8 @@
         }
 
         // Iniciar mapa
-        const lat = {{#usuarioLogueado}}{{usuarioLogueado.latitud}}{{/usuarioLogueado}}{{^usuarioLogueado}}-34.6037{{/usuarioLogueado}};
-        const lng = {{#usuarioLogueado}}{{usuarioLogueado.longitud}}{{/usuarioLogueado}}{{^usuarioLogueado}}-58.3816{{/usuarioLogueado}};
+        const lat = {{#usuario.latitud}}{{usuario.latitud}}{{/usuario.latitud}}{{^usuario.latitud}}-34.6037{{/usuario.latitud}};
+        const lng = {{#usuario.longitud}}{{usuario.longitud}}{{/usuario.longitud}}{{^usuario.longitud}}-58.3816{{/usuario.longitud}};
         const map = L.map('map').setView([lat,lng], 9); // Buenos Aires
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {

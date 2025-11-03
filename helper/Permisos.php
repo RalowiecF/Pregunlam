@@ -8,7 +8,7 @@ public function __construct(){
     $this->permisos = [
         'Anonimo' => [
             '' => [''],
-            'usuario' => ['', 'login', 'registroUsuarioForm', 'nuevo', 'ranking'],
+            'usuario' => ['', 'login', 'registroUsuarioForm', 'nuevo', 'ranking','verPerfil'],
         ],
         'Jugador' => [
             '' => [''],
