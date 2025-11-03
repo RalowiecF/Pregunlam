@@ -1,8 +1,7 @@
 <?php
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use Endroid\QrCode\QrCode;
-use Endroid\QrCode\Writer\PngWriter;
+
 
 class UsuarioController
 {
@@ -258,15 +257,14 @@ class UsuarioController
         if (!isset($_SESSION["usuarioLogueado"])) {
             $this->redirectToIndex();
         }
+
         $usuario = $_SESSION["usuarioLogueado"];
-        $perfilUrl = 'https://pregunlam.infinityfreeapp.com' . BASE_URL . 'usuario/verPerfil?idUsuario=' . $usuario['idUsuario'];
-        $qrCode = new QrCode($perfilUrl);
-        $writer = new PngWriter();
-        $result = $writer->write($qrCode);
-        $qrBase64 = base64_encode($result->getString());
+        $perfilUrl = 'https://pregunlam.page.gd' . BASE_URL . 'usuario/verPerfil?idUsuario=' . $usuario['idUsuario'];
+        $qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' . urlencode($perfilUrl);
+
         $this->renderer->render("perfilPropio", [
             "usuarioLogueado" => $usuario,
-            "qrBase64" => $qrBase64
+            "qrUrl" => $qrUrl
         ]);
     }
 

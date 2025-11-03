@@ -42,7 +42,7 @@
             <div class="w3-row-padding" style="min-width: 60rem">
                 <!-- Columna 1 -->
                 <div class="w3-half">
-                    <img src="/PregUNLaM/imagenes/usuario.png" alt="Foto de Perfil"
+                    <img src="{{BASE_URL}}/imagenes/usuario.png" alt="Foto de Perfil"
                          style="width:150px; height:150px; object-fit:cover; border-radius:50%; display:block; margin-bottom: 1rem;border: solid">
                     <h2>Usuario:{{usuarioLogueado.nombreUsuario}}</h2>
                     <h3><i class="fa-solid fa-globe"></i>{{usuarioLogueado.pais}}</h3>
@@ -54,7 +54,8 @@
                     <h3>Apellido:{{usuarioLogueado.apellido}}</h3>
                     <h3>Email:{{usuarioLogueado.mail}}</h3>
                     <h3>Puntuacion:{{usuarioLogueado.puntaje}}</h3>
-                    <img src="data:image/png;base64,{{qrBase64}}" alt="QR Perfil">
+<!--                    <img src="data:image/png;base64,{{qrBase64}}" alt="QR Perfil">-->
+                    <img src="{{qrUrl}}" alt="Código QR del perfil">
                 </div>
 
             </div>
