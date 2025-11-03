@@ -25,7 +25,7 @@
                 <input type="hidden" name="id" value="{{pregunta.id}}">
             {{/esEdicion}}
             <p><label>Nombre de Usuario</label>
-                <input class="w3-input w3-border" type="text" value="{{usuarioLogueado.nombreUsuario}}" name="nombreUsuario" maxlength="50" required></p>
+                <input class="w3-input w3-border" type="text" value="{{usuarioLogueado.nombreUsuario}}" name="nombreUsuario" minlength="3" maxlength="50" required></p>
             <p><label>Mail</label>
                 <input class="w3-input w3-border" type="email" value="{{usuarioLogueado.mail}}" name="mail" maxlength="50" required></p>
             <p><label>Nombre</label>

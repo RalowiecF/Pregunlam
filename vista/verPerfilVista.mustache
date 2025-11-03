@@ -1,0 +1,152 @@
+<div class="w3-light-grey w3-center"
+     style="display:flex;flex-direction:column;align-items:center;
+            justify-content:space-between;
+            min-height:calc(100vh - 175px); /* resta header+footer aprox */
+            margin:0;box-sizing:border-box;overflow:hidden;">
+
+    <!-- TÍTULO CON FOTO -->
+    <div style="display:flex;align-items:center;gap:15px;margin:10px 0 20px 0;">
+        <img src="{{BASE_URL}}imagenes/avatares/{{usuario.fotoPerfil}}"
+             alt="Foto de perfil"
+             class="w3-circle w3-border"
+             style="width:70px;height:70px;object-fit:cover;border:3px solid #00EF48;">
+        <h2 class="w3-text-blue"
+            style="color:#005DF0;font-weight:bold;margin:0;">
+            {{usuario.nombreUsuario}}
+        </h2>
+    </div>
+
+    <!-- CONTENEDOR PRINCIPAL -->
+    <div class="w3-card w3-round-large w3-white"
+         style="width:95%;max-width:1100px;display:flex;flex-wrap:wrap;
+                justify-content:center;align-items:flex-start;gap:20px;
+                padding:15px;box-shadow:0 3px 6px rgba(0,0,0,0.1);
+                flex:1;overflow:hidden;">
+
+        <!-- COLUMNA IZQUIERDA -->
+        <div class="w3-half"
+             style="flex:1 1 380px;min-width:280px;text-align:center;">
+
+            <!-- Mapa -->
+            <div id="map"
+                 class="w3-border"
+                 style="width:100%;height:220px;margin:auto;border-radius:8px;margin-bottom:12px;">
+            </div>
+
+            <!-- QR -->
+            <div style="margin-top:8px;">
+                <h5 style="color:#005DF0;margin-bottom:6px;">Perfil QR</h5>
+                <div id="qrCode" style="display:flex;justify-content:center;"></div>
+            </div>
+        </div>
+
+        <!-- COLUMNA DERECHA -->
+        <div class="w3-half"
+             style="flex:1 1 380px;min-width:280px;text-align:center;">
+
+            <!-- Puntaje -->
+            <p style="font-size:1.5rem;font-weight:bold;color:#005DF0;margin: auto auto 8px;">
+                Puntaje total: <span style="color:#00EF48;">{{usuario.puntaje}}</span>
+            </p>
+
+            <h4 class="w3-text-blue" style="color:#005DF0;font-weight:bold;margin-bottom:8px;">
+                Últimas Partidas
+            </h4>
+
+            <!-- Tabla Partidas -->
+            <div class="w3-responsive" style="max-height:270px;overflow:auto;">
+                <table class="w3-table w3-bordered w3-striped w3-white"
+                       style="font-size:0.85rem;box-shadow:0 2px 5px rgba(0,0,0,0.1);margin:0;">
+                    <thead style="background-color:#26F0EC;color:black;font-weight:bold;">
+                    <tr style="height:32px;">
+                        <th>Puntaje</th>
+                        <th>Duración</th>
+                        <th>Fecha</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {{#partidas}}
+                        <tr style="height:30px;">
+                            <td>{{puntaje}}</td>
+                            <td>{{duracionPartida}}</td>
+                            <td>{{fechaPartida}}</td>
+                        </tr>
+                    {{/partidas}}
+                    {{^partidas}}
+                        <tr>
+                            <td colspan="3" style="text-align:center;color:#777;">No hay partidas registradas</td>
+                        </tr>
+                    {{/partidas}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOTONES INFERIORES -->
+    <div style="width:100%;display:flex;justify-content:space-between;align-items:center;
+                margin-top:10px;flex-shrink:0;">
+
+        <!-- Botón Lobby -->
+        <a href="{{BASE_URL}}usuario/lobby"
+           class="w3-button w3-round-large"
+           style="background-color:#26F0EC;color:black;font-weight:bold;text-decoration:none;
+                  margin:0 0 5px 10px;padding:6px 14px;font-size:0.9rem;">
+            <i class="fa fa-home" style="margin-right:5px;"></i>Lobby
+        </a>
+
+        <!-- Botón derecho dinámico -->
+        {{#perfilPropio}}
+            <a href="{{BASE_URL}}usuario/editarPerfilForm"
+               class="w3-button w3-round-large"
+               style="background-color:#00EF48;color:white;font-weight:bold;text-decoration:none;
+                      margin:0 10px 5px 0;padding:6px 14px;font-size:0.9rem;">
+                Editar Perfil
+            </a>
+        {{/perfilPropio}}
+
+        {{^perfilPropio}}
+            {{#esContacto}}
+                <a href="{{BASE_URL}}usuario/eliminarContacto/idUsuario={{usuario.idUsuario}}"
+                class="w3-button w3-round-large"
+                style="background-color:#005DF0;color:white;font-weight:bold;text-decoration:none;
+                margin:0 10px 5px 0;padding:6px 14px;font-size:0.9rem;">
+                Eliminar Contacto
+                </a>
+            {{/esContacto}}
+            {{^esContacto}}
+                <a href="{{BASE_URL}}usuario/agregarContacto/idUsuario={{usuario.idUsuario}}"
+                class="w3-button w3-round-large"
+                style="background-color:#00EF48;color:white;font-weight:bold;text-decoration:none;
+                margin:0 10px 5px 0;padding:6px 14px;font-size:0.9rem;">
+                Agregar a Contactos
+                </a>
+            {{/esContacto}}
+        {{/perfilPropio}}
+    </div>
+
+    <!-- LIBRERÍAS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+
+    <!-- SCRIPT MAPA + QR -->
+    <script>
+        const lat = {{usuario.latitud}};
+        const lng = {{usuario.longitud}};
+        const map = L.map('map').setView([lat, lng], 11);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+        L.marker([lat, lng]).addTo(map);
+
+        const qrUrl = "https://pregunlam.page.gd/usuario/verPerfil/id={{usuario.idUsuario}}";
+        new QRCode(document.getElementById("qrCode"), {
+            text: qrUrl,
+            width: 100,
+            height: 100,
+            colorDark: "#005DF0",
+            colorLight: "#ffffff"
+        });
+    </script>
+</div>
