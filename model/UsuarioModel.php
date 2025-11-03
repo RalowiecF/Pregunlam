@@ -76,9 +76,27 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     }
 
     public function getRanking(){
-        $sql = "SELECT u.idUsuario, u.nombreUsuario, u.puntaje, MAX(p.fechaPartida) AS fechaUltimaPartida FROM usuario u 
-    LEFT JOIN usuario_juega_partida ujp ON u.idUsuario = ujp.idUsuario
-    LEFT JOIN partida p ON ujp.idPartida = p.idPartida GROUP BY u.idUsuario, u.nombreUsuario, u.puntaje ORDER BY u.puntaje desc;";
+        $sql = "SELECT t1.idUsuario, t1.nombreUsuario, t1.puntaje, t1.duracionPartida, DATE_FORMAT(t1.fechaPartida, '%d/%m/%y %h:%m') AS fechaPartida FROM (
+         SELECT
+             u.idUsuario,
+             u.nombreUsuario,
+             p.puntaje,
+             p.duracionPartida,
+             p.fechaPartida,
+             -- Asigna un número de fila para cada partida del usuario
+             ROW_NUMBER() OVER (
+                 PARTITION BY u.idUsuario
+                 ORDER BY p.puntaje DESC, p.duracionPartida ASC
+                 ) AS rn FROM
+             usuario u JOIN usuario_juega_partida ujp ON u.idUsuario = ujp.idUsuario JOIN partida p ON ujp.idPartida = p.idPartida
+         WHERE p.fechaPartida >= DATE_SUB(NOW(), INTERVAL 7 DAY)
+     ) t1
+-- Filtra para quedarte solo con la mejor partida (rn = 1) para cada usuario
+WHERE t1.rn = 1
+-- Ordena la lista final de usuarios según los requisitos
+ORDER BY
+    t1.puntaje DESC,
+    t1.duracionPartida ASC limit 100;";
         return $this->conexion->query($sql);
     }
 
@@ -292,50 +310,149 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         }
     }
 
-    public function getById($idUsuario){
+    public function getPerfil($idUsuario){
         $sql = "SELECT 
-                u.fotoPerfil, 
-                u.nombreUsuario,
-                u.pais,
-                u.latitud, 
-                u.longitud,
-                u.puntaje,
-                COUNT(ujp.idPartida) AS partidas
-            FROM usuario AS u
-            LEFT JOIN usuario_juega_partida ujp ON u.idUsuario = ujp.idUsuario
-            WHERE u.idUsuario = ?
-            GROUP BY u.idUsuario, u.fotoPerfil, u.nombreUsuario, u.latitud, u.longitud";
-
+                idUsuario,
+                nombreUsuario, 
+                fotoPerfil, 
+                pais, 
+                latitud, 
+                longitud, 
+                puntaje
+            FROM usuario WHERE idUsuario = ?";
         $stmt = $this->conexion->prepare($sql);
         $stmt->bind_param("i", $idUsuario);
         $stmt->execute();
-
         $resultado = $stmt->get_result();
-
-        if ($resultado && $resultado->num_rows > 0) {
-            return $resultado->fetch_assoc();
+        if ($resultado->num_rows === 0) {
+            return false;
         }
-        return null;
+        $usuario = $resultado->fetch_assoc();
+        $partidas = $this->getPartidas($idUsuario, 15);
+
+        if (isset($_SESSION["usuarioLogueado"])) {
+            $usuarioLogueado = $_SESSION["usuarioLogueado"];
+            $perfilPropio = ($idUsuario === (int)$usuarioLogueado['idUsuario']);
+            $esContacto = $this->verificarSiEsContacto($idUsuario);
+            return [
+                'usuario' => $usuario,
+                'usuarioLogueado' => $usuarioLogueado,
+                'partidas' => $partidas,
+                'perfilPropio' => $perfilPropio,
+                'esContacto' => $esContacto];
+        } else {
+            return [
+                'usuario' => $usuario,
+                'partidas' => $partidas];
+        }
     }
 
-    public function getPartidasByUsuario($idUsuario){
-        $sql = "SELECT p.idPartida, p.fechaPartida, p.puntaje
-            FROM partida AS p
-            JOIN usuario_juega_partida ujp ON p.idPartida = ujp.idPartida
-            WHERE ujp.idUsuario = ?
-            ORDER BY p.fechaPartida DESC";
-
+    public function verificarSiEsContacto($idUsuarioBuscado): bool {
+        $idUsuarioLogueado = $_SESSION['usuarioLogueado']['idUsuario'];
+        $sql = "SELECT idContacto 
+            FROM usuario_contacto 
+            WHERE idUsuario = ? AND idContacto = ?";
         $stmt = $this->conexion->prepare($sql);
-        $stmt->bind_param("i", $idUsuario);
+        $stmt->bind_param("ii", $idUsuarioLogueado, $idUsuarioBuscado);
         $stmt->execute();
-
-        $resultado = $stmt->get_result();
-
-        $partidas = [];
-        while ($row = $resultado->fetch_assoc()) {
-            $partidas[] = $row;
-        }
-        return $partidas;
+        $contacto = $stmt->get_result();
+        return $contacto->num_rows > 0;
     }
+
+    public function getPartidas($idUsuario, $cantidad){
+        $sql = "SELECT p.puntaje, p.duracionPartida, 
+                   DATE_FORMAT(p.fechaPartida, '%d/%m/%y %h:%i') AS fechaPartida 
+            FROM partida AS p 
+            JOIN usuario_juega_partida AS ujp ON p.idPartida = ujp.idPartida 
+            WHERE ujp.idUsuario = ? 
+            ORDER BY p.fechaPartida DESC 
+            LIMIT ?";
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->bind_param("ii", $idUsuario, $cantidad);
+        $stmt->execute();
+        $partidas = $stmt->get_result();
+        return $partidas->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public function getContactos(){
+        $idUsuarioLogueado = $_SESSION['usuarioLogueado']['idUsuario'];
+        $sql = "SELECT t1.idUsuario, t1.nombreUsuario, t1.puntaje, t1.duracionPartida, IFNULL(DATE_FORMAT(t1.fechaPartida, '%d/%m/%y %H:%i'), 'Sin partidas') AS fechaPartida FROM (
+    SELECT
+        u.idUsuario,
+        u.nombreUsuario,
+        p.puntaje,
+        p.duracionPartida,
+        p.fechaPartida,
+        -- Asigna un número de fila para cada partida del usuario
+        ROW_NUMBER() OVER (
+           PARTITION BY u.idUsuario
+             ORDER BY p.puntaje DESC, p.duracionPartida ASC
+            ) AS rn FROM
+       usuario u LEFT JOIN usuario_juega_partida ujp ON u.idUsuario = ujp.idUsuario LEFT JOIN partida p ON ujp.idPartida = p.idPartida
+                    where u.idUsuario in (select idContacto from usuario_contacto where idUsuario = $idUsuarioLogueado)
+         ) t1
+-- Filtra para quedarte solo con la mejor partida (rn = 1) para cada usuario
+WHERE t1.rn = 1
+-- Ordena la lista final de usuarios según los requisitos
+ORDER BY
+    t1.nombreUsuario";
+        return $this->conexion->query($sql);
+    }
+
+    public  function agregarContacto($idUsuario): bool{
+        $idUsuarioLogueado = (INT)$_SESSION["usuarioLogueado"]['idUsuario'];
+        if ($idUsuarioLogueado === $idUsuario || $this->verificarSiEsContacto($idUsuario) || $idUsuario === 0) {
+            return false;
+        } else {
+            $sql = "INSERT INTO usuario_contacto (idUsuario, idContacto) VALUES (?, ?)";
+            $stmt = $this->conexion->prepare($sql);
+            $stmt->bind_param("ii", $idUsuarioLogueado, $idUsuario);
+            $stmt->execute();
+            return true;
+        }
+    }
+
+    public function eliminarContacto($idUsuario): bool{
+        $idUsuarioLogueado = $_SESSION['usuarioLogueado']['idUsuario'];
+        if ($idUsuarioLogueado === $idUsuario || !($this->verificarSiEsContacto($idUsuario)) || $idUsuario === 0) {
+            return false;
+        } else {
+            $sql = "DELETE FROM `usuario_contacto` WHERE idUsuario = ? and idContacto = ?";
+            $stmt = $this->conexion->prepare($sql);
+            $stmt->bind_param("ii", $idUsuarioLogueado, $idUsuario);
+            $stmt->execute();
+            return true;
+        }
+    }
+
+    public function getByNombreusuario($nombreUsuario){
+        $nombreUsuarioBusqueda = "%" . $nombreUsuario . "%";
+        $sql = "SELECT t1.idUsuario, t1.nombreUsuario, t1.puntaje, t1.duracionPartida, IFNULL(DATE_FORMAT(t1.fechaPartida, '%d/%m/%y %H:%i'), 'Sin partidas') AS fechaPartida FROM (
+    SELECT
+         u.idUsuario,
+        u.nombreUsuario,
+        p.puntaje,
+        p.duracionPartida,
+        p.fechaPartida,
+        -- Asigna un número de fila para cada partida del usuario
+        ROW_NUMBER() OVER (
+            PARTITION BY u.idUsuario
+            ORDER BY p.puntaje DESC, p.duracionPartida ASC
+            ) AS rn FROM
+        usuario u LEFT JOIN usuario_juega_partida ujp ON u.idUsuario = ujp.idUsuario LEFT JOIN partida p ON ujp.idPartida = p.idPartida
+        where u.nombreUsuario like ?
+) t1
+-- Filtra para quedarte solo con la mejor partida (rn = 1) para cada usuario
+WHERE t1.rn = 1
+-- Ordena la lista final de usuarios según los requisitos
+ORDER BY
+    t1.nombreUsuario";
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->bind_param("s", $nombreUsuarioBusqueda);
+        $stmt->execute();
+        $resultado = $stmt->get_result();
+        return $resultado->fetch_all(MYSQLI_ASSOC);
+}
+
 
 }

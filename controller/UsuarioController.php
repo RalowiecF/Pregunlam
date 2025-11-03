@@ -1,7 +1,8 @@
 <?php
 require_once __DIR__ . '/../vendor/autoload.php';
 
-
+use Endroid\QrCode\QrCode;
+use Endroid\QrCode\Writer\PngWriter;
 
 class UsuarioController
 {
@@ -51,7 +52,7 @@ class UsuarioController
 
     public function nuevo()
     {
-        $this->validarTexto($_POST['nombreUsuario'], 1, 50);
+        $this->validarTexto($_POST['nombreUsuario'], 3, 50);
         $this->validarMail($_POST['mail']);
         $this->validarTexto($_POST['nombre'], 1, 50);
         $this->validarTexto($_POST['apellido'], 1, 50);
@@ -79,11 +80,61 @@ class UsuarioController
         $this->redirectToIndex();
     }
 
-    public function ranking()
-    {
+    public function ranking(){
         if (isset($_SESSION["usuarioLogueado"])) {
-            $this->renderer->render("tablaUsuarios", ["usuarios" => $this->model->getRanking(), "tabla" => "RANKING", "usuarioLogueado" => $_SESSION["usuarioLogueado"]]);
-        } else $this->renderer->render("tablaUsuarios", ["usuarios" => $this->model->getRanking(), "tabla" => "RANKING"]);
+            $this->renderer->render("tablaUsuarios", ["usuarios" => $this->model->getRanking(), "tabla" => "TOP 100 SEMANAL", "usuarioLogueado" => $_SESSION["usuarioLogueado"]]);
+        } else $this->renderer->render("tablaUsuarios", ["usuarios" => $this->model->getRanking(), "tabla" => "TOP 100 SEMANAL"]);
+    }
+
+    public function verPerfil(){
+        $idUsuario = isset($_GET['idUsuario']) ? (int)$_GET['idUsuario'] : 0;
+        $data = $this->model->getPerfil($idUsuario);
+        if ($data) {
+            if (isset($_SESSION["usuarioLogueado"])) {
+                $this->renderer->render("verPerfil", $data);
+                exit();
+            } else {
+                $this->renderer->render("verPerfil", $data);
+                exit();
+            }
+        }
+        $this->renderer->render("lobby", ["mensaje" => "El usuario no existe."]);
+        exit();
+    }
+
+    public function contactos(){
+        if (isset($_SESSION["usuarioLogueado"])) {
+            $this->renderer->render("tablaUsuarios", ["usuarios" => $this->model->getContactos(), "tabla" => "CONTACTOS", "usuarioLogueado" => $_SESSION["usuarioLogueado"]]);
+        } else $this->redirectToIndex();
+    }
+
+    public  function agregarContacto(){
+        $idUsuario = isset($_GET['idUsuario']) ? (int)$_GET['idUsuario'] : 0;
+        if ($this->model->agregarContacto($idUsuario)) {
+            $data = $this->model->getPerfil($idUsuario);
+            $this->renderer->render("verPerfil", $data);
+            exit();
+        } else {
+            $this->renderer->render("lobby", ["error" => "El usuario no existe o ya es contacto.", 'usuarioLogueado' => $_SESSION["usuarioLogueado"]]);
+            exit();
+        }
+    }
+
+    public function eliminarContacto(){
+        $idUsuario = isset($_GET['idUsuario']) ? (int)$_GET['idUsuario'] : 0;
+        if ($this->model->eliminarContacto($idUsuario)) {
+            $data = $this->model->getPerfil($idUsuario);
+            $this->renderer->render("verPerfil", $data);
+        } else {
+            $this->renderer->render("lobby", ["mensaje" => "El usuario no existe o no es contacto.", 'usuarioLogueado' => $_SESSION["usuarioLogueado"]]);
+        }
+    }
+
+    public function buscarUsuario(){
+        $this->validarTexto($_POST['nombreUsuario'], 3, 50);
+        $this->renderer->render("tablaUsuarios", ["usuarios" => $this->model->getByNombreusuario($_POST['nombreUsuario']),
+            "tabla" => "RESULTADOS",
+            "usuarioLogueado" => $_SESSION["usuarioLogueado"]]);
     }
 
     public function redirectToIndex()
@@ -202,7 +253,7 @@ class UsuarioController
         if (!isset($_SESSION["usuarioLogueado"])) {
             $this->redirectToIndex();
         }
-        $this->validarTexto($_POST['nombreUsuario'], 1, 50);
+        $this->validarTexto($_POST['nombreUsuario'], 3, 50);
         $this->validarMail($_POST['mail']);
         $this->validarTexto($_POST['nombre'], 1, 50);
         $this->validarTexto($_POST['apellido'], 1, 50);
@@ -237,36 +288,5 @@ class UsuarioController
         }
     }
 
-    public function verPerfil()
-    {
-        $idUsuario = $_GET['idUsuario'];
-        $partidas = $this->model->getPartidasByUsuario($idUsuario);
-        $usuario = $this->model->getById($idUsuario);
-        if (!$usuario) {
-            $this->renderer->render("error", ["mensaje" => "El usuario no existe."]);
-            exit();
-        }
-        if (isset($_SESSION["usuarioLogueado"])) {
-            $this->renderer->render("verPerfilUsuario", ["usuario" => $usuario,"partidas" => $partidas, "usuarioLogueado" => $_SESSION["usuarioLogueado"]]);
-        } else {
-            $this->renderer->render("verPerfilUsuario", ["usuario" => $usuario, "partidas" => $partidas]);
-        }
-    }
-
-    public function verPerfilPropio()
-    {
-        if (!isset($_SESSION["usuarioLogueado"])) {
-            $this->redirectToIndex();
-        }
-
-        $usuario = $_SESSION["usuarioLogueado"];
-        $perfilUrl = 'https://pregunlam.page.gd' . BASE_URL . 'usuario/verPerfil?idUsuario=' . $usuario['idUsuario'];
-        $qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' . urlencode($perfilUrl);
-
-        $this->renderer->render("perfilPropio", [
-            "usuarioLogueado" => $usuario,
-            "qrUrl" => $qrUrl
-        ]);
-    }
 
 }

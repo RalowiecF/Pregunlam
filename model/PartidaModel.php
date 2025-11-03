@@ -96,7 +96,7 @@ class PartidaModel
     public function  verificarTiempoDeRespuesta($idPreguntaPendiente): bool{
         $tiempoEntrega = (INT)$_SESSION['horaEntregaPregunta'];
         $tiempoRecepcion = time();
-        if( ($tiempoRecepcion - $tiempoEntrega) > 12){
+        if( ($tiempoRecepcion - $tiempoEntrega) > 18){
             return $this->cerrarPartidaAbandonada($idPreguntaPendiente, $_SESSION['idPartidaEnCurso']);
         } else {
             $_SESSION['horaEntregaPregunta'] = time();
