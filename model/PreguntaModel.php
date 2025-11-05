@@ -136,5 +136,40 @@ class PreguntaModel
         return true;
     }
 
+    public function obtenerPreguntasSugeridasPorCategoria($idCategoria)
+    {
+        $sql = "SELECT * FROM pregunta p WHERE p.idEstado = 1 AND p.idCategoria = $idCategoria ";
+        return $this->conexion->query($sql);
+    }
+
+    public function obtenerPreguntasVigentesPorCategoria($idCategoria){
+        $sql = "SELECT * FROM pregunta p WHERE p.idEstado = 2 AND p.idCategoria = $idCategoria ";
+        return $this->conexion->query($sql);
+    }
+
+
+    public function aprobarPregunta($idPregunta): bool
+    {
+        $sql = "UPDATE pregunta p SET p.idEstado = 2 WHERE p.idPregunta = $idPregunta ";
+        $this->conexion->query($sql);
+        return true;
+    }
+
+    public function obtenerCategoriaPorId($idCategoria)
+    {
+        $sql = "SELECT * FROM categoria c WHERE c.idCategoria = $idCategoria ";
+        return $this->conexion->query($sql);
+    }
+
+    public function reportarPregunta($idPregunta, $motivo)
+    {
+        $sql = "UPDATE pregunta SET idEstado = 3, motivoReporte = ? WHERE idPregunta = ?";
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->bind_param("si", $motivo, $idPregunta); // s = string, i = integer
+        $stmt->execute();
+
+        return $stmt->affected_rows > 0; // true si se actualizó algo
+    }
+
 
 }

@@ -1,5 +1,8 @@
-<div>
-    <div class="w3-sidebar w3-bar-block" style="width:15%">
+<div style="display:flex;flex-wrap:wrap;" class="main-container">
+
+    <!-- Sidebar -->
+    <div class="w3-sidebar w3-bar-block sidebar"
+         style="width:10%;min-width:200px;box-sizing:border-box;flex-shrink:0;">
         <ul class="w3-ul w3-hoverable" style="font-size:1.3rem;cursor:pointer;">
             <li class="w3-padding-large" onclick="mostrarSeccion('preguntasSugeridas')">Preguntas Sugeridas</li>
             <li class="w3-padding-large" onclick="mostrarSeccion('preguntasReportadas')">Preguntas Reportadas</li>
@@ -7,23 +10,35 @@
         </ul>
     </div>
 
-    <div style="margin-left:auto">
+    <!-- Contenido -->
+    <div style="flex:1;min-width:300px;box-sizing:border-box;padding:10px;">
+
         <!-- Preguntas sugeridas -->
         <div class="w3-light-grey w3-center seccion"
              id="preguntasSugeridas"
-             style="min-height:70vh;display:flex;flex-direction:column;justify-content:flex-start;align-items:center;margin:0;padding-top:10px;">
+             style="min-height:70vh;display:flex;flex-direction:column;justify-content:flex-start;align-items:center;margin:0;padding-top:10px;width:100%;">
             <h2>Preguntas Sugeridas:</h2>
-            <!-- Contenedor de la tabla -->
-            <div class="w3-card-4 w3-white w3-round-large"
-                 style="width:100%;max-width:1200px;overflow:hidden;margin-bottom:5px;">
-                <table class="w3-table w3-bordered w3-hoverable w3-centered" id="usuariosTabla" style="margin:0;">
+            <form action="{{BASE_URL}}pregunta/filtrarPreguntasSugeridas" method="post" style="margin-bottom: .5rem">
+                <label for="filtroCategoria">Filtrar por categoría:</label>
+                <select id="filtroCategoria" name="categoria">
+                    <option value="">Todas</option>
+                    {{#categorias}}
+                        <option value="{{idCategoria}}">{{descripcion}}</option>
+                    {{/categorias}}
+                </select>
+                <button type="submit" class="w3-button" style="background-color:#005DF0;color:white;">Filtrar</button>
+            </form>
+            <div class="w3-card-4 w3-white w3-round-large table-container"
+                 style="width:100%;max-width:1300px;margin-bottom:5px;">
+                <table class="w3-table w3-bordered w3-hoverable w3-centered tabla-fija"
+                       id="usuariosTabla"
+                       style="margin:0;min-width:600px;">
                     <thead style="background-color:#00EF48;color:white;">
                     <tr>
                         <th>Enunciado</th>
                         <th>Categoria</th>
                         <th>Respuesta Correcta</th>
-                        <th>Respuestas Incorrectas</th>
-                        <th>Cambiar Estado</th>
+                        <th>Aprobar Pregunta</th>
                         <th>Eliminar Pregunta</th>
                     </tr>
                     </thead>
@@ -33,36 +48,63 @@
                             <td>{{enunciado}}</td>
                             <td class="categoria" data-id="{{idCategoria}}"></td>
                             <td>{{respuestaCorrecta}}</td>
-                            <td></td>
-                            <td></td>
                             <td>
-                                <form action="{{BASE_URL}}pregunta/eliminarPregunta?idPregunta={{idPregunta}}" method="post">
-                                    <button type="submit" style="cursor: pointer;background: none;border: none">
-                                        <i class="fa-solid fa-trash" style="color: #ed1202;"></i>
-                                    </button>
+                                <form action="{{BASE_URL}}pregunta/aprobarPregunta?idPregunta={{idPregunta}}"
+                                method="post">
+                                <button type="submit" style="cursor:pointer;background:none;border:none">
+                                    <i class="fa-solid fa-thumbs-up" style="color: #63E6BE;"></i>
+                                </button>
+                                </form>
+                            </td>
+                            <td>
+                                <form action="{{BASE_URL}}pregunta/eliminarPregunta?idPregunta={{idPregunta}}"
+                                method="post">
+                                <button type="submit" style="cursor:pointer;background:none;border:none">
+                                    <i class="fa-solid fa-trash" style="color:#ed1202;"></i>
+                                </button>
                                 </form>
                             </td>
                         </tr>
                     {{/preguntasSugeridas}}
                     </tbody>
                 </table>
+                <div class="w3-margin-top"
+                     style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;">
+                    <button id="prevPage" class="w3-button" style="background-color:#005DF0;color:white;">Anterior
+                    </button>
+                    <span id="pageInfo" class="w3-text-black"></span>
+                    <button id="nextPage" class="w3-button" style="background-color:#005DF0;color:white;">Siguiente
+                    </button>
+                </div>
             </div>
         </div>
 
         <!-- Preguntas Reportadas -->
         <div class="w3-light-grey w3-center seccion"
              id="preguntasReportadas"
-             style="min-height:70vh;display:flex;flex-direction:column;justify-content:flex-start;align-items:center;margin:0;padding-top:10px;">
+             style="min-height:70vh;display:flex;flex-direction:column;justify-content:flex-start;align-items:center;margin:0;padding-top:10px;width:100%;">
             <h2>Preguntas Reportadas:</h2>
-            <!-- Contenedor de la tabla -->
-            <div class="w3-card-4 w3-white w3-round-large"
-                 style="width:90%;max-width:1000px;overflow:hidden;margin-bottom:5px;">
-                <table class="w3-table w3-bordered w3-hoverable w3-centered" id="usuariosTabla" style="margin:0;">
+            <form action="{{BASE_URL}}filtrarPreguntasReportadas" method="post" style="margin-bottom: .5rem">
+                <label for="filtroCategoria">Filtrar por categoría:</label>
+                <select id="filtroCategoria" name="filtroCategoria">
+                    <option value="">Todas</option>
+                    {{#categorias}}
+                        <option value="{{id}}">{{descripcion}}</option>
+                    {{/categorias}}
+                </select>
+                <button type="submit" class="w3-button" style="background-color:#005DF0;color:white;">Filtrar</button>
+            </form>
+            <div class="w3-card-4 w3-white w3-round-large table-container"
+                 style="width:100%;max-width:1000px;margin-bottom:5px;">
+                <table class="w3-table w3-bordered w3-hoverable w3-centered tabla-fija"
+                       id="usuariosTabla"
+                       style="margin:0;min-width:600px;">
                     <thead style="background-color:#00EF48;color:white;">
                     <tr>
                         <th>Enunciado</th>
-                        <th>Respuesta</th>
-                        <th>Accion</th>
+                        <th>Categoria</th>
+                        <th>Motivo Reporte</th>
+                        <th>Aprobar Pregunta</th>
                         <th>Eliminar Pregunta</th>
                     </tr>
                     </thead>
@@ -70,30 +112,67 @@
                     {{#preguntasReportadas}}
                         <tr>
                             <td>{{enunciado}}</td>
-                            <td>{{respuestaCorrecta}}</td>
-                            <td></td>
+                            <td class="categoria" data-id="{{idCategoria}}"></td>
                             <td>
-                                <form action="{{BASE_URL}}pregunta/eliminarPregunta?idPregunta={{idPregunta}}" method="post">
-                                    <button type="submit" style="cursor: pointer;background: none;border: none">
-                                        <i class="fa-solid fa-trash" style="color: #ed1202;"></i>
-                                    </button>
+                                <span
+                                        onclick="abrirModal('{{motivoReporte}}')"
+                                        class="w3-text-blue w3-hover-text-green"
+                                        style="cursor:pointer; text-decoration:underline;">
+                                        Ver motivo
+                                </span>
+                            </td>
+                            <td>
+                                <form action="{{BASE_URL}}pregunta/aprobarPregunta?idPregunta={{idPregunta}}"
+                                method="post">
+                                <button type="submit" style="cursor:pointer;background:none;border:none">
+                                    <i class="fa-solid fa-thumbs-up" style="color: #63E6BE;"></i>
+                                </button>
+                                </form>
+                            </td>
+                            <td>
+                                <form action="{{BASE_URL}}pregunta/eliminarPregunta?idPregunta={{idPregunta}}"
+                                method="post">
+                                <button type="submit" style="cursor:pointer;background:none;border:none">
+                                    <i class="fa-solid fa-trash" style="color:#ed1202;"></i>
+                                </button>
                                 </form>
                             </td>
                         </tr>
                     {{/preguntasReportadas}}
                     </tbody>
                 </table>
+                <div class="w3-margin-top"
+                     style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;">
+                    <button id="prevPage" class="w3-button" style="background-color:#005DF0;color:white;">Anterior
+                    </button>
+                    <span id="pageInfo" class="w3-text-black"></span>
+                    <button id="nextPage" class="w3-button" style="background-color:#005DF0;color:white;">Siguiente
+                    </button>
+                </div>
             </div>
         </div>
+
         <!-- Editar Preguntas -->
         <div class="w3-light-grey w3-center seccion"
              id="editarPreguntas"
-             style="min-height:70vh;display:flex;flex-direction:column;justify-content:flex-start;align-items:center;margin:0;padding-top:10px;">
+             style="min-height:70vh;display:flex;flex-direction:column;justify-content:flex-start;align-items:center;margin:0;padding-top:10px;width:100%;">
             <h2>Editar Preguntas:</h2>
-            <!-- Contenedor de la tabla -->
-            <div class="w3-card-4 w3-white w3-round-large"
-                 style="width:90%;max-width:1000px;overflow:hidden;margin-bottom:5px;">
-                <table class="w3-table w3-bordered w3-hoverable w3-centered" id="usuariosTabla" style="margin:0;">
+            <form action="{{BASE_URL}}pregunta/filtrarPreguntasVigentes" method="post" style="margin-bottom: .5rem">
+                <input type="hidden" name="seccionActiva" value="editarPreguntas">
+                <label for="filtroCategoria">Filtrar por categoría:</label>
+                <select id="filtroCategoria" name="categoria">
+                    <option value="">Todas</option>
+                    {{#categorias}}
+                        <option value="{{idCategoria}}">{{descripcion}}</option>
+                    {{/categorias}}
+                </select>
+                <button type="submit" class="w3-button" style="background-color:#005DF0;color:white;">Filtrar</button>
+            </form>
+            <div class="w3-card-4 w3-white w3-round-large table-container"
+                 style="width:100%;max-width:1000px;margin-bottom:5px;">
+                <table class="w3-table w3-bordered w3-hoverable w3-centered tabla-fija"
+                       id="usuariosTabla"
+                       style="margin:0;min-width:600px;">
                     <thead style="background-color:#00EF48;color:white;">
                     <tr>
                         <th>Enunciado</th>
@@ -111,29 +190,176 @@
                             <td>{{respuestaCorrecta}}</td>
                             <td>
                                 <a href="{{BASE_URL}}pregunta/editarPregunta?idPregunta={{idPregunta}}">
-                                    <i class="fa-solid fa-pen-to-square"
-                                       style="cursor: pointer">
-                                    </i>
+                                <i class="fa-solid fa-pen-to-square" style="cursor:pointer"></i>
                                 </a>
                             </td>
                             <td>
-                                <form action="{{BASE_URL}}pregunta/eliminarPregunta?idPregunta={{idPregunta}}" method="post">
-                                    <button type="submit" style="cursor: pointer;background: none;border: none">
-                                        <i class="fa-solid fa-trash" style="color: #ed1202;"></i>
-                                    </button>
+                                <form action="{{BASE_URL}}pregunta/eliminarPregunta?idPregunta={{idPregunta}}"
+                                method="post">
+                                <button type="submit" style="cursor:pointer;background:none;border:none">
+                                    <i class="fa-solid fa-trash" style="color:#ed1202;"></i>
+                                </button>
                                 </form>
                             </td>
                         </tr>
                     {{/preguntasVigentes}}
                     </tbody>
                 </table>
+                <div class="w3-margin-top"
+                     style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;">
+                    <button id="prevPage" class="w3-button" style="background-color:#005DF0;color:white;">Anterior
+                    </button>
+                    <span id="pageInfo" class="w3-text-black"></span>
+                    <button id="nextPage" class="w3-button" style="background-color:#005DF0;color:white;">Siguiente
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Modal-->
+<div id="modalMotivo" class="w3-modal" onclick="cerrarModal(event)">
+    <div class="w3-modal-content w3-animate-top w3-card-4" style="max-width:500px;">
+        <header class="w3-container w3-green">
+      <span onclick="cerrarModal()"
+            class="w3-button w3-display-topright">&times;</span>
+            <h3>Motivo del Reporte</h3>
+        </header>
+        <div class="w3-container" id="contenidoMotivo" style="padding:20px;">
+
+        </div>
+        <footer class="w3-container w3-green">
+            <p style="text-align:center;">Revisión de preguntas reportadas</p>
+        </footer>
+    </div>
+</div>
+
+
+
+<style>
+    /* ---------- ESTILOS GENERALES ---------- */
+    .main-container {
+        display: flex;
+        flex-wrap: nowrap;
+    }
+
+    #contenidoMotivo {
+        max-height: 300px;
+        overflow-y: auto;
+        word-break: break-word;
+        white-space: pre-line;
+    }
+
+    .table-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+
+    /* Mantener tablas del mismo alto */
+    .tabla-fija {
+        flex: 1;
+        height: 100%;
+        overflow-y: hidden; /* sin scroll vertical */
+        border-collapse: collapse;
+    }
+
+    /* ---------- RESPONSIVE ---------- */
+    @media screen and (max-width: 1500px) {
+        .main-container {
+            flex-direction: column;
+        }
+
+        .sidebar {
+            position: relative !important;
+            width: 100% !important;
+            min-width: unset !important;
+            order: -1;
+            box-shadow: none;
+        }
+
+        .table-container {
+            height: auto; /* auto en móvil */
+            overflow-x: auto; /* scroll horizontal */
+        }
+
+        .tabla-fija {
+            overflow-x: auto;
+
+        }
+
+        table {
+            width: 100%;
+        }
+
+        ul {
+            display: flex;
+            justify-content: center;
+        }
+
+    }
+    @media screen and (max-width: 600px) {
+        .w3-modal-content {
+            max-width: 95vw !important;
+            width: 95vw !important;
+            margin: 10px;
+            box-sizing: border-box;
+        }
+    }
+</style>
 
 <script>
+    const rowsPerPage = 7;
+    let currentPage = 1;
+    let totalPages = 1;
+    let rows = [];
+    let pageInfo, prevBtn, nextBtn;
+
+    function inicializarPaginacion(seccion) {
+        // Buscar los elementos dentro de la sección visible
+        const tablaBody = seccion.querySelector('tbody');
+        pageInfo = seccion.querySelector('#pageInfo');
+        prevBtn = seccion.querySelector('#prevPage');
+        nextBtn = seccion.querySelector('#nextPage');
+
+        if (!tablaBody || !pageInfo || !prevBtn || !nextBtn) return;
+
+        rows = Array.from(tablaBody.querySelectorAll('tr'));
+        currentPage = 1;
+        totalPages = Math.ceil(rows.length / rowsPerPage);
+
+        // Reiniciar handlers (para evitar acumulación)
+        prevBtn.onclick = null;
+        nextBtn.onclick = null;
+
+        prevBtn.onclick = () => {
+            if (currentPage > 1) mostrarPagina(--currentPage);
+        };
+        nextBtn.onclick = () => {
+            if (currentPage < totalPages) mostrarPagina(++currentPage);
+        };
+
+        mostrarPagina(currentPage);
+    }
+
+    function mostrarPagina(page) {
+        rows.forEach((row, i) => {
+            row.style.display = (i >= (page - 1) * rowsPerPage && i < page * rowsPerPage) ? '' : 'none';
+        });
+        if (pageInfo) pageInfo.textContent = `Página ${page} de ${totalPages}`;
+    }
+
+    // === Cambiar entre secciones ===
+    function mostrarSeccion(id) {
+        document.querySelectorAll('.seccion').forEach(div => div.style.display = 'none');
+        const seccion = document.getElementById(id);
+        seccion.style.display = 'flex';
+        inicializarPaginacion(seccion);
+    }
+
+    // === Categorías ===
     const categorias = [
         {id: 1, descripcion: "Cultura General"},
         {id: 2, descripcion: "Geografia"},
@@ -151,23 +377,37 @@
         {id: 14, descripcion: "Tecnologia"},
     ];
 
-    document.querySelectorAll('.categoria').forEach(td => {
-        const id = td.getAttribute('data-id');
-        const cat = categorias.find(c => c.id == id);
-        td.textContent = cat ? cat.descripcion : 'Sin categoría';
+    // === Inicialización ===
+    window.addEventListener('DOMContentLoaded', () => {
+        // Ocultar todas las secciones
+        document.querySelectorAll('.seccion').forEach(div => div.style.display = 'none');
+
+        // Mostrar la sección enviada desde el backend o por defecto
+        const seccionActiva = '{{seccionActiva}}' || 'preguntasSugeridas';
+        const seccionDiv = document.getElementById(seccionActiva);
+        if (seccionDiv) {
+            seccionDiv.style.display = 'flex';
+            inicializarPaginacion(seccionDiv);
+        }
+
+        // Rellenar categorías
+        document.querySelectorAll('.categoria').forEach(td => {
+            const id = td.getAttribute('data-id');
+            const cat = categorias.find(c => c.id == id);
+            td.textContent = cat ? cat.descripcion : 'Sin categoría';
+        });
     });
 
-
-    function mostrarSeccion(id) {
-        document.querySelectorAll('.seccion').forEach(div => {
-            div.style.display = 'none';
-        });
-
-        document.getElementById(id).style.display = 'flex';
+    function abrirModal(motivo) {
+        document.getElementById('contenidoMotivo').innerText = motivo;
+        document.getElementById('modalMotivo').style.display = 'block';
     }
 
-    window.addEventListener('DOMContentLoaded', () => {
-        document.querySelectorAll('.seccion').forEach(div => div.style.display = 'none');
-        document.getElementById('preguntasSugeridas').style.display = 'flex';
-    });
+    function cerrarModal(event) {
+        // Cierra si se hace clic fuera del contenido o en la X
+        if (!event || event.target === document.getElementById('modalMotivo')) {
+            document.getElementById('modalMotivo').style.display = 'none';
+        }
+    }
+
 </script>
