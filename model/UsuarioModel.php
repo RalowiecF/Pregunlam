@@ -425,6 +425,49 @@ ORDER BY
         }
     }
 
+    public function ruletaTrampas($resultado){
+        if ($this->verificarDisponibilidadRuleta()) {
+            if ($resultado === 0) {
+                return ['ruletaHabilitada' => true,
+                    'mensaje' => "Podés intentarlo nuevamente",
+                    'usuarioLogueado' => $_SESSION['usuarioLogueado'],];
+            } else {
+                $idUsuario = $_SESSION['usuarioLogueado']['idUsuario'];
+                $sql = "update usuario set cantidadTrampas = (usuario.cantidadTrampas + ?) where idUsuario = ?;";
+                $stmt = $this->conexion->prepare($sql);
+                $stmt->bind_param("ii", $resultado, $idUsuario);
+                $stmt->execute();
+                $sql2 = "update usuario set ultimoUsoRuleta = now() where idUsuario = $idUsuario";
+                $this->conexion->query($sql2);
+                $_SESSION['usuarioLogueado']['cantidadTrampas'] += $resultado;
+                $mensaje = "Felicidades! Sumaste a tus trampas " . $resultado . " más.";
+                return ['ruletaHabilitada' => true,
+                    'mensaje' => $mensaje,
+                    'usuarioLogueado' => $_SESSION['usuarioLogueado'],];
+            }
+        } else {
+            return ['ruletaHabilitada' => false,
+                'mensaje' => "Ya usaste la ruleta hoy. Volve a usarla mañana.",
+                'usuarioLogueado' => $_SESSION['usuarioLogueado'],];
+        }
+    }
+
+    public function verificarDisponibilidadRuleta(): bool {
+        $idUsuario = (int) $_SESSION['usuarioLogueado']['idUsuario'];
+        $sql = "SELECT ultimoUsoRuleta FROM usuario WHERE idUsuario = $idUsuario";
+        $result = $this->conexion->query($sql);
+        $tz = new DateTimeZone('America/Argentina/Buenos_Aires');
+
+        $fechaUltimoUsoSinFormato = $result[0]['ultimoUsoRuleta'] ?? null;
+        if (!$fechaUltimoUsoSinFormato) {
+            return true;
+        }
+        $fechaUltimoUso = (new DateTime($fechaUltimoUsoSinFormato, $tz))->format('Y-m-d');
+        $hoy = (new DateTime('now', $tz))->format('Y-m-d');
+
+        return $hoy !== $fechaUltimoUso;
+    }
+
     public function getByNombreusuario($nombreUsuario){
         $nombreUsuarioBusqueda = "%" . $nombreUsuario . "%";
         $sql = "SELECT t1.idUsuario, t1.nombreUsuario, t1.puntaje, t1.duracionPartida, IFNULL(DATE_FORMAT(t1.fechaPartida, '%d/%m/%y %H:%i'), 'Sin partidas') AS fechaPartida FROM (

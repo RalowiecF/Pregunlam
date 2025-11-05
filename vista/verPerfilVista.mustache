@@ -96,6 +96,7 @@
         </a>
 
         <!-- Botón derecho dinámico -->
+        {{#usuarioLogueado}}
         {{#perfilPropio}}
             <a href="{{BASE_URL}}usuario/editarPerfilForm"
                class="w3-button w3-round-large"
@@ -123,6 +124,9 @@
                 </a>
             {{/esContacto}}
         {{/perfilPropio}}
+        {{/usuarioLogueado}}
+        {{^usuarioLogueado}}
+        {{/usuarioLogueado}}
     </div>
 
     <!-- LIBRERÍAS -->

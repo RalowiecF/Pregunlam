@@ -132,9 +132,32 @@ class UsuarioController
 
     public function buscarUsuario(){
         $this->validarTexto($_POST['nombreUsuario'], 3, 50);
-        $this->renderer->render("tablaUsuarios", ["usuarios" => $this->model->getByNombreusuario($_POST['nombreUsuario']),
-            "tabla" => "RESULTADOS",
-            "usuarioLogueado" => $_SESSION["usuarioLogueado"]]);
+        if (isset($_SESSION["usuarioLogueado"])) {
+            $this->renderer->render("tablaUsuarios", ["usuarios" => $this->model->getByNombreusuario($_POST['nombreUsuario']),
+                "tabla" => "RESULTADOS",
+                "usuarioLogueado" => $_SESSION["usuarioLogueado"]]);
+        } else {
+            $this->renderer->render("tablaUsuarios", ["usuarios" => $this->model->getByNombreusuario($_POST['nombreUsuario']),
+                "tabla" => "RESULTADOS"]);
+        }
+    }
+
+    public function comprarTrampas(){
+        $disponibilidadRuleta = $this->model->verificarDisponibilidadRuleta();
+        if($disponibilidadRuleta){
+            $this->renderer->render("trampas", ['ruletaHabilitada' => $disponibilidadRuleta, "usuarioLogueado" => $_SESSION["usuarioLogueado"]]);
+        } else {
+            $this->renderer->render("trampas", ['ruletaHabilitada' => $disponibilidadRuleta,
+                                    "usuarioLogueado" => $_SESSION["usuarioLogueado"],
+                                    'mensaje' => "Ya usaste la ruleta hoy. Volve a usarla mañana."]);
+        }
+    }
+
+    public function ruletaTrampas(){
+        if($this->validarResultadoRuleta()){
+            $data = $this->model->ruletaTrampas((INT)$_POST['resultado']);
+            $this->renderer->render("trampas", $data);
+        }
     }
 
     public function redirectToIndex()
@@ -238,6 +261,12 @@ class UsuarioController
             exit();
         }
         return true;
+    }
+
+    public function validarResultadoRuleta(): bool{
+        if(isset($_POST["resultado"]) && (0<=(INT)$_POST["resultado"] && (INT)$_POST['resultado']<=3)){
+            return true;
+        }else return false;
     }
 
     public function editarPerfil()

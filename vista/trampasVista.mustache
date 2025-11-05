@@ -1,0 +1,187 @@
+<div class="w3-light-grey w3-center"
+     style="min-height:70vh;display:flex;flex-direction:column;justify-content:center;align-items:center;
+            margin:0;padding:0;box-sizing:border-box;overflow:hidden;position:relative;">
+
+    <!-- CONTENEDOR PRINCIPAL (ALTURA AJUSTADA) -->
+    <div class="w3-card w3-round-large w3-white"
+         style="width:90%;max-width:900px;max-height:500px;display:flex;flex-wrap:wrap;
+                justify-content:space-between;align-items:stretch;box-shadow:0 3px 6px rgba(0,0,0,0.1);
+                overflow:hidden;flex:1;padding:5px 0;">
+
+        <!-- MITAD IZQUIERDA -->
+        <div class="w3-half w3-padding w3-display-container"
+             style="flex:1 1 400px;min-width:280px;background:linear-gradient(135deg,#26F0EC,#00BFBF);
+                    display:flex;flex-direction:column;justify-content:center;align-items:center;color:black;">
+            <h3 style="font-weight:bold;margin-bottom:6px;">Sistema de Pago</h3>
+            <p style="font-size:0.85rem;max-width:90%;text-align:center;margin:0;">
+                Sistema de pago en mantenimiento.<br>
+                Mientras tanto podés conseguir trampas con la ruleta diaria.
+            </p>
+        </div>
+
+        <!-- MITAD DERECHA (RULETA) -->
+        <div class="w3-half w3-padding"
+             style="flex:1 1 400px;min-width:280px;display:flex;flex-direction:column;justify-content:center;align-items:center;
+                    background-color:white;">
+            <h3 class="w3-text-blue" style="color:#005DF0;font-weight:bold;margin-bottom:10px;">Ruleta de Trampas</h3>
+
+            <!-- CONTENEDOR RULETA -->
+            <div style="position:relative;width:180px;height:180px;border-radius:50%;border:6px solid #005DF0;
+                        display:flex;justify-content:center;align-items:center;overflow:hidden;
+                        box-shadow:0 4px 10px rgba(0,0,0,0.2);">
+                <canvas id="ruleta" width="180" height="180"></canvas>
+
+                <!-- Indicador -->
+                <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);
+                            width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;
+                            border-bottom:20px solid red;"></div>
+            </div>
+
+            <!-- BOTÓN GIRAR -->
+            <form id="formRuleta" method="POST" action="{{BASE_URL}}usuario/ruletaTrampas">
+                <input type="hidden" name="resultado" id="resultado">
+                <button type="button"
+                        onclick="girarRuleta()"
+                        class="w3-button w3-round-large"
+                        style="background-color:#00EF48;color:white;font-weight:bold;margin-top:12px;
+                               padding:6px 18px;font-size:1rem;"
+                    {{^ruletaHabilitada}}disabled style="opacity:0.6;cursor:not-allowed;"{{/ruletaHabilitada}}>
+                    Girar
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- BOTÓN INFERIOR IZQUIERDO -->
+    <a href="{{BASE_URL}}usuario/lobby"
+       class="w3-button w3-round-large"
+       style="position:fixed;bottom:90px;left:15px;background-color:#26F0EC;color:black;font-weight:bold;
+              text-decoration:none;z-index:20;padding:6px 14px;font-size:0.9rem;">
+        <i class="fa fa-home" style="margin-right:5px;"></i>Lobby
+    </a>
+
+    <!-- BOTÓN INFERIOR DERECHO -->
+    <a href="{{BASE_URL}}partida/seleccionPartida"
+       class="w3-button w3-round-large"
+       style="position:fixed;bottom:90px;right:15px;background-color:#00EF48;color:white;font-weight:bold;
+              text-decoration:none;z-index:20;padding:6px 14px;font-size:0.9rem;">
+        Jugar
+    </a>
+
+    <!-- MENSAJE INFERIOR (COMPACTO Y CENTRADO) -->
+    {{#mensaje}}
+        <div id="mensaje"
+             class="w3-panel w3-round w3-animate-opacity"
+             style="background-color:#f44336;color:white;position:fixed;bottom:65px;left:50%;
+                transform:translateX(-50%);z-index:10;min-width:220px;max-width:80%;
+                text-align:center;font-weight:bold;box-shadow:0 2px 6px rgba(0,0,0,0.2);
+                padding:8px 15px;border-radius:8px;font-size:0.9rem;">
+            {{mensaje}}
+        </div>
+    {{/mensaje}}
+
+    <!-- SCRIPT DE LA RULETA -->
+    <script>
+        const opciones = ["1", "Ninguna", "2", "Ninguna", "3", "Ninguna"];
+        const colores = ["#26F0EC", "#9E9E9E", "#005DF0", "#BDBDBD", "#00EF48", "#757575"];
+        const canvas = document.getElementById('ruleta');
+        const ctx = canvas.getContext('2d');
+        const radius = canvas.width / 2;
+        let anguloInicio = 0;
+
+        function dibujarRuleta() {
+            const arc = 2 * Math.PI / opciones.length;
+            for (let i = 0; i < opciones.length; i++) {
+                const angle = anguloInicio + i * arc;
+
+                // 1. MODIFICACIÓN: Degradado más sutil
+                const grad = ctx.createRadialGradient(radius, radius, 0, radius, radius, radius);
+
+                // Usamos el color original en 0.7 y un tono ligeramente más claro en 1
+                const baseColor = colores[i];
+                // Para evitar el blanco puro, usamos el color base en el 90% y solo un 10% de blanco
+                grad.addColorStop(0.7, baseColor);
+                // Añadimos un tono muy claro pero no blanco puro (ej: un gris muy claro #F0F0F0)
+                grad.addColorStop(1, baseColor + 'E0'); // Añadimos transparencia sutil o tono más claro
+
+                ctx.beginPath();
+                ctx.fillStyle = grad;
+                ctx.moveTo(radius, radius);
+                ctx.arc(radius, radius, radius, angle, angle + arc);
+                ctx.fill();
+                ctx.save();
+                ctx.translate(radius, radius);
+                ctx.rotate(angle + arc / 2);
+                ctx.textAlign = "right";
+                ctx.fillStyle = "white";
+                ctx.font = "bold 16px Arial";
+                ctx.fillText(opciones[i], radius - 12, 5);
+                ctx.restore();
+            }
+        }
+
+        dibujarRuleta();
+
+        function girarRuleta() {
+            // Deshabilita el botón mientras gira
+            const button = document.querySelector('#formRuleta button');
+            if(button) button.disabled = true;
+
+            const giroTotal = 360 * 5 + Math.random() * 360;
+            const duracion = 4000;
+            const inicio = performance.now();
+
+            function animar(now) {
+                const progreso = Math.min((now - inicio) / duracion, 1);
+                // Usa una función de easing para desacelerar
+                const easing = 1 - Math.pow(1 - progreso, 3);
+                const angulo = (giroTotal * easing * Math.PI) / 180;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                anguloInicio = angulo;
+                dibujarRuleta();
+                if (progreso < 1) {
+                    requestAnimationFrame(animar);
+                } else {
+                    calcularResultado(giroTotal % 360);
+                    // Habilita el botón después de terminar
+                    if(button) button.disabled = false;
+                }
+            }
+
+            requestAnimationFrame(animar);
+        }
+
+        function calcularResultado(anguloFinal) {
+            const gradosPorSector = 360 / opciones.length;
+            // Calculamos el índice que está siendo apuntado por el indicador superior (cerca de 270 grados en el círculo)
+
+            // Ángulo inicial del puntero (270 grados es arriba)
+            const anguloPuntero = 270;
+
+            // 2. CORRECCIÓN LÓGICA: Ajustamos el ángulo final para la posición del puntero
+            // Sumamos el ángulo del giro (en radianes) a 270 grados (posición del puntero)
+            const anguloGiroGrados = (anguloFinal * 180) / Math.PI;
+
+            // Normalizamos el ángulo final respecto al inicio de la ruleta (que es donde se dibuja el primer sector)
+            // Se resta el ángulo total rotado (normalizado) de 360.
+            let anguloEnRuleta = (360 - (anguloFinal % 360) + anguloPuntero) % 360;
+
+            // Calculamos el índice del sector
+            const indice = Math.floor(anguloEnRuleta / gradosPorSector);
+
+            // El resultado está en el índice calculado
+            const resultado = opciones[indice];
+
+            // Convertimos el resultado a valor numérico (0 para "Ninguna")
+            const valor = resultado === "Ninguna" ? 0 : parseInt(resultado, 10);
+
+            document.getElementById("resultado").value = valor;
+
+            // Opcional: Puedes mostrar el resultado en un mensaje temporal
+            // console.log("Resultado de la ruleta:", resultado, "Valor POST:", valor);
+
+            // Envía el formulario 800ms después de que termine la animación
+            setTimeout(() => document.getElementById("formRuleta").submit(), 800);
+        }
+    </script>
+</div>
