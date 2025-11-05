@@ -9,6 +9,7 @@ class MyConexion
     {
         $this->conexion = new mysqli($server, $user, $pass, $database);
         mysqli_set_charset($this->conexion, 'utf8mb4');
+        $this->conexion->query("SET time_zone = '-03:00'");
         if ($this->conexion->error) { die("Error en la conexión: " . $this->conexion->error); }
     }
 
