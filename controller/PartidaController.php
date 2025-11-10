@@ -41,15 +41,15 @@ class PartidaController
         $idPregunta = isset($_POST['idPregunta']) ? (int)$_POST['idPregunta'] : 0;
         if($this->model->verificarPreguntaInconclusa($idPregunta) && $this->model->verificarTiempoDeRespuesta($idPregunta)) {
             if(isset($_POST['hacerTrampa'])){
-                $continuarPartida = $this->model->hacerTrampa($idPregunta);
+                $continuacionPartida = $this->model->hacerTrampa($idPregunta);
             } else {
                 $this->validarOpcionSeleccionada();
-                $continuarPartida = $this->model->continuarPartida((INT)$_POST['opcionSeleccionada']);
+                $continuacionPartida = $this->model->continuarPartida((INT)$_POST['opcionSeleccionada']);
             }
-            if($continuarPartida['siguientePaso'] === 'siguientePregunta'){
-                $this->renderer->render("partida", $continuarPartida);
+            if($continuacionPartida['siguientePaso'] === 'siguientePregunta'){
+                $this->renderer->render("partida", $continuacionPartida);
                 }else{
-                    $this->renderer->render("resultado", $continuarPartida);
+                    $this->renderer->render("resultado", $continuacionPartida);
                 }
         } else {
                 $error = $_SESSION["error"];

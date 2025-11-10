@@ -333,17 +333,20 @@ where ujp.idUsuario = $idUsuario) order by rand() limit $cantidad;";
         $this->actualizarPuntajePartidaUsuario($idPartida, $puntaje);
         $this->actualizarDuracionPartida($idPartida);
         $this->actualizarNivelUsuario();
-        $this->unsetearVariablesSessionPartida();
         if($resultadoFinal){
+            $this->unsetearVariablesSessionPartida();
             return ['siguientePaso' => 'finalizar',
                 'victoria' => true,
                 'puntaje' => $puntaje,
                 'usuarioLogueado' => $_SESSION["usuarioLogueado"]];
         }else {
+            $pregunta = $this->getPreguntaRespuestaCategoriaId((INT)$_SESSION['idsPreguntas'][(INT)$_SESSION['preguntaEnCurso']]);
+            $this->unsetearVariablesSessionPartida();
             return [
                 'siguientePaso' => 'finalizar',
                 'victoria' => false,
                 'puntaje' => $puntaje,
+                'pregunta' => $pregunta[0],
                 'usuarioLogueado' => $_SESSION["usuarioLogueado"]];
         }
     }

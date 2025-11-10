@@ -1,84 +1,116 @@
-<div class="w3-container w3-animate-opacity"
+<div class="w3-light-grey w3-center"
      style="display:flex;
             flex-direction:column;
             align-items:center;
-            justify-content:center;
-            text-align:center;
-            height:calc(100vh - 175px);
-            padding:10px 20px;
+            justify-content:space-between;
+            min-height:calc(100vh - 175px); /* resta header + footer */
+            margin:0;
             box-sizing:border-box;
-            position:relative;">
+            overflow:hidden;
+            padding:10px 20px;">
 
-    <!-- Título principal -->
-    {{#victoria}}
-        <h1 class="w3-text-green"
-            style="font-size:2rem;
-                   font-weight:bold;
-                   text-shadow:1px 1px #fff;
-                   margin-bottom:10px;">
-            ¡Felicidades! ¡Ganaste la partida!
-        </h1>
-    {{/victoria}}
+    <!-- CONTENEDOR CENTRAL -->
+    <div style="display:flex;
+                flex-wrap:wrap;
+                justify-content:center;
+                align-items:flex-start;
+                gap:20px;
+                width:100%;
+                max-width:950px;
+                flex:1;">
 
-    {{^victoria}}
-        <h1 class="w3-text-red"
-            style="font-size:2rem;
-                   font-weight:bold;
-                   text-shadow:1px 1px #fff;
-                   margin-bottom:10px;">
-            Lo sentimos... perdiste la partida.
-        </h1>
-    {{/victoria}}
+        <!-- BLOQUE PRINCIPAL -->
+        <div class="w3-card w3-round-large w3-white w3-animate-opacity"
+             style="flex:1 1 400px;min-width:280px;max-width:420px;
+                    display:flex;flex-direction:column;align-items:center;
+                    justify-content:center;padding:15px;box-shadow:0 3px 6px rgba(0,0,0,0.1);">
 
-    <!-- Imagen central -->
-    <div class="w3-card w3-round-large w3-white w3-hover-shadow"
-         style="max-width:380px;
-                width:85%;
-                background-color:#f5f5f5;
-                padding:8px;
-                margin:0 auto;">
-        {{#victoria}}
-            <img src="{{BASE_URL}}imagenes/Festejo.png" alt="Victoria"
-                 style="width:100%;
-                        max-height:240px;
-                        object-fit:contain;
-                        border-radius:10px;">
-        {{/victoria}}
+            {{#victoria}}
+                <h1 class="w3-text-green"
+                    style="font-size:2rem;font-weight:bold;text-shadow:1px 1px #fff;margin-bottom:10px;">
+                    ¡Felicidades! ¡Ganaste la partida!
+                </h1>
+            {{/victoria}}
 
+            {{^victoria}}
+                <h1 class="w3-text-red"
+                    style="font-size:2rem;font-weight:bold;text-shadow:1px 1px #fff;margin-bottom:10px;">
+                    Lo sentimos... perdiste la partida.
+                </h1>
+            {{/victoria}}
+
+            <div class="w3-card w3-round-large w3-white w3-hover-shadow"
+                 style="max-width:380px;width:85%;background-color:#f5f5f5;padding:8px;margin:0 auto;">
+                {{#victoria}}
+                    <img src="{{BASE_URL}}imagenes/Festejo.png" alt="Victoria"
+                         style="width:100%;max-height:240px;object-fit:contain;border-radius:10px;">
+                {{/victoria}}
+                {{^victoria}}
+                    <img src="{{BASE_URL}}imagenes/Derrota.png" alt="Derrota"
+                         style="width:100%;max-height:240px;object-fit:contain;border-radius:10px;">
+                {{/victoria}}
+            </div>
+
+            <div class="w3-panel w3-round-large w3-light-grey"
+                 style="margin-top:10px;padding:8px 16px;font-size:1rem;font-weight:bold;color:#000;">
+                El puntaje resultante fue <span class="w3-text-blue">{{puntaje}}</span> puntos.
+            </div>
+        </div>
+
+        <!-- BLOQUE EXTRA SI PERDIÓ -->
         {{^victoria}}
-            <img src="{{BASE_URL}}imagenes/Derrota.png" alt="Derrota"
-                 style="width:100%;
-                        max-height:240px;
-                        object-fit:contain;
-                        border-radius:10px;">
+            <div class="w3-card w3-round-large w3-white w3-animate-opacity"
+                 style="flex:1 1 400px;min-width:280px;max-width:420px;background-color:#fff;
+                    padding:15px;box-shadow:0 3px 6px rgba(0,0,0,0.1);
+                    display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;">
+
+                <h3 class="w3-text-blue"
+                    style="font-weight:bold;margin-bottom:5px;text-align:left;font-size:1.1rem;">
+                    Pregunta:
+                </h3>
+                <p style="text-align:left;margin:0;font-weight:bold;color:black;">
+                    {{pregunta.enunciado}}
+                </p>
+
+                <p style="text-align:left;margin:10px 0 5px 0;color:#333;font-size:0.95rem;">
+                    <strong>Respuesta correcta:</strong>
+                    <span class="w3-text-green">{{pregunta.respuestaCorrecta}}</span>
+                </p>
+
+                <!-- BOTÓN COLAPSABLE -->
+                <button type="button"
+                        onclick="document.getElementById('formReporte').classList.toggle('w3-hide');"
+                        class="w3-button w3-round-large"
+                        style="background-color:#26F0EC;color:black;font-weight:bold;padding:6px;font-size:0.9rem;">
+                    Reportar Pregunta
+                </button>
+
+                <!-- FORMULARIO OCULTO -->
+                <form id="formReporte" method="POST" action="{{BASE_URL}}Pregunta/reportarPregunta"
+                      class="w3-hide"
+                      style="margin-top:10px;display:flex;flex-direction:column;gap:10px;">
+                    <input type="hidden" name="idPregunta" value="{{pregunta.idPregunta}}">
+                    <textarea name="motivoReporte" minlength="15" maxlength="100" required
+                              placeholder="Motivo del reporte (entre 15 y 100 caracteres)"
+                              class="w3-input w3-border w3-round"
+                              style="resize:none;font-size:0.9rem;padding:6px;"></textarea>
+                    <button type="submit"
+                            class="w3-button w3-round-large"
+                            style="background-color:#00EF48;color:white;font-weight:bold;
+                               padding:8px;font-size:0.9rem;">
+                        Enviar reporte
+                    </button>
+                </form>
+            </div>
         {{/victoria}}
     </div>
 
-    <!-- Puntaje -->
-    <div class="w3-panel w3-round-large w3-light-grey"
-         style="margin-top:10px;
-                padding:8px 16px;
-                font-size:1rem;
-                font-weight:bold;
-                color:#000;">
-        El puntaje resultante fue <span class="w3-text-blue">{{puntaje}}</span> puntos.
-    </div>
-
-    <!-- Botón Volver al Lobby -->
-    <div style="width:100%;
-                display:flex;
-                justify-content:flex-start;
-                margin-top:8px;">
-        <a href="{{BASE_URL}}usuario/lobby"
-           class="w3-button w3-round-large"
-           style="background-color:#26F0EC;
-                  color:black;
-                  font-weight:bold;
-                  text-decoration:none;
-                  margin:0 0 5px 10px;
-                  padding:6px 14px;
-                  font-size:0.9rem;">
-            Lobby
-        </a>
-    </div>
+    <!-- BOTÓN LOBBY FIJO -->
+    <a href="{{BASE_URL}}usuario/lobby"
+       class="w3-button w3-round-large"
+       style="position:fixed;bottom:90px;left:15px;background-color:#26F0EC;
+              color:black;font-weight:bold;text-decoration:none;z-index:20;
+              padding:6px 14px;font-size:0.9rem;">
+        <i class="fa fa-home" style="margin-right:5px;"></i>Lobby
+    </a>
 </div>

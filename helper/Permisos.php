@@ -8,17 +8,17 @@ public function __construct(){
     $this->permisos = [
         'Anonimo' => [
             '' => [''],
-            'usuario' => ['', 'login', 'registroUsuarioForm', 'nuevo', 'ranking', 'verPerfil', 'buscarUsuario'],
+            'usuario' => ['', 'login', 'registroUsuarioForm', 'nuevo', 'verificarmail', 'ranking', 'verPerfil', 'buscarUsuario'],
         ],
         'Jugador' => [
             '' => [''],
-            'usuario' => ['', 'logout', 'registroUsuarioForm', 'nuevo', 'ranking', 'verPerfil', 'buscarUsuario', 'contactos', 'agregarContacto', 'eliminarContacto', 'comprarTrampas', 'ruletaTrampas'],
+            'usuario' => ['', 'logout', 'registroUsuarioForm', 'ranking', 'verPerfil', 'buscarUsuario', 'contactos', 'agregarContacto', 'eliminarContacto', 'comprarTrampas', 'ruletaTrampas'],
             'pregunta' => ['', 'registroPregunta', 'listar'],
             'partida' => ['', 'seleccionPartida', 'nueva', 'continuarPartida', 'verReglas'],
         ],
         'Editor' => [
             '' => [''],
-            'usuario' => ['', 'logout', 'registroUsuarioForm', 'nuevo', 'ranking', 'verPerfil', 'buscarUsuario', 'contactos', 'agregarContacto', 'eliminarContacto'],
+            'usuario' => ['', 'logout', 'registroUsuarioForm', 'ranking', 'verPerfil', 'buscarUsuario', 'contactos', 'agregarContacto', 'eliminarContacto'],
             'pregunta' => ['', 'registroPregunta', 'listar'],
             'partida' => ['', 'seleccionPartida', 'nueva', 'continuarPartida', 'verReglas'],
         ],

@@ -160,6 +160,19 @@ class UsuarioController
         }
     }
 
+    public function verificarmail(){
+        if (isset($_GET['token'])){
+            if ($this->model->verificarEmailConToken($_GET['token'])) {
+                $this->renderer->render("login", ["error" => "Verificación exitosa. Ya podés Ingresar!"]);
+            } else {
+                $this->renderer->render("login", ["error" => "Token invalido o vencido. Intentá registrarte nuevamente."]);
+            }
+            exit();
+        } else {
+            $this->redirectToIndex();
+        }
+    }
+
     public function redirectToIndex()
     {
         header("Location: " . BASE_URL);
