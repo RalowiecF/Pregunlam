@@ -1,10 +1,10 @@
-<?php
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
-require_once('vendor/autoload.php');
+    <?php
+    require_once __DIR__ . '/../vendor/autoload.php';
+    use PHPMailer\PHPMailer\PHPMailer;
+    use PHPMailer\PHPMailer\Exception;
 
-class UsuarioModel
-{
+    class UsuarioModel
+    {
 
     private $conexion;
 
@@ -22,7 +22,7 @@ class UsuarioModel
             JOIN tipousuario AS t ON u.idTipoUsuario = t.idTipoUsuario
             JOIN nivel AS n ON u.idNivel = n.idNivel
             LEFT JOIN entorno AS e ON u.idEntorno = e.idEntorno
-            WHERE u.nombreUsuario = ? AND u.contrasenia = ?";
+            WHERE u.nombreUsuario = ? AND u.contrasenia = ? AND mailVerificado = 1";
 
         $stmt = $this->conexion->prepare($sql);
         $stmt->bind_param("ss", $nombreUsuario, $contrasenia);
@@ -207,44 +207,58 @@ ORDER BY
         return ['ciudad' => $ciudad, 'pais' => $pais];
     }
 
-    public function guardarFotoPerfil($fileFotoPerfil, $nombreUsuario){
-        $fotoPerfil =  'imagenes/avatares/' . $nombreUsuario . '.png';
+    public function guardarFotoPerfil($fileFotoPerfil, $nombreUsuario): string{
+        $fotoPerfil =  $nombreUsuario . '.png';
         move_uploaded_file($fileFotoPerfil["tmp_name"], $fotoPerfil);
         return $fotoPerfil;
     }
 
-    public function enviarMailVerificacion($mailDestinatario, $nombreUsuario, $tokenVerificacion){
+    public function enviarMailVerificacion($mailDestinatario, $nombreUsuario, $tokenVerificacion): bool{
         $mail = new PHPMailer(true);
 
         try {
             $mail->isSMTP();
-            $mail->Host = 'sandbox.smtp.mailtrap.io';
+            $mail->Host = 'smtp.sendgrid.net';
             $mail->SMTPAuth = true;
-            $mail->Port = 2525;
-            $mail->Username = 'dd8e7f5372862d';
-            $mail->Password = 'eee56449f15bd6';
+            $mail->Username = 'apikey';
+            $mail->Password = ''; // tu API Key copiada
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->Port = 587;
 
-            $mail->setFrom('no-reply@pregunlam.com', 'PregUNLaM');
+            $mail->setFrom('federico13111987@gmail.com', 'PregUNLaM');
             $mail->addAddress($mailDestinatario, $nombreUsuario);
 
             $mail->isHTML(true);
-            $mail->Subject = 'Verificá tu cuenta.';
+            $mail->Subject = 'Verifica tu cuenta.';
 
-            $mail->Body = 'Hola ' . htmlspecialchars($nombreUsuario) . ',<br><br>
-            Gracias por registrarte. Por favor hacé clic en el siguiente enlace para verificar tu cuenta:<br><br>
-            <a href="http://localhost/PregUNLaM/usuario/verificartoken?token=' . urlencode($tokenVerificacion) . '">Verificar cuenta</a>';
+            $linkVerificacion = 'https://pregunlam.page.gd/usuario/verificarmail?token=' . urlencode($tokenVerificacion);
 
-            // Para debug
-            // $mail->SMTPDebug = 2;
-            // $mail->Debugoutput = 'html';
-
+            $mail->Body = '
+            <p>Hola ' . htmlspecialchars($nombreUsuario) . ',</p>
+            <p>Gracias por registrarte en <strong>PregUNLaM</strong>. Por favor, hace clic en el siguiente enlace para verificar tu cuenta:</p>
+            <p><a href="' . $linkVerificacion . '" target="_blank">Verificar cuenta</a></p>
+            <p>Si vos no creaste esta cuenta, podes ignorar este mensaje.</p>
+            <br>
+            <p>Saludos,<br>El equipo de PregUNLaM</p>
+        ';
             $mail->send();
             return true;
-
         } catch (Exception $e) {
             echo "Error al enviar el mensaje: {$mail->ErrorInfo}";
             return false;
         }
+    }
+
+    public function verificarEmailConToken($token){
+        $sql = "update usuario set mailVerificado = 1, tokenVerificacion = null where tokenVerificacion = ?";
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->bind_param("s", $token);
+        $resultado = $stmt->execute();
+        if ($resultado) {
+            $filasAfectadas = $stmt->affected_rows;
+            return $filasAfectadas === 1;
+        }
+        return false;
     }
 
     public function validarEditorYAdmin($usuario) {
@@ -441,7 +455,7 @@ ORDER BY
                 $this->conexion->query($sql2);
                 $_SESSION['usuarioLogueado']['cantidadTrampas'] += $resultado;
                 $mensaje = "Felicidades! Sumaste a tus trampas " . $resultado . " más.";
-                return ['ruletaHabilitada' => true,
+                return ['ruletaHabilitada' => false,
                     'mensaje' => $mensaje,
                     'usuarioLogueado' => $_SESSION['usuarioLogueado'],];
             }
