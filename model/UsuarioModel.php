@@ -221,7 +221,7 @@ ORDER BY
             $mail->Host = 'smtp.sendgrid.net';
             $mail->SMTPAuth = true;
             $mail->Username = 'apikey';
-            $mail->Password = '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'; // tu API Key copiada
+            $mail->Password = ''; // tu API Key copiada
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $mail->Port = 587;
 
