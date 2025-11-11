@@ -12,14 +12,14 @@ public function __construct(){
         ],
         'Jugador' => [
             '' => [''],
-            'usuario' => ['', 'logout', 'registroUsuarioForm', 'ranking', 'verPerfil', 'buscarUsuario', 'contactos', 'agregarContacto', 'eliminarContacto', 'comprarTrampas', 'ruletaTrampas'],
-            'pregunta' => ['', 'registroPregunta', 'listar'],
+            'usuario' => ['', 'logout', 'registroUsuarioForm', 'ranking', 'verPerfil', 'editarPerfilForm', 'editarPerfil', 'buscarUsuario', 'contactos', 'agregarContacto', 'eliminarContacto', 'comprarTrampas', 'ruletaTrampas'],
+            'pregunta' => ['', 'registroPregunta', 'listar', 'reportarPregunta'],
             'partida' => ['', 'seleccionPartida', 'nueva', 'continuarPartida', 'verReglas'],
         ],
         'Editor' => [
             '' => [''],
-            'usuario' => ['', 'logout', 'registroUsuarioForm', 'ranking', 'verPerfil', 'buscarUsuario', 'contactos', 'agregarContacto', 'eliminarContacto'],
-            'pregunta' => ['', 'registroPregunta', 'listar'],
+            'usuario' => ['', 'logout', 'registroUsuarioForm', 'ranking', 'verPerfil', 'editarPerfilForm', 'editarPerfil', 'buscarUsuario', 'contactos', 'agregarContacto', 'eliminarContacto'],
+            'pregunta' => ['', 'registroPregunta', 'listar', 'reportarPregunta'],
             'partida' => ['', 'seleccionPartida', 'nueva', 'continuarPartida', 'verReglas'],
         ],
         'Administrador' => [

@@ -16,8 +16,7 @@ class PreguntaController
         $this->registrarPregunta();
     }
 
-    public function redirectToIndex()
-    {
+    public function redirectToIndex(){
         header("Location: " . BASE_URL);
         exit;
     }
@@ -137,39 +136,14 @@ class PreguntaController
         ]);
     }
 
-    public function reportarPregunta()
-    {
-        if (!isset($_SESSION["usuarioLogueado"])) {
-            $this->redirectToIndex();
-            return;
-        }
-
-        $idPregunta = $_GET['idPregunta'];
-        $pregunta = $this->model->obtenerPreguntaPorId($idPregunta);
-        $categoriaArray = $this->model->obtenerCategoriaPorId($pregunta['idCategoria']);
-        $categoria = $categoriaArray[0];
-        $this->renderer->render("reportarPregunta", [
-            "usuarioLogueado" => $_SESSION["usuarioLogueado"],
-            "pregunta" => $pregunta,
-            "categoria" => $categoria
-        ]);
-    }
-
-    public function reportarPreguntaForm(){
-        if (!isset($_SESSION["usuarioLogueado"])) {
-            $this->redirectToIndex();
-            return;
-        }
-
-        $idPregunta = $_POST["idPregunta"];
-        $motivo = $_POST["motivoReporte"];
-
-        $this->model->reportarPregunta($idPregunta, $motivo);
-
-        $_SESSION['mensaje'] = "La pregunta ha sido reportada correctamente.";
+    public function reportarPregunta(){
+        if ( $this->validarTexto($_POST["motivoReporte"], 15, 100) && isset($_POST["idPregunta"]) ) {
+            $data = $this->model->reportarPregunta($_POST["idPregunta"], $_POST["motivoReporte"]);
+            $this->renderer->render("lobby", $data);
+            exit();
+            }
         $this->redirectToIndex();
     }
-
 
     public function editarPreguntaForm()
     {
@@ -263,6 +237,34 @@ class PreguntaController
         $this->model->aprobarPregunta($idPregunta);
         $_SESSION['mensaje'] = "Pregunta aprobada correctamente.";
         $this->listaPreguntas();
+    }
+
+    // Validacion de datos entrantes
+
+    public function validarTexto($texto, $minLongitud, $maxLongitud): bool
+    {
+        if (!isset($texto)) {
+            $this->renderer->render("registroUsuario", ["error" => "Texto vacío"]);
+            exit();
+        }
+
+        $texto = trim($texto);
+        if ($texto === '') {
+            $this->renderer->render("registroUsuario", ["error" => "Ingresó solo espacios"]);
+            exit();
+        }
+
+        if (strlen($texto) > $maxLongitud) {
+            $this->renderer->render("registroUsuario", ["error" => "Exceso de caracteres."]);
+            exit();
+        }
+
+        if (strlen($texto) < $minLongitud) {
+            $this->renderer->render("registroUsuario", ["error" => "No escribió los caracteres suficientes."]);
+            exit();
+        }
+
+        return true;
     }
 
 
