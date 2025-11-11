@@ -89,7 +89,7 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                  ORDER BY p.puntaje DESC, p.duracionPartida ASC
                  ) AS rn FROM
              usuario u JOIN usuario_juega_partida ujp ON u.idUsuario = ujp.idUsuario JOIN partida p ON ujp.idPartida = p.idPartida
-         WHERE p.fechaPartida >= DATE_SUB(NOW(), INTERVAL 7 DAY)
+         WHERE p.fechaPartida >= DATE_SUB(NOW(), INTERVAL 7 DAY) AND idTipoUsuario = 3
      ) t1
 -- Filtra para quedarte solo con la mejor partida (rn = 1) para cada usuario
 WHERE t1.rn = 1
@@ -207,9 +207,10 @@ ORDER BY
         return ['ciudad' => $ciudad, 'pais' => $pais];
     }
 
-    public function guardarFotoPerfil($fileFotoPerfil, $nombreUsuario): string{
+    public function guardarFotoPerfil($fileFotoPerfil, $nombreUsuario){
         $fotoPerfil =  $nombreUsuario . '.png';
-        move_uploaded_file($fileFotoPerfil["tmp_name"], $fotoPerfil);
+        $ruta = 'imagenes/avatares/' . $nombreUsuario . '.png';
+        move_uploaded_file($fileFotoPerfil["tmp_name"], $ruta);
         return $fotoPerfil;
     }
 

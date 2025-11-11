@@ -161,14 +161,33 @@ class PreguntaModel
         return $this->conexion->query($sql);
     }
 
-    public function reportarPregunta($idPregunta, $motivo)
-    {
-        $sql = "UPDATE pregunta SET idEstado = 3, motivoReporte = ? WHERE idPregunta = ?";
-        $stmt = $this->conexion->prepare($sql);
-        $stmt->bind_param("si", $motivo, $idPregunta); // s = string, i = integer
-        $stmt->execute();
+    public function reportarPregunta($idPregunta, $motivo){
+        if ($this->verificarCantidadReportesDelUsuario() < 3) {
+            $idUsuario = $_SESSION["usuarioLogueado"]["idUsuario"];
+            $fechaReporte = time();
+            $sql = "UPDATE pregunta SET idEstado = 3, motivoReporte = ?, idUsuarioQueReporto = $idUsuario, fechaReporte = $fechaReporte WHERE idPregunta = ?";
+            $stmt = $this->conexion->prepare($sql);
+            $stmt->bind_param("si", $motivo, $idPregunta);
+            $stmt->execute();
 
-        return $stmt->affected_rows > 0; // true si se actualizó algo
+            if ( $stmt->affected_rows > 0 ) { // true si se actualizó algo
+                return ['error' => "La pregunta ha sido reportada.",
+                    'usuarioLogueado' => $_SESSION['usuarioLogueado'],];
+                    } else {
+                return ['error' => "No se encontró la pregunta.",
+                    'usuarioLogueado' => $_SESSION['usuarioLogueado'],];
+            }
+        } else {
+            return ['error' => "Alcanzaste el límite de reportes permitidos.",
+                    'usuarioLogueado' => $_SESSION['usuarioLogueado'],];
+        }
+    }
+
+    public function verificarCantidadReportesDelUsuario(): int{
+        $idUsuario = (INT)$_SESSION['usuarioLogueado']['idUsuario'];
+        $sql = "select count(idUsuarioQueReporto) as cantidad from pregunta where idUsuarioQueReporto = $idUsuario";
+        $resultado = $this->conexion->query($sql);
+        return (INT)$resultado[0]['cantidad'];
     }
 
 
