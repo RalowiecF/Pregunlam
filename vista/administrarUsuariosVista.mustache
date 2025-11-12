@@ -1,0 +1,81 @@
+<div class="w3-light-grey w3-center">
+    <h1>Administrar Usuarios:</h1>
+    <input type="text" id="buscar" placeholder="Buscar usuario">
+    <div style="max-width:700px;margin:auto;" id="resultado" class="w3-responsive w3-margin-top"></div>
+</div>
+
+
+<style>
+    .fade-in {
+        opacity: 0;
+        animation: fadeIn 0.6s forwards;
+    }
+    @keyframes fadeIn {
+        to { opacity: 1; }
+    }
+</style>
+
+<script>
+
+    const tipoUsuario = [
+        {id: 1, descripcion: "Administrador"},
+        {id: 2, descripcion: "Editor"},
+        {id: 3, descripcion: "Jugador"},
+    ];
+
+    function getDescripcionTipo(id) {
+        const tipo = tipoUsuario.find(t => Number(t.id) === Number(id));
+        return tipo ? tipo.descripcion : 'Desconocido';
+    }
+
+    document.getElementById('buscar').addEventListener('keyup', function () {
+        const valor = this.value;
+        const div = document.getElementById('resultado');
+
+        if (valor.trim() === '') {
+            div.innerHTML = '';
+            return;
+        }
+
+        fetch({{BASE_URL}}+'usuario/buscadorUsuario?q=' + encodeURIComponent(valor))
+                .then(res => res.json())
+                .then(data => {
+                    const filas = data.map(u => `
+        <tr>
+            <td>${u.nombreUsuario}</td>
+            <td>${getDescripcionTipo(u.idTipoUsuario)}</td>
+            <td>
+<form action="{{BASE_URL}}usuario/cambiarTipoUsuario" method="post">
+    <input type="hidden" name="idUsuario" value="${u.idUsuario}">
+<select name="tipoUsuario" id="tipoUsuario">
+    ${tipoUsuario.map(t => `
+        <option value="${t.id}" ${t.id == u.idTipoUsuario ? 'selected' : ''}>
+            ${t.descripcion}
+        </option>
+    `).join('')}
+</select>
+<button type="submit">Cambiar</button>
+</form>
+</td>
+        </tr>
+    `).join('');
+
+                    const tabla = `
+        <table class="w3-table w3-bordered w3-hoverable w3-centered" style="width:100%;min-width:600px;">
+            <thead style="background-color:#00EF48;color:white;">
+                <tr>
+                    <th>Nombre</th>
+                    <th>Tipo Usuario</th>
+                    <th>Accion</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${filas}
+            </tbody>
+        </table>
+    `;
+                    div.innerHTML = tabla;
+                    div.firstElementChild.classList.add('fade-in');
+                });
+    })
+</script>

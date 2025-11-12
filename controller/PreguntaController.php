@@ -27,7 +27,7 @@ class PreguntaController
             $this->redirectToIndex();
             return;
         }
-        $categorias = $this->model->obtenerCategorias();
+        $categorias = $this->model->obtenerCategoriasAprobadas();
         $niveles = $this->model->obtenerNiveles();
         $this->renderer->render("registroPregunta", [
             "usuarioLogueado" => $_SESSION["usuarioLogueado"],
@@ -124,7 +124,7 @@ class PreguntaController
         $esEdicion = true;
         $pregunta = $this->model->obtenerPreguntaPorId($idPregunta);
         $respuestasIncorrectas = $this->model->obtenerRespuestasIncorrectasPorIdPregunta($idPregunta);
-        $categorias = $this->model->obtenerCategorias();
+        $categorias = $this->model->obtenerCategoriasAprobadas();
         $niveles = $this->model->obtenerNiveles();
         $this->renderer->render("registroPregunta", [
             "usuarioLogueado" => $_SESSION["usuarioLogueado"],
@@ -267,5 +267,34 @@ class PreguntaController
         return true;
     }
 
+    public function sugerirCategoriaNueva()
+    {
+        if (!isset($_SESSION["usuarioLogueado"])) {
+            $this->redirectToIndex();
+            return;
+        }
 
+        $nuevaCategoria = $_POST["nuevaCategoria"];
+
+        $categoriaExistente = $this->model->obtenerCategoriaPorNombre($nuevaCategoria);
+        if ($categoriaExistente > 0) {
+            $_SESSION['error'] = "La categoría ya existe.";
+            $this->registrarPregunta();
+            return;
+        }
+        $this->model->sugerirCategoriaNueva($nuevaCategoria);
+        $_SESSION['mensaje'] = "Categoría registrada correctamente.";
+        $this->registrarPregunta();
+    }
+
+    public function cambiarEstadoCategoria(){
+        if (!isset($_SESSION["usuarioLogueado"])) {
+            $this->redirectToIndex();
+            return;
+        }
+
+        $idCategoria = $_GET['idCategoria'];
+        $this->model->cambiarEstadoCategoria($idCategoria);
+        $this->listaPreguntas();
+    }
 }

@@ -19,7 +19,7 @@
     <!-- IZQUIERDA: Bienvenida -->
     <div class="w3-text-white w3-large" style="margin-left: 10px;">
         {{#usuarioLogueado}}
-            Bienvenido {{usuarioLogueado.nombreUsuario}}
+            Bienvenido {{usuarioLogueado.nombreUsuario}} ({{usuarioLogueado.tipoUsuario}})
         {{/usuarioLogueado}}
         {{^usuarioLogueado}}
             Bienvenido Invitado

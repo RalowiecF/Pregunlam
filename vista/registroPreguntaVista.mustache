@@ -22,7 +22,8 @@
         {{/esEdicion}}
         <p><label>Enunciado Pregunta:</label>
             <input class="w3-input w3-border" type="text" value="{{pregunta.enunciado}}" name="enunciado" required></p>
-        <p><label>Categoria:</label>
+        <p><label>Categoria{{^esEdicion}}/<label for="sugerirCategoria" id="sugerirCategoria" onclick="abrirModal('Sugerir Categoria')">Sugerir Categoria</label>{{/esEdicion}}:</label>
+
             <select class="w3-input w3-border"  name="categoria" required>
                 {{#categorias}}
                     <option value="{{idCategoria}}">{{descripcion}}</option>
@@ -65,3 +66,51 @@
     </p>
 
 </form>
+
+<div id="modalMotivo" class="w3-modal" onclick="cerrarModal(event)">
+    <div class="w3-modal-content w3-animate-top w3-card-4" style="max-width:500px;">
+        <header class="w3-container w3-green">
+      <span onclick="cerrarModal()"
+            class="w3-button w3-display-topright">&times;</span>
+            <h3>Sugerir Categoria:</h3>
+        </header>
+        <div class="w3-container" id="contenidoMotivo" style="padding:20px;">
+            <form action="{{BASE_URL}}pregunta/sugerirCategoriaNueva" method="post">
+                <label for="nuevaCategoria">Nueva categoria:</label>
+                <input  type="text" id="nuevaCategoria" name="nuevaCategoria">
+                <button type="submit" class="w3-button w3-green">Sugerir:</button>
+            </form>
+
+        </div>
+        <footer class="w3-container w3-green">
+            <p style="text-align:center;">Sugiere una nueva categoria</p>
+        </footer>
+    </div>
+</div>
+
+<style>
+    #sugerirCategoria {
+        cursor: pointer;
+        color: blue;
+        text-decoration: underline;
+    }
+    #sugerirCategoria:hover{
+        background-color: #00BFBF;
+    }
+</style>
+
+
+<script>
+    function abrirModal(motivo) {
+        document.getElementById('sugerirCategoria').innerText = motivo;
+        document.getElementById('modalMotivo').style.display = 'block';
+    }
+
+    function cerrarModal(event) {
+        // Cierra si se hace clic fuera del contenido o en la X
+        if (!event || event.target === document.getElementById('modalMotivo')) {
+            document.getElementById('modalMotivo').style.display = 'none';
+        }
+    }
+
+</script>

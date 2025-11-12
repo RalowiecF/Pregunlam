@@ -1,10 +1,11 @@
-    <?php
-    require_once __DIR__ . '/../vendor/autoload.php';
-    use PHPMailer\PHPMailer\PHPMailer;
-    use PHPMailer\PHPMailer\Exception;
+<?php
+require_once __DIR__ . '/../vendor/autoload.php';
 
-    class UsuarioModel
-    {
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+class UsuarioModel
+{
 
     private $conexion;
 
@@ -13,7 +14,8 @@
         $this->conexion = $conexion;
     }
 
-    public function getUserWith($nombreUsuario, $contrasenia){
+    public function getUserWith($nombreUsuario, $contrasenia)
+    {
         $sql = "SELECT 
                 u.idUsuario,u.nombreUsuario,u.mail,u.anioNacimiento,u.fotoPerfil, u.nombre, u.apellido, u.cantidadTrampas, s.descripcion AS sexo, u.fotoPerfil, 
                 t.descripcion AS tipoUsuario, u.fechaRegistro, u.idNivel, n.descripcion AS nivel, u.latitud, u.longitud, 
@@ -37,16 +39,17 @@
         return [];
     }
 
-    public function nuevo($nombreUsuario, $mail, $nombre, $apellido, $anioNacimiento, $sexo, $contrasenia, $fileFotoPerfil, $latitud, $longitud) {
-        if($this->verificarNombreUsuarioDuplicado($nombreUsuario) && $this->verificarMailDuplicado($mail)){
-        $idSexo = $this->obtenerIdSexo($sexo);
-        $latitud = (float) $latitud;
-        $longitud = (float) $longitud;
-        $ciudadPais = $this->obtenerCiudadPais($latitud, $longitud);
-        $ciudad = $ciudadPais['ciudad'];
-        $pais = $ciudadPais['pais'];
-        $fotoPerfil = $this->guardarFotoPerfil($fileFotoPerfil, $nombreUsuario);
-        $tokenVerificacion = bin2hex(random_bytes(32));
+    public function nuevo($nombreUsuario, $mail, $nombre, $apellido, $anioNacimiento, $sexo, $contrasenia, $fileFotoPerfil, $latitud, $longitud)
+    {
+        if ($this->verificarNombreUsuarioDuplicado($nombreUsuario) && $this->verificarMailDuplicado($mail)) {
+            $idSexo = $this->obtenerIdSexo($sexo);
+            $latitud = (float)$latitud;
+            $longitud = (float)$longitud;
+            $ciudadPais = $this->obtenerCiudadPais($latitud, $longitud);
+            $ciudad = $ciudadPais['ciudad'];
+            $pais = $ciudadPais['pais'];
+            $fotoPerfil = $this->guardarFotoPerfil($fileFotoPerfil, $nombreUsuario);
+            $tokenVerificacion = bin2hex(random_bytes(32));
             $sql = "INSERT INTO usuario 
 (nombreUsuario, mail, nombre, apellido, anioNacimiento, idSexo, contrasenia, fotoPerfil, latitud, longitud, ciudad, pais, tokenVerificacion)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -71,11 +74,12 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             );
             $stmt->execute();
             $this->enviarMailVerificacion($mail, $nombreUsuario, $tokenVerificacion);
-        return true;
+            return true;
         } else return false;
     }
 
-    public function getRanking(){
+    public function getRanking()
+    {
         $sql = "SELECT t1.idUsuario, t1.nombreUsuario, t1.puntaje, t1.duracionPartida, DATE_FORMAT(t1.fechaPartida, '%d/%m/%y %h:%m') AS fechaPartida FROM (
          SELECT
              u.idUsuario,
@@ -100,12 +104,13 @@ ORDER BY
         return $this->conexion->query($sql);
     }
 
-    public function getSexoList(){
+    public function getSexoList()
+    {
         $sql = "SELECT descripcion FROM sexo";
         return $result = $this->conexion->query($sql);
     }
 
-    public function verificarNombreUsuarioDuplicado($nombreUsuario,$idUsuario = null): bool
+    public function verificarNombreUsuarioDuplicado($nombreUsuario, $idUsuario = null): bool
     {
         if ($idUsuario === null) {
             $sql = "SELECT * FROM usuario WHERE nombreUsuario = ?";
@@ -133,7 +138,7 @@ ORDER BY
         return true;
     }
 
-    public function verificarMailDuplicado($mail,$idUsuario = null): bool
+    public function verificarMailDuplicado($mail, $idUsuario = null): bool
     {
         if ($idUsuario === null) {
             $sql = "SELECT * FROM usuario WHERE mail = ?";
@@ -162,7 +167,8 @@ ORDER BY
         return true;
     }
 
-    function obtenerIdSexo($sexo): int {
+    function obtenerIdSexo($sexo): int
+    {
         $sql = "SELECT idSexo FROM sexo WHERE descripcion = ?";
         $stmt = $this->conexion->prepare($sql);
         $stmt->bind_param("s", $sexo);
@@ -180,7 +186,8 @@ ORDER BY
         }
     }
 
-    function obtenerCiudadPais($lat, $lng): array{
+    function obtenerCiudadPais($lat, $lng): array
+    {
         $latlng = urlencode($lat . ',' . $lng);
         $url = "https://nominatim.openstreetmap.org/reverse?lat=$lat&lon=$lng&format=json&accept-language=es";
 
@@ -207,14 +214,16 @@ ORDER BY
         return ['ciudad' => $ciudad, 'pais' => $pais];
     }
 
-    public function guardarFotoPerfil($fileFotoPerfil, $nombreUsuario){
-        $fotoPerfil =  $nombreUsuario . '.png';
+    public function guardarFotoPerfil($fileFotoPerfil, $nombreUsuario)
+    {
+        $fotoPerfil = $nombreUsuario . '.png';
         $ruta = 'imagenes/avatares/' . $nombreUsuario . '.png';
         move_uploaded_file($fileFotoPerfil["tmp_name"], $ruta);
         return $fotoPerfil;
     }
 
-    public function enviarMailVerificacion($mailDestinatario, $nombreUsuario, $tokenVerificacion): bool{
+    public function enviarMailVerificacion($mailDestinatario, $nombreUsuario, $tokenVerificacion): bool
+    {
         $mail = new PHPMailer(true);
 
         try {
@@ -250,7 +259,8 @@ ORDER BY
         }
     }
 
-    public function verificarEmailConToken($token){
+    public function verificarEmailConToken($token)
+    {
         $sql = "update usuario set mailVerificado = 1, tokenVerificacion = null where tokenVerificacion = ?";
         $stmt = $this->conexion->prepare($sql);
         $stmt->bind_param("s", $token);
@@ -262,7 +272,8 @@ ORDER BY
         return false;
     }
 
-    public function validarEditorYAdmin($usuario) {
+    public function validarEditorYAdmin($usuario)
+    {
         if ($usuario['tipoUsuario'] == "Administrador") {
             $usuario['isAdmin'] = true;
         } elseif ($usuario['tipoUsuario'] == "Editor") {
@@ -273,7 +284,7 @@ ORDER BY
 
     public function actualizar($idUsuario, $nombreUsuario, $mail, $nombre, $apellido, $anioNacimiento, $sexo, $contrasenia, $fileFotoPerfil, $latitud, $longitud)
     {
-        if ($this->verificarNombreUsuarioDuplicado($nombreUsuario,$idUsuario) && $this->verificarMailDuplicado($mail,$idUsuario)) {
+        if ($this->verificarNombreUsuarioDuplicado($nombreUsuario, $idUsuario) && $this->verificarMailDuplicado($mail, $idUsuario)) {
             $idSexo = $this->obtenerIdSexo($sexo);
             $latitud = (float)$latitud;
             $longitud = (float)$longitud;
@@ -325,7 +336,8 @@ ORDER BY
         }
     }
 
-    public function getPerfil($idUsuario){
+    public function getPerfil($idUsuario)
+    {
         $sql = "SELECT 
                 idUsuario,
                 nombreUsuario, 
@@ -362,7 +374,8 @@ ORDER BY
         }
     }
 
-    public function verificarSiEsContacto($idUsuarioBuscado): bool {
+    public function verificarSiEsContacto($idUsuarioBuscado): bool
+    {
         $idUsuarioLogueado = $_SESSION['usuarioLogueado']['idUsuario'];
         $sql = "SELECT idContacto 
             FROM usuario_contacto 
@@ -374,7 +387,8 @@ ORDER BY
         return $contacto->num_rows > 0;
     }
 
-    public function getPartidas($idUsuario, $cantidad){
+    public function getPartidas($idUsuario, $cantidad)
+    {
         $sql = "SELECT p.puntaje, p.duracionPartida, 
                    DATE_FORMAT(p.fechaPartida, '%d/%m/%y %h:%i') AS fechaPartida 
             FROM partida AS p 
@@ -389,7 +403,8 @@ ORDER BY
         return $partidas->fetch_all(MYSQLI_ASSOC);
     }
 
-    public function getContactos(){
+    public function getContactos()
+    {
         $idUsuarioLogueado = $_SESSION['usuarioLogueado']['idUsuario'];
         $sql = "SELECT t1.idUsuario, t1.nombreUsuario, t1.puntaje, t1.duracionPartida, IFNULL(DATE_FORMAT(t1.fechaPartida, '%d/%m/%y %H:%i'), 'Sin partidas') AS fechaPartida FROM (
     SELECT
@@ -414,8 +429,9 @@ ORDER BY
         return $this->conexion->query($sql);
     }
 
-    public  function agregarContacto($idUsuario): bool{
-        $idUsuarioLogueado = (INT)$_SESSION["usuarioLogueado"]['idUsuario'];
+    public function agregarContacto($idUsuario): bool
+    {
+        $idUsuarioLogueado = (int)$_SESSION["usuarioLogueado"]['idUsuario'];
         if ($idUsuarioLogueado === $idUsuario || $this->verificarSiEsContacto($idUsuario) || $idUsuario === 0) {
             return false;
         } else {
@@ -427,7 +443,8 @@ ORDER BY
         }
     }
 
-    public function eliminarContacto($idUsuario): bool{
+    public function eliminarContacto($idUsuario): bool
+    {
         $idUsuarioLogueado = $_SESSION['usuarioLogueado']['idUsuario'];
         if ($idUsuarioLogueado === $idUsuario || !($this->verificarSiEsContacto($idUsuario)) || $idUsuario === 0) {
             return false;
@@ -440,7 +457,8 @@ ORDER BY
         }
     }
 
-    public function ruletaTrampas($resultado){
+    public function ruletaTrampas($resultado)
+    {
         if ($this->verificarDisponibilidadRuleta()) {
             if ($resultado === 0) {
                 return ['ruletaHabilitada' => true,
@@ -467,8 +485,9 @@ ORDER BY
         }
     }
 
-    public function verificarDisponibilidadRuleta(): bool {
-        $idUsuario = (int) $_SESSION['usuarioLogueado']['idUsuario'];
+    public function verificarDisponibilidadRuleta(): bool
+    {
+        $idUsuario = (int)$_SESSION['usuarioLogueado']['idUsuario'];
         $sql = "SELECT ultimoUsoRuleta FROM usuario WHERE idUsuario = $idUsuario";
         $result = $this->conexion->query($sql);
         $tz = new DateTimeZone('America/Argentina/Buenos_Aires');
@@ -483,7 +502,8 @@ ORDER BY
         return $hoy !== $fechaUltimoUso;
     }
 
-    public function getByNombreusuario($nombreUsuario){
+    public function getByNombreusuario($nombreUsuario)
+    {
         $nombreUsuarioBusqueda = "%" . $nombreUsuario . "%";
         $sql = "SELECT t1.idUsuario, t1.nombreUsuario, t1.puntaje, t1.duracionPartida, IFNULL(DATE_FORMAT(t1.fechaPartida, '%d/%m/%y %H:%i'), 'Sin partidas') AS fechaPartida FROM (
     SELECT
@@ -510,7 +530,22 @@ ORDER BY
         $stmt->execute();
         $resultado = $stmt->get_result();
         return $resultado->fetch_all(MYSQLI_ASSOC);
-}
+    }
+
+    public function obtenerTodosLosUsuarios()
+    {
+        $sql = "SELECT * FROM usuario";
+        $resultado = $this->conexion->query($sql);
+        return $resultado;
+    }
+
+    public function cambiarTipoUsuario($idUsuario, $idTipoUsuario)
+    {
+        $sql = "UPDATE usuario SET idTipoUsuario = ? WHERE idUsuario = ?";
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->bind_param("ii", $idTipoUsuario, $idUsuario);
+        return $stmt->execute();
+    }
 
 
 }

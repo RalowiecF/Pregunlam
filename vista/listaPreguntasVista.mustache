@@ -7,6 +7,7 @@
             <li class="w3-padding-large" onclick="mostrarSeccion('preguntasSugeridas')">Preguntas Sugeridas</li>
             <li class="w3-padding-large" onclick="mostrarSeccion('preguntasReportadas')">Preguntas Reportadas</li>
             <li class="w3-padding-large" onclick="mostrarSeccion('editarPreguntas')">Editar Preguntas</li>
+            <li class="w3-padding-large" onclick="mostrarSeccion('categorias')">Categorias</li>
         </ul>
     </div>
 
@@ -215,6 +216,52 @@
                 </div>
             </div>
         </div>
+
+        <!-- Categorias -->
+        <div class="w3-light-grey w3-center seccion"
+             id="categorias"
+             style="min-height:70vh;display:flex;flex-direction:column;justify-content:flex-start;align-items:center;margin:0;padding-top:10px;width:100%;">
+            <h2>Categorias:</h2>
+            <div class="w3-card-4 w3-white w3-round-large table-container"
+                 style="width:100%;max-width:1000px;margin-bottom:5px;">
+                <table class="w3-table w3-bordered w3-hoverable w3-centered tabla-fija"
+                       id="usuariosTabla"
+                       style="margin:0;min-width:600px;">
+                    <thead style="background-color:#00EF48;color:white;">
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Estado</th>
+                        <th>Cambiar Estado</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tablaBody">
+                    {{#categorias}}
+                        <tr>
+                            <td>{{descripcion}}</td>
+                            <td>{{estado}}</td>
+                            <td>
+                                <form action="{{BASE_URL}}pregunta/cambiarEstadoCategoria?idCategoria={{idCategoria}}"
+                                method="post">
+                                <button type="submit" style="cursor:pointer;background:none;border:none">
+                                    <i class="fa-solid fa-pen-to-square" style="cursor:pointer"></i>
+                                </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {{/categorias}}
+                    </tbody>
+                </table>
+                <div class="w3-margin-top"
+                     style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;">
+                    <button id="prevPage" class="w3-button" style="background-color:#005DF0;color:white;">Anterior
+                    </button>
+                    <span id="pageInfo" class="w3-text-black"></span>
+                    <button id="nextPage" class="w3-button" style="background-color:#005DF0;color:white;">Siguiente
+                    </button>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 
@@ -361,20 +408,9 @@
 
     // === Categorías ===
     const categorias = [
-        {id: 1, descripcion: "Cultura General"},
-        {id: 2, descripcion: "Geografia"},
-        {id: 3, descripcion: "Entretenimiento"},
-        {id: 4, descripcion: "Comida"},
-        {id: 5, descripcion: "Musica"},
-        {id: 6, descripcion: "Arte"},
-        {id: 7, descripcion: "Cine"},
-        {id: 8, descripcion: "Literatura"},
-        {id: 9, descripcion: "Historia"},
-        {id: 10, descripcion: "Ciencia"},
-        {id: 11, descripcion: "Naturaleza"},
-        {id: 12, descripcion: "Series"},
-        {id: 13, descripcion: "Deporte"},
-        {id: 14, descripcion: "Tecnologia"},
+        {{#categorias}}
+            {id: {{idCategoria}}, descripcion: "{{descripcion}}"},
+        {{/categorias}}
     ];
 
     // === Inicialización ===

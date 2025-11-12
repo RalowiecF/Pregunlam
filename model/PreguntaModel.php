@@ -24,7 +24,12 @@ class PreguntaModel
 
     public function obtenerCategorias()
     {
-        $sql = "SELECT * FROM categoria";
+        $sql = "SELECT * FROM categoria ";
+        return $this->conexion->query($sql);
+    }
+
+    public function obtenerCategoriasAprobadas(){
+        $sql = "SELECT * FROM categoria c WHERE c.estado = 'Aprobada' ";
         return $this->conexion->query($sql);
     }
 
@@ -190,5 +195,40 @@ class PreguntaModel
         return (INT)$resultado[0]['cantidad'];
     }
 
+
+    public function obtenerCategoriaPorNombre($nombreCategoria)
+    {
+        $sql = "SELECT * FROM categoria WHERE descripcion = ?";
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->bind_param("s", $nombreCategoria);
+        $stmt->execute();
+        $resultado = $stmt->get_result();
+        return $resultado->fetch_assoc();
+    }
+
+    public function sugerirCategoriaNueva($nombreCategoria)
+    {
+        $sql = "INSERT INTO categoria (descripcion,estado) VALUES (?,'Deshabilitada')";
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->bind_param("s", $nombreCategoria);
+        return $stmt->execute();
+    }
+
+    public function cambiarEstadoCategoria($idCategoria){
+        $sqlObtenerEstado = "SELECT estado FROM categoria WHERE idCategoria = ?";
+        $stmt = $this->conexion->prepare($sqlObtenerEstado);
+        $stmt->bind_param("i", $idCategoria);
+        $stmt->execute();
+        $resultado = $stmt->get_result();
+        $fila = $resultado->fetch_assoc();
+        $estadoActual = $fila['estado'];
+
+        $nuevoEstado = ($estadoActual === 'Aprobada') ? 'Deshabilitada' : 'Aprobada';
+
+        $sqlActualizarEstado = "UPDATE categoria SET estado = ? WHERE idCategoria = ?";
+        $stmt = $this->conexion->prepare($sqlActualizarEstado);
+        $stmt->bind_param("si", $nuevoEstado, $idCategoria);
+        return $stmt->execute();
+    }
 
 }

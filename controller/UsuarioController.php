@@ -331,4 +331,35 @@ class UsuarioController
     }
 
 
+    public function administrarUsuarios()
+    {
+        if (!isset($_SESSION["usuarioLogueado"])) {
+            $this->redirectToIndex();
+        }
+        $this->renderer->render("administrarUsuarios", ["usuarioLogueado" => $_SESSION["usuarioLogueado"]]);
+        exit();
+    }
+
+    public function buscadorUsuario(){
+        $usuarios = $this->model->obtenerTodosLosUsuarios();
+        $q = strtolower($_GET['q'] ?? '');
+        $resultado = array_filter($usuarios, fn($u) => str_contains(strtolower($u['nombreUsuario']), $q));
+
+        header('Content-type: application/json');
+        echo json_encode(array_values($resultado));
+    }
+
+    public function cambiarTipoUsuario(){
+        if (!isset($_SESSION["usuarioLogueado"])) {
+            $this->redirectToIndex();
+        }
+        $idUsuario = $_POST["idUsuario"];
+        $tipoUsuario = $_POST["tipoUsuario"];
+
+        $this->model->cambiarTipoUsuario($idUsuario, $tipoUsuario);
+        $this->renderer->render("administrarUsuarios", ["usuarioLogueado" => $_SESSION["usuarioLogueado"]]);
+        exit();
+    }
+
+
 }

@@ -31,28 +31,30 @@ USE `pregunlam`;
 
 CREATE TABLE `categoria` (
                              `idCategoria` int(11) NOT NULL,
-                             `descripcion` varchar(50) NOT NULL
+                             `descripcion` varchar(50) NOT NULL,
+                             `estado` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `categoria`
 --
 
-INSERT INTO `categoria` (`idCategoria`, `descripcion`) VALUES
-                                                           (6, 'Arte'),
-                                                           (10, 'Ciencia'),
-                                                           (7, 'Cine'),
-                                                           (4, 'Comida'),
-                                                           (1, 'Cultura General'),
-                                                           (13, 'Deporte'),
-                                                           (3, 'Entretenimiento'),
-                                                           (2, 'Geografía'),
-                                                           (9, 'Historia'),
-                                                           (8, 'Literatura'),
-                                                           (5, 'Musica'),
-                                                           (11, 'Naturaleza'),
-                                                           (12, 'Series'),
-                                                           (14, 'Tecnología');
+INSERT INTO `categoria` (`idCategoria`, `descripcion`,`estado`) VALUES
+                                                                    (6, 'Arte','Aprobada'),
+                                                                    (10, 'Ciencia','Aprobada'),
+                                                                    (7, 'Cine','Aprobada'),
+                                                                    (4, 'Comida','Aprobada'),
+                                                                    (1, 'Cultura General','Aprobada'),
+                                                                    (13, 'Deporte','Aprobada'),
+                                                                    (3, 'Entretenimiento','Aprobada'),
+                                                                    (2, 'Geografía','Aprobada'),
+                                                                    (9, 'Historia','Aprobada'),
+                                                                    (8, 'Literatura','Aprobada'),
+                                                                    (5, 'Musica','Aprobada'),
+                                                                    (11, 'Naturaleza','Aprobada'),
+                                                                    (12, 'Series','Aprobada'),
+                                                                    (14, 'Tecnología','Aprobada');
+
 
 -- --------------------------------------------------------
 

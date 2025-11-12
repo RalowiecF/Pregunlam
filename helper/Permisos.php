@@ -13,7 +13,7 @@ public function __construct(){
         'Jugador' => [
             '' => [''],
             'usuario' => ['', 'logout', 'registroUsuarioForm', 'ranking', 'verPerfil', 'editarPerfilForm', 'editarPerfil', 'buscarUsuario', 'contactos', 'agregarContacto', 'eliminarContacto', 'comprarTrampas', 'ruletaTrampas'],
-            'pregunta' => ['', 'registroPregunta', 'listar', 'reportarPregunta'],
+            'pregunta' => ['', 'registroPregunta', 'listar', 'reportarPregunta','sugerirCategoriaNueva'],
             'partida' => ['', 'seleccionPartida', 'nueva', 'continuarPartida', 'verReglas'],
         ],
         'Editor' => [
