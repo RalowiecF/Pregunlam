@@ -37,7 +37,7 @@
             return;
         }
 
-        fetch({{BASE_URL}}+'usuario/buscadorUsuario?q=' + encodeURIComponent(valor))
+        fetch("{{BASE_URL}}usuario/buscadorUsuario?q=" + encodeURIComponent(valor))
                 .then(res => res.json())
                 .then(data => {
                     const filas = data.map(u => `
