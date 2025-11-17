@@ -357,7 +357,7 @@ class UsuarioController
 
         header('Content-Type: application/json');
         echo json_encode([
-            'exists' => $existe  // TRUE si existe en BD
+            'exists' => $existe
         ]);
 
         exit;
