@@ -8,17 +8,17 @@ public function __construct(){
     $this->permisos = [
         'Anonimo' => [
             '' => [''],
-            'usuario' => ['', 'login', 'registroUsuarioForm', 'nuevo', 'verificarmail', 'ranking', 'verPerfil', 'buscarUsuario'],
+            'usuario' => ['', 'login', 'registroUsuarioForm', 'nuevo', 'verificarmail','validarMailAjax', 'ranking', 'verPerfil', 'buscarUsuario'],
         ],
         'Jugador' => [
             '' => [''],
-            'usuario' => ['', 'logout', 'registroUsuarioForm', 'ranking', 'verPerfil', 'editarPerfilForm', 'editarPerfil', 'buscarUsuario', 'contactos', 'agregarContacto', 'eliminarContacto', 'comprarTrampas', 'ruletaTrampas'],
+            'usuario' => ['', 'logout', 'registroUsuarioForm', 'ranking', 'verPerfil', 'editarPerfilForm','validarMailAjax' ,'editarPerfil', 'buscarUsuario', 'contactos', 'agregarContacto', 'eliminarContacto', 'comprarTrampas', 'ruletaTrampas'],
             'pregunta' => ['', 'registroPregunta', 'listar', 'reportarPregunta','sugerirCategoriaNueva'],
             'partida' => ['', 'seleccionPartida', 'nueva', 'continuarPartida', 'verReglas'],
         ],
         'Editor' => [
             '' => [''],
-            'usuario' => ['', 'logout', 'registroUsuarioForm', 'ranking', 'verPerfil', 'editarPerfilForm', 'editarPerfil', 'buscarUsuario', 'contactos', 'agregarContacto', 'eliminarContacto'],
+            'usuario' => ['', 'logout', 'registroUsuarioForm', 'ranking', 'verPerfil','validarMailAjax' , 'editarPerfilForm', 'editarPerfil', 'buscarUsuario', 'contactos', 'agregarContacto', 'eliminarContacto'],
             'pregunta' => ['', 'registroPregunta', 'listar', 'reportarPregunta'],
             'partida' => ['', 'seleccionPartida', 'nueva', 'continuarPartida', 'verReglas'],
         ],

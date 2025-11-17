@@ -349,6 +349,21 @@ class UsuarioController
         echo json_encode(array_values($resultado));
     }
 
+    public function validarMailAjax(){
+        $mail = strtolower($_GET['q'] ?? '');
+        $idUsuario = $_GET['id'] ?? null;
+
+        $existe = !$this->model->verificarMailDuplicado($mail,$idUsuario);
+
+        header('Content-Type: application/json');
+        echo json_encode([
+            'exists' => $existe  // TRUE si existe en BD
+        ]);
+
+        exit;
+    }
+
+
     public function cambiarTipoUsuario(){
         if (!isset($_SESSION["usuarioLogueado"])) {
             $this->redirectToIndex();

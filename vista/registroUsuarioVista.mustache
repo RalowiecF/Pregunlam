@@ -1,39 +1,51 @@
-<form method="POST" action="{{#usuarioLogueado}}{{BASE_URL}}usuario/editarPerfilForm{{/usuarioLogueado}}{{^usuarioLogueado}}{{BASE_URL}}usuario/nuevo{{/usuarioLogueado}}"
+<form method="POST"
+      action="{{#usuarioLogueado}}{{BASE_URL}}usuario/editarPerfilForm{{/usuarioLogueado}}{{^usuarioLogueado}}{{BASE_URL}}usuario/nuevo{{/usuarioLogueado}}"
       enctype="multipart/form-data"
       class="w3-card w3-white w3-padding w3-content"
       style="max-width:900px; margin-top: 3rem" onsubmit="return validarFormulario()">
 
     <!-- Cargar estilos desde W3.CSS y Leaflet directamente -->
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
     {{#error}}
-    <div class="w3-panel w3-red w3-display-container">
-        <span onclick="this.parentElement.style.display='none'" class="w3-button w3-large w3-display-topright">&times;</span>
-        <p>{{error}}</p>
-    </div>
+        <div class="w3-panel w3-red w3-display-container">
+            <span onclick="this.parentElement.style.display='none'" class="w3-button w3-large w3-display-topright">&times;</span>
+            <p>{{error}}</p>
+        </div>
     {{/error}}
 
     <style>
-        #map { height: 300px; margin-top: 8px; }
+        #map {
+            height: 300px;
+            margin-top: 8px;
+        }
     </style>
 
     <div class="w3-row-padding">
         <!-- Columna 1 -->
         <div class="w3-half">
             {{#esEdicion}}
-                <input type="hidden" name="id" value="{{pregunta.id}}">
+                <input type="hidden" name="idUsuario" value="{{usuarioLogueado.id}}">
             {{/esEdicion}}
             <p><label>Nombre de Usuario</label>
-                <input class="w3-input w3-border" type="text" value="{{usuarioLogueado.nombreUsuario}}" name="nombreUsuario" minlength="3" maxlength="50" required></p>
+                <input class="w3-input w3-border" type="text" value="{{usuarioLogueado.nombreUsuario}}"
+                       name="nombreUsuario" minlength="3" maxlength="50" required></p>
             <p><label>Mail</label>
-                <input class="w3-input w3-border" type="email" value="{{usuarioLogueado.mail}}" name="mail" maxlength="50" required></p>
+                <input class="w3-input w3-border" type="email" value="{{usuarioLogueado.mail}}" name="mail" id="mail"
+                       maxlength="50" required>
+
+            <div id="mail-error" style="color: red; font-size: 0.9em;"></div>
+            </p>
             <p><label>Nombre</label>
-                <input class="w3-input w3-border" type="text" value="{{usuarioLogueado.nombre}}" name="nombre" maxlength="50" required></p>
+                <input class="w3-input w3-border" type="text" value="{{usuarioLogueado.nombre}}" name="nombre"
+                       maxlength="50" required></p>
             <p><label>Apellido</label>
-                <input class="w3-input w3-border" type="text" value="{{usuarioLogueado.apellido}}" name="apellido" maxlength="50" required></p>
+                <input class="w3-input w3-border" type="text" value="{{usuarioLogueado.apellido}}" name="apellido"
+                       maxlength="50" required></p>
             <p><label>Año de Nacimiento</label>
-                <input class="w3-input w3-border" type="number" value="{{usuarioLogueado.anioNacimiento}}" name="anioNacimiento" min="1901" max="2025" required></p>
+                <input class="w3-input w3-border" type="number" value="{{usuarioLogueado.anioNacimiento}}"
+                       name="anioNacimiento" min="1901" max="2025" required></p>
             <p><label>Sexo</label><br>
                 <input class="w3-radio" type="radio" name="sexo" value="Femenino"> Femenino<br>
                 <input class="w3-radio" type="radio" name="sexo" value="Masculino"> Masculino<br>
@@ -44,11 +56,13 @@
         <!-- Columna 2 -->
         <div class="w3-half">
             <p><label>Contraseña</label>
-                <input class="w3-input w3-border" type="password" value="{{usuarioLogueado.contrasenia}}" name="contrasenia" id="contraseña" maxlength="50" required></p>
+                <input class="w3-input w3-border" type="password" value="{{usuarioLogueado.contrasenia}}"
+                       name="contrasenia" id="contraseña" maxlength="50" required></p>
             <p><label>Confirmar Contraseña</label>
-                <input class="w3-input w3-border" type="password"  id="confirmarContraseña" maxlength="50" required></p>
+                <input class="w3-input w3-border" type="password" id="confirmarContraseña" maxlength="50" required></p>
             <p><label>Foto de Perfil</label>
-                <input class="w3-input w3-border" type="file" value="{{usuarioLogueado.fotoPerfil}}" name="fotoPerfil" accept="image/*"></p>
+                <input class="w3-input w3-border" type="file" value="{{usuarioLogueado.fotoPerfil}}" name="fotoPerfil"
+                       accept="image/*"></p>
             <p><label>Ubicación (clic en el mapa)</label></p>
             <div id="map" class="w3-border" style="height: 250px;"></div>
             <input type="hidden" name="latitud" value="{{usuarioLogueado.latitud}}" id="latitud">
@@ -81,14 +95,14 @@
         // Iniciar mapa
         const lat = {{#usuarioLogueado}}{{usuarioLogueado.latitud}}{{/usuarioLogueado}}{{^usuarioLogueado}}-34.6037{{/usuarioLogueado}};
         const lng = {{#usuarioLogueado}}{{usuarioLogueado.longitud}}{{/usuarioLogueado}}{{^usuarioLogueado}}-58.3816{{/usuarioLogueado}};
-        const map = L.map('map').setView([lat,lng], 9); // Buenos Aires
+        const map = L.map('map').setView([lat, lng], 9); // Buenos Aires
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
 
         let marker;
-        map.on('click', function(e) {
+        map.on('click', function (e) {
             const lat = e.latlng.lat.toFixed(6);
             const lng = e.latlng.lng.toFixed(6);
             document.getElementById('latitud').value = lat;
@@ -99,6 +113,37 @@
             } else {
                 marker = L.marker(e.latlng).addTo(map);
             }
+        });
+
+        document.getElementById('mail').addEventListener('keyup', function () {
+            const valor = this.value.trim().toLowerCase();
+            const errorDiv = document.getElementById('mail-error');
+            const idUsuario = {{#usuarioLogueado.idUsuario}}{{usuarioLogueado.idUsuario}}{{/usuarioLogueado.idUsuario}}{{^usuarioLogueado.idUsuario}}null{{/usuarioLogueado.idUsuario}};
+            const mailOriginal = "{{usuarioLogueado.mail ?? ''}}".trim().toLowerCase();
+
+            if (valor === mailOriginal && idUsuario !== null) {
+                errorDiv.style.display = 'none';
+                errorDiv.textContent = '';
+                return;
+            }
+
+
+            fetch("{{BASE_URL}}usuario/validarMailAjax?q=" + encodeURIComponent(valor) + "&id=" + encodeURIComponent(idUsuario))
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.exists) {
+                            errorDiv.textContent = "El mail ya está registrado en el sistema.";
+                            errorDiv.style.display = 'block';
+                        } else {
+                            errorDiv.textContent = '';
+                            errorDiv.style.display = 'none';
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Error en la verificación de mail:', err);
+                        errorDiv.textContent = "No se pudo verificar el email.";
+                        errorDiv.style.display = 'block';
+                    });
         });
     </script>
 </form>
