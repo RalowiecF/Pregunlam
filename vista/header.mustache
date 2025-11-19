@@ -38,7 +38,12 @@
         <!-- Botón de música -->
         <button class="w3-button w3-green w3-round"
                 style="margin-right: 5px;"
-                onclick="toggleMusic()">🎵 Música</button>
+                onclick="toggleMusic()">
+            <i id="icon-music-on" class="fa-solid fa-music"></i>
+            <i id="icon-music-off" class="fa-solid fa-music-slash" style="display:none;"></i>
+            Música</button>
+
+        <audio id="backgroundMusic" src="{{BASE_URL}}imagenes/musica/pregUnlam.mp3" loop style="display:none;"></audio>
 
         <!-- Si NO está logueado -->
         {{^usuarioLogueado}}
@@ -61,7 +66,67 @@
 </header>
 
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Obtener idUsuario desde Mustache (o null si no hay usuario)
+        var idUsuario = {{#usuarioLogueado}}{{usuarioLogueado.idUsuario}}{{/usuarioLogueado}}{{^usuarioLogueado}}null{{/usuarioLogueado}};
+        var keyPrefix = 'music_' + (idUsuario !== null ? idUsuario : 'guest') + '_';
+
+        var audio = document.getElementById('backgroundMusic');
+        var savedTime = localStorage.getItem(keyPrefix + 'time');
+        var wasPaused = localStorage.getItem(keyPrefix + 'paused') === 'true';
+
+        if (savedTime) {
+            audio.currentTime = parseFloat(savedTime);
+        }
+
+        if (!wasPaused) {
+            audio.play().catch(function() {
+                document.body.addEventListener('click', function playOnce() {
+                    audio.play();
+                    document.body.removeEventListener('click', playOnce);
+                });
+            });
+        }
+
+        audio.addEventListener('timeupdate', function() {
+            localStorage.setItem(keyPrefix + 'time', audio.currentTime);
+        });
+
+        audio.addEventListener('play', function() {
+            localStorage.setItem(keyPrefix + 'paused', 'false');
+        });
+
+        audio.addEventListener('pause', function() {
+            localStorage.setItem(keyPrefix + 'paused', 'true');
+        });
+
+        var iconOn = document.getElementById('icon-music-on');
+        var iconOff = document.getElementById('icon-music-off');
+
+        function updateMusicIcon() {
+            if (audio.paused) {
+                iconOn.style.display = 'none';
+                iconOff.style.display = '';
+            } else {
+                iconOn.style.display = '';
+                iconOff.style.display = 'none';
+            }
+        }
+
+        audio.addEventListener('play', updateMusicIcon);
+        audio.addEventListener('pause', updateMusicIcon);
+
+        // Llama una vez al cargar
+        updateMusicIcon();
+    });
+
+
     function toggleMusic() {
-        alert("Funcionalidad de música aún no implementada 🎶");
+        var audio = document.getElementById('backgroundMusic');
+        if (audio.paused) {
+            audio.play();
+        } else {
+            audio.pause();
+        }
     }
 </script>
