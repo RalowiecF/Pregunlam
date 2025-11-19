@@ -71,7 +71,7 @@
     </div>
 
     <p class="w3-center">
-        <button class="w3-button w3-green" type="submit">
+        <button class="w3-button w3-green" type="submit" id="botonForm">
             {{#usuarioLogueado}}Actualizar{{/usuarioLogueado}}{{^usuarioLogueado}}Registrar{{/usuarioLogueado}}
         </button>
         <a class="w3-button w3-blue" href="{{BASE_URL}}">Volver</a>
@@ -120,6 +120,7 @@
             const errorDiv = document.getElementById('mail-error');
             const idUsuario = {{#usuarioLogueado.idUsuario}}{{usuarioLogueado.idUsuario}}{{/usuarioLogueado.idUsuario}}{{^usuarioLogueado.idUsuario}}null{{/usuarioLogueado.idUsuario}};
             const mailOriginal = "{{usuarioLogueado.mail ?? ''}}".trim().toLowerCase();
+            const botonForm = document.getElementById('botonForm');
 
             if (valor === mailOriginal && idUsuario !== null) {
                 errorDiv.style.display = 'none';
@@ -134,9 +135,11 @@
                         if (data.exists) {
                             errorDiv.textContent = "El mail ya está registrado en el sistema.";
                             errorDiv.style.display = 'block';
+                            botonForm.disabled = true;
                         } else {
                             errorDiv.textContent = '';
                             errorDiv.style.display = 'none';
+                            botonForm.disabled = false;
                         }
                     })
                     .catch(err => {

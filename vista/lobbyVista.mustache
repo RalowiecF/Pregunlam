@@ -57,7 +57,8 @@
                     <button class="w3-button w3-blue w3-round-large w3-hover-green"
                             style="width: 100%; max-width: 450px; height:50px;"
                             onclick="window.location='{{BASE_URL}}pregunta/registroPregunta'">
-                        Sugerir pregunta
+                        {{#usuarioLogueado.isEditor}}Agregar Pregunta{{/usuarioLogueado.isEditor}}
+                        {{^usuarioLogueado.isEditor}}Sugerir Pregunta{{/usuarioLogueado.isEditor}}
                     </button>
                 {{/usuarioLogueado}}
 
@@ -94,9 +95,6 @@
     <div class="w3-center w3-padding" style="margin-top: 1px;">
         {{#usuarioLogueado}}
             {{#usuarioLogueado.isAdmin}}
-                <a href="{{BASE_URL}}pregunta/listaPreguntas" class="w3-button w3-green w3-round-large">
-                    Administrar Preguntas
-                </a>
                 <a href="{{BASE_URL}}usuario/administrarUsuarios" class="w3-button w3-blue w3-round-large">
                     Administrar Usuarios
                 </a>

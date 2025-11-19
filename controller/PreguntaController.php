@@ -48,6 +48,45 @@ class PreguntaController
         } else $this->redirectToIndex();
     }
 
+    public function agregarPregunta()
+    {
+        if (!isset($_SESSION["usuarioLogueado"])) {
+            $this->redirectToIndex();
+        }
+
+        $enunciado = $_POST["enunciado"];
+        $categoria = $_POST["categoria"];
+        $nivel = $_POST["nivel"];
+        $respuestaCorrecta = $_POST["respuestaCorrecta"];
+        $respuestaIncorrecta1 = $_POST["respuestaIncorrecta1"];
+        $respuestaIncorrecta2 = $_POST["respuestaIncorrecta2"];
+        $respuestaIncorrecta3 = $_POST["respuestaIncorrecta3"];
+        $idEstado = 2;
+
+
+
+        $resultado = $this->model->agregarPreguntaNueva(
+            $enunciado,
+            $categoria,
+            $nivel,
+            $respuestaCorrecta,
+            $respuestaIncorrecta1,
+            $respuestaIncorrecta2,
+            $respuestaIncorrecta3,
+            $idEstado
+
+        );
+
+        if ($resultado) {
+            $_SESSION['mensaje'] = "Pregunta registrada correctamente.";
+            $this->redirectToIndex();
+        } else {
+            $_SESSION['error'] = "Error al registrar la pregunta.";
+            $this->renderer->render("registroPregunta");
+        }
+
+    }
+
     public function sugerirPreguntaNueva()
     {
         if (!isset($_SESSION["usuarioLogueado"])) {
@@ -267,6 +306,26 @@ class PreguntaController
         return true;
     }
 
+
+    public function agregarCategoria()
+    {
+        if (!isset($_SESSION["usuarioLogueado"])) {
+            $this->redirectToIndex();
+            return;
+        }
+
+        $nuevaCategoria = $_POST["nuevaCategoria"];
+
+        $categoriaExistente = $this->model->obtenerCategoriaPorNombre($nuevaCategoria);
+        if ($categoriaExistente > 0) {
+            $_SESSION['error'] = "La categoría ya existe.";
+            $this->registrarPregunta();
+            return;
+        }
+        $this->model->agregarCategoria($nuevaCategoria);
+        $_SESSION['mensaje'] = "Categoría registrada correctamente.";
+        $this->registrarPregunta();
+    }
     public function sugerirCategoriaNueva()
     {
         if (!isset($_SESSION["usuarioLogueado"])) {
@@ -287,14 +346,23 @@ class PreguntaController
         $this->registrarPregunta();
     }
 
+
+
     public function cambiarEstadoCategoria(){
         if (!isset($_SESSION["usuarioLogueado"])) {
             $this->redirectToIndex();
             return;
         }
+        $seccionActiva = $_POST["seccionActiva"];
 
         $idCategoria = $_GET['idCategoria'];
         $this->model->cambiarEstadoCategoria($idCategoria);
-        $this->listaPreguntas();
+        $this->renderer->render("listaPreguntas", ["preguntasVigentes" => $this->model->obtenerPreguntasSegunIdEstado(2),
+            "preguntasReportadas" => $this->model->obtenerPreguntasSegunIdEstado(3),
+            "preguntasSugeridas" => $this->model->obtenerPreguntasSegunIdEstado(1),
+            "categorias" => $this->model->obtenerCategorias(),
+            "niveles" => $this->model->obtenerNiveles(),
+            "seccionActiva" => $seccionActiva,
+            "usuarioLogueado" => $_SESSION["usuarioLogueado"]]);
     }
 }

@@ -1,8 +1,13 @@
 <h1>{{#esEdicion}}Editar Pregunta{{/esEdicion}}{{^esEdicion}} Registro de Pregunta:{{/esEdicion}}</h1>
-<form method="POST" action="{{#esEdicion}}{{BASE_URL}}pregunta/editarPreguntaForm/{{pregunta.id}}{{/esEdicion}}{{^esEdicion}}{{BASE_URL}}pregunta/sugerirPreguntaNueva{{/esEdicion}}"
+<form method="POST"
+      action="{{#esEdicion}}{{BASE_URL}}pregunta/editarPreguntaForm/{{pregunta.id}}{{/esEdicion}}
+          {{^esEdicion}}
+              {{#usuarioLogueado.isEditor}}{{BASE_URL}}pregunta/agregarPregunta{{/usuarioLogueado.isEditor}}
+              {{^usuarioLogueado.isEditor}}{{BASE_URL}}pregunta/sugerirPreguntaNueva{{/usuarioLogueado.isEditor}}
+          {{/esEdicion}}"
       enctype="multipart/form-data"
       class="w3-card w3-white w3-padding w3-content"
-        style="width:900px;margin-top:2rem">
+      style="width:100%;margin-top:2rem">
 
     <!-- Cargar estilos desde W3.CSS y Leaflet directamente -->
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
@@ -22,9 +27,13 @@
         {{/esEdicion}}
         <p><label>Enunciado Pregunta:</label>
             <input class="w3-input w3-border" type="text" value="{{pregunta.enunciado}}" name="enunciado" required></p>
-        <p><label>Categoria{{^esEdicion}}/<label for="sugerirCategoria" id="sugerirCategoria" onclick="abrirModal('Sugerir Categoria')">Sugerir Categoria</label>{{/esEdicion}}:</label>
+        <p><label>Categoria{{^esEdicion}}
+            /<label for="sugerirCategoria" id="sugerirCategoria" onclick="abrirModal()">
+            {{#usuarioLogueado.isEditor}}Agregar Categoria{{/usuarioLogueado.isEditor}}
+            {{^usuarioLogueado.isEditor}}Sugerir Categoria{{/usuarioLogueado.isEditor}}
+        </label>{{/esEdicion}}:</label>
 
-            <select class="w3-input w3-border"  name="categoria" required>
+            <select class="w3-input w3-border" name="categoria" required>
                 {{#categorias}}
                     <option value="{{idCategoria}}">{{descripcion}}</option>
                 {{/categorias}}
@@ -38,12 +47,14 @@
             </select>
         </p>
         <p><label>Respuesta Correcta:</label>
-            <input class="w3-input w3-border" type="text" value="{{pregunta.respuestaCorrecta}}" name="respuestaCorrecta" required></p>
+            <input class="w3-input w3-border" type="text" value="{{pregunta.respuestaCorrecta}}"
+                   name="respuestaCorrecta" required></p>
         {{#esEdicion}}
             {{#respuestasIncorrectas}}
                 <p>
                     <label>Respuesta Incorrecta {{index}}:</label>
-                    <input class="w3-input w3-border" type="text" name="respuestaIncorrecta[]" value="{{respuestaIncorrecta}}" required>
+                    <input class="w3-input w3-border" type="text" name="respuestaIncorrecta[]"
+                           value="{{respuestaIncorrecta}}" required>
                     <input type="hidden" name="idRespuestaIncorrecta[]" value="{{idRespuestaIncorrecta}}">
                 </p>
             {{/respuestasIncorrectas}}
@@ -61,7 +72,11 @@
     <p class="w3-center">
         <a class="w3-button w3-blue" href="{{BASE_URL}}">Volver</a>
         <button class="w3-button w3-green" type="submit">
-            {{#esEdicion}}Editar Pregunta{{/esEdicion}}{{^esEdicion}} Sugerir Pregunta{{/esEdicion}}
+            {{#esEdicion}}Editar Pregunta{{/esEdicion}}
+            {{^esEdicion}}
+                {{#usuarioLogueado.isEditor}}Agregar Pregunta{{/usuarioLogueado.isEditor}}
+                {{^usuarioLogueado.isEditor}}Sugerir Pregunta{{/usuarioLogueado.isEditor}}
+            {{/esEdicion}}
         </button>
     </p>
 
@@ -72,18 +87,22 @@
         <header class="w3-container w3-green">
       <span onclick="cerrarModal()"
             class="w3-button w3-display-topright">&times;</span>
-            <h3>Sugerir Categoria:</h3>
+            <h3>{{#usuarioLogueado.isEditor}}Agregar Categoria{{/usuarioLogueado.isEditor}}
+                {{^usuarioLogueado.isEditor}}Sugerir Categoria{{/usuarioLogueado.isEditor}}</h3>
         </header>
         <div class="w3-container" id="contenidoMotivo" style="padding:20px;">
-            <form action="{{BASE_URL}}pregunta/sugerirCategoriaNueva" method="post">
+            <form action= {{#usuarioLogueado.isEditor}}{{BASE_URL}}pregunta/agregarCategoria{{/usuarioLogueado.isEditor}}
+                {{^usuarioLogueado.isEditor}}{{BASE_URL}}pregunta/sugerirCategoriaNueva{{/usuarioLogueado.isEditor}} method="post">
                 <label for="nuevaCategoria">Nueva categoria:</label>
-                <input  type="text" id="nuevaCategoria" name="nuevaCategoria">
-                <button type="submit" class="w3-button w3-green">Sugerir:</button>
+                <input type="text" id="nuevaCategoria" name="nuevaCategoria">
+                <button type="submit" class="w3-button w3-green">{{#usuarioLogueado.isEditor}}Agregar{{/usuarioLogueado.isEditor}}
+                    {{^usuarioLogueado.isEditor}}Sugerir{{/usuarioLogueado.isEditor}}</button>
             </form>
 
         </div>
         <footer class="w3-container w3-green">
-            <p style="text-align:center;">Sugiere una nueva categoria</p>
+            <p style="text-align:center;">{{#usuarioLogueado.isEditor}}Agrega una nueva categoria{{/usuarioLogueado.isEditor}}
+                {{^usuarioLogueado.isEditor}}Sugiere una nueva categoria{{/usuarioLogueado.isEditor}}</p>
         </footer>
     </div>
 </div>
@@ -94,15 +113,15 @@
         color: blue;
         text-decoration: underline;
     }
-    #sugerirCategoria:hover{
+
+    #sugerirCategoria:hover {
         background-color: #00BFBF;
     }
 </style>
 
 
 <script>
-    function abrirModal(motivo) {
-        document.getElementById('sugerirCategoria').innerText = motivo;
+    function abrirModal() {
         document.getElementById('modalMotivo').style.display = 'block';
     }
 

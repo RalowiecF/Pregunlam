@@ -242,6 +242,7 @@
                             <td>
                                 <form action="{{BASE_URL}}pregunta/cambiarEstadoCategoria?idCategoria={{idCategoria}}"
                                 method="post">
+                                <input type="hidden" name="seccionActiva" value="categorias">
                                 <button type="submit" style="cursor:pointer;background:none;border:none">
                                     <i class="fa-solid fa-pen-to-square" style="cursor:pointer"></i>
                                 </button>
@@ -285,7 +286,7 @@
 
 
 <style>
-    /* ---------- ESTILOS GENERALES ---------- */
+
     .main-container {
         display: flex;
         flex-wrap: nowrap;
@@ -305,7 +306,7 @@
     }
 
 
-    /* Mantener tablas del mismo alto */
+
     .tabla-fija {
         flex: 1;
         height: 100%;
@@ -313,7 +314,7 @@
         border-collapse: collapse;
     }
 
-    /* ---------- RESPONSIVE ---------- */
+
     @media screen and (max-width: 1500px) {
         .main-container {
             flex-direction: column;
@@ -328,8 +329,8 @@
         }
 
         .table-container {
-            height: auto; /* auto en móvil */
-            overflow-x: auto; /* scroll horizontal */
+            height: auto;
+            overflow-x: auto;
         }
 
         .tabla-fija {
@@ -365,7 +366,7 @@
     let pageInfo, prevBtn, nextBtn;
 
     function inicializarPaginacion(seccion) {
-        // Buscar los elementos dentro de la sección visible
+
         const tablaBody = seccion.querySelector('tbody');
         pageInfo = seccion.querySelector('#pageInfo');
         prevBtn = seccion.querySelector('#prevPage');
@@ -377,7 +378,7 @@
         currentPage = 1;
         totalPages = Math.ceil(rows.length / rowsPerPage);
 
-        // Reiniciar handlers (para evitar acumulación)
+
         prevBtn.onclick = null;
         nextBtn.onclick = null;
 
@@ -398,7 +399,7 @@
         if (pageInfo) pageInfo.textContent = `Página ${page} de ${totalPages}`;
     }
 
-    // === Cambiar entre secciones ===
+
     function mostrarSeccion(id) {
         document.querySelectorAll('.seccion').forEach(div => div.style.display = 'none');
         const seccion = document.getElementById(id);
@@ -406,19 +407,19 @@
         inicializarPaginacion(seccion);
     }
 
-    // === Categorías ===
+
     const categorias = [
         {{#categorias}}
             {id: {{idCategoria}}, descripcion: "{{descripcion}}"},
         {{/categorias}}
     ];
 
-    // === Inicialización ===
+
     window.addEventListener('DOMContentLoaded', () => {
-        // Ocultar todas las secciones
+
         document.querySelectorAll('.seccion').forEach(div => div.style.display = 'none');
 
-        // Mostrar la sección enviada desde el backend o por defecto
+
         const seccionActiva = '{{seccionActiva}}' || 'preguntasSugeridas';
         const seccionDiv = document.getElementById(seccionActiva);
         if (seccionDiv) {
@@ -426,7 +427,7 @@
             inicializarPaginacion(seccionDiv);
         }
 
-        // Rellenar categorías
+
         document.querySelectorAll('.categoria').forEach(td => {
             const id = td.getAttribute('data-id');
             const cat = categorias.find(c => c.id == id);
@@ -440,7 +441,7 @@
     }
 
     function cerrarModal(event) {
-        // Cierra si se hace clic fuera del contenido o en la X
+
         if (!event || event.target === document.getElementById('modalMotivo')) {
             document.getElementById('modalMotivo').style.display = 'none';
         }
