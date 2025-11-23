@@ -80,20 +80,20 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     public function getRanking()
     {
-        $sql = "SELECT t1.idUsuario, t1.nombreUsuario, t1.puntaje, t1.duracionPartida, DATE_FORMAT(t1.fechaPartida, '%d/%m/%y %h:%m') AS fechaPartida FROM (
+        $sql = "SELECT t1.idUsuario, t1.nombreUsuario, t1.puntaje, t1.duracionPartida, DATE_FORMAT(t1.fechaRegistro, '%d/%m/%y %h:%m') AS fechaRegistro FROM (
          SELECT
              u.idUsuario,
              u.nombreUsuario,
              p.puntaje,
              p.duracionPartida,
-             p.fechaPartida,
+             p.fechaRegistro,
              -- Asigna un número de fila para cada partida del usuario
              ROW_NUMBER() OVER (
                  PARTITION BY u.idUsuario
                  ORDER BY p.puntaje DESC, p.duracionPartida ASC
                  ) AS rn FROM
              usuario u JOIN usuario_juega_partida ujp ON u.idUsuario = ujp.idUsuario JOIN partida p ON ujp.idPartida = p.idPartida
-         WHERE p.fechaPartida >= DATE_SUB(NOW(), INTERVAL 7 DAY) AND idTipoUsuario = 3
+         WHERE p.fechaRegistro >= DATE_SUB(NOW(), INTERVAL 7 DAY) AND idTipoUsuario = 3
      ) t1
 -- Filtra para quedarte solo con la mejor partida (rn = 1) para cada usuario
 WHERE t1.rn = 1
@@ -390,11 +390,11 @@ ORDER BY
     public function getPartidas($idUsuario, $cantidad)
     {
         $sql = "SELECT p.puntaje, p.duracionPartida, 
-                   DATE_FORMAT(p.fechaPartida, '%d/%m/%y %h:%i') AS fechaPartida 
+                   DATE_FORMAT(p.fechaRegistro, '%d/%m/%y %h:%i') AS fechaRegistro 
             FROM partida AS p 
             JOIN usuario_juega_partida AS ujp ON p.idPartida = ujp.idPartida 
             WHERE ujp.idUsuario = ? 
-            ORDER BY p.fechaPartida DESC 
+            ORDER BY p.fechaRegistro DESC 
             LIMIT ?";
         $stmt = $this->conexion->prepare($sql);
         $stmt->bind_param("ii", $idUsuario, $cantidad);
@@ -406,13 +406,13 @@ ORDER BY
     public function getContactos()
     {
         $idUsuarioLogueado = $_SESSION['usuarioLogueado']['idUsuario'];
-        $sql = "SELECT t1.idUsuario, t1.nombreUsuario, t1.puntaje, t1.duracionPartida, IFNULL(DATE_FORMAT(t1.fechaPartida, '%d/%m/%y %H:%i'), 'Sin partidas') AS fechaPartida FROM (
+        $sql = "SELECT t1.idUsuario, t1.nombreUsuario, t1.puntaje, t1.duracionPartida, IFNULL(DATE_FORMAT(t1.fechaRegistro, '%d/%m/%y %H:%i'), 'Sin partidas') AS fechaRegistro FROM (
     SELECT
         u.idUsuario,
         u.nombreUsuario,
         p.puntaje,
         p.duracionPartida,
-        p.fechaPartida,
+        p.fechaRegistro,
         -- Asigna un número de fila para cada partida del usuario
         ROW_NUMBER() OVER (
            PARTITION BY u.idUsuario
@@ -505,13 +505,13 @@ ORDER BY
     public function getByNombreusuario($nombreUsuario)
     {
         $nombreUsuarioBusqueda = "%" . $nombreUsuario . "%";
-        $sql = "SELECT t1.idUsuario, t1.nombreUsuario, t1.puntaje, t1.duracionPartida, IFNULL(DATE_FORMAT(t1.fechaPartida, '%d/%m/%y %H:%i'), 'Sin partidas') AS fechaPartida FROM (
+        $sql = "SELECT t1.idUsuario, t1.nombreUsuario, t1.puntaje, t1.duracionPartida, IFNULL(DATE_FORMAT(t1.fechaRegistro, '%d/%m/%y %H:%i'), 'Sin partidas') AS fechaRegistro FROM (
     SELECT
          u.idUsuario,
         u.nombreUsuario,
         p.puntaje,
         p.duracionPartida,
-        p.fechaPartida,
+        p.fechaRegistro,
         -- Asigna un número de fila para cada partida del usuario
         ROW_NUMBER() OVER (
             PARTITION BY u.idUsuario

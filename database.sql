@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 10, 2025 at 05:09 PM
+-- Generation Time: Nov 23, 2025 at 07:28 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -39,22 +39,21 @@ CREATE TABLE `categoria` (
 -- Dumping data for table `categoria`
 --
 
-INSERT INTO `categoria` (`idCategoria`, `descripcion`,`estado`) VALUES
-                                                                    (6, 'Arte','Aprobada'),
-                                                                    (10, 'Ciencia','Aprobada'),
-                                                                    (7, 'Cine','Aprobada'),
-                                                                    (4, 'Comida','Aprobada'),
-                                                                    (1, 'Cultura General','Aprobada'),
-                                                                    (13, 'Deporte','Aprobada'),
-                                                                    (3, 'Entretenimiento','Aprobada'),
-                                                                    (2, 'Geografía','Aprobada'),
-                                                                    (9, 'Historia','Aprobada'),
-                                                                    (8, 'Literatura','Aprobada'),
-                                                                    (5, 'Musica','Aprobada'),
-                                                                    (11, 'Naturaleza','Aprobada'),
-                                                                    (12, 'Series','Aprobada'),
-                                                                    (14, 'Tecnología','Aprobada');
-
+INSERT INTO `categoria` (`idCategoria`, `descripcion`, `estado`) VALUES
+                                                                     (1, 'Cultura General', 'Aprobada'),
+                                                                     (2, 'Geografía', 'Aprobada'),
+                                                                     (3, 'Entretenimiento', 'Aprobada'),
+                                                                     (4, 'Comida', 'Aprobada'),
+                                                                     (5, 'Musica', 'Aprobada'),
+                                                                     (6, 'Arte', 'Aprobada'),
+                                                                     (7, 'Cine', 'Aprobada'),
+                                                                     (8, 'Literatura', 'Aprobada'),
+                                                                     (9, 'Historia', 'Aprobada'),
+                                                                     (10, 'Ciencia', 'Aprobada'),
+                                                                     (11, 'Naturaleza', 'Aprobada'),
+                                                                     (12, 'Series', 'Aprobada'),
+                                                                     (13, 'Deporte', 'Aprobada'),
+                                                                     (14, 'Tecnología', 'Aprobada');
 
 -- --------------------------------------------------------
 
@@ -118,7 +117,7 @@ INSERT INTO `nivel` (`idNivel`, `descripcion`) VALUES
 
 CREATE TABLE `partida` (
                            `idPartida` int(11) NOT NULL,
-                           `fechaPartida` datetime NOT NULL DEFAULT current_timestamp(),
+                           `fechaRegistro` datetime NOT NULL DEFAULT current_timestamp(),
                            `duracionPartida` time DEFAULT NULL,
                            `puntaje` int(11) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -145,7 +144,7 @@ CREATE TABLE `pregunta` (
                             `idPregunta` int(11) NOT NULL,
                             `enunciado` text NOT NULL,
                             `respuestaCorrecta` text NOT NULL,
-                            `fechaCreacion` datetime NOT NULL DEFAULT current_timestamp(),
+                            `fechaRegistro` datetime NOT NULL DEFAULT current_timestamp(),
                             `cantidadApariciones` int(11) DEFAULT 0,
                             `cantidadAciertos` int(11) DEFAULT 0,
                             `idCategoria` int(11) NOT NULL,
@@ -162,7 +161,7 @@ CREATE TABLE `pregunta` (
 -- Dumping data for table `pregunta`
 --
 
-INSERT INTO `pregunta` (`idPregunta`, `enunciado`, `respuestaCorrecta`, `fechaCreacion`, `cantidadApariciones`, `cantidadAciertos`, `idCategoria`, `idEntorno`, `idNivel`, `idEstado`, `motivoReporte`, `idUsuarioCreador`, `idUsuarioQueReporto`, `fechaReporte`) VALUES
+INSERT INTO `pregunta` (`idPregunta`, `enunciado`, `respuestaCorrecta`, `fechaRegistro`, `cantidadApariciones`, `cantidadAciertos`, `idCategoria`, `idEntorno`, `idNivel`, `idEstado`, `motivoReporte`, `idUsuarioCreador`, `idUsuarioQueReporto`, `fechaReporte`) VALUES
                                                                                                                                                                                                                                                                        (1, '¿Cuál es el océano más grande del mundo?', 'Océano Pacífico', '2025-10-22 13:11:37', 0, 0, 1, NULL, 3, 2, NULL, NULL, NULL, NULL),
                                                                                                                                                                                                                                                                        (2, '¿En qué país se encuentra la Torre Eiffel?', 'Francia', '2025-10-22 13:11:37', 0, 0, 1, NULL, 3, 2, NULL, NULL, NULL, NULL),
                                                                                                                                                                                                                                                                        (3, '¿Quién escribió \"Cien años de soledad\"?', 'Gabriel García Márquez', '2025-10-22 13:11:37', 0, 0, 1, NULL, 3, 2, NULL, NULL, NULL, NULL),

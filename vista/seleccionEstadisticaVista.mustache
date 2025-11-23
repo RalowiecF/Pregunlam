@@ -1,10 +1,172 @@
-<p>Pagina de seleccion de estadistica en desarrollo</p>
+<div class="w3-light-grey" style="margin:0;padding:0;">
+    <div class="w3-row" style="display:flex;flex-wrap:wrap;position:relative;">
 
+        <!-- =========================== -->
+        <!--   MENÚ IZQUIERDO / FORM     -->
+        <!-- =========================== -->
 
-<div style="width:100%;display:flex;justify-content:flex-start;">
-    <a href="{{BASE_URL}}usuario/lobby"
-       class="w3-button w3-round-large"
-       style="background-color:#26F0EC;color:black;font-weight:bold;text-decoration:none;margin:0 0 20px 20px;">
-        Lobby
-    </a>
+        <div class="w3-col l3 m0 s12"
+             style="padding:5px;background-color:white;
+             min-height:calc(100vh - 175px);
+             display:flex;
+             flex-direction:column;
+             justify-content:space-between;">
+
+            <!-- Form ahora es sticky -->
+            <div style="position:sticky;top:0;z-index:10;background:white;padding-bottom:5px;">
+
+                <h2 style="font-weight:bold;color:#005DF0;margin-top:0;">
+                    Estadísticas
+                </h2>
+
+                <form method="POST" action="{{BASE_URL}}estadisticas/ver"
+                      style="display:flex;flex-direction:column;gap:15px;">
+
+                    <!-- Usuarios -->
+                    <button type="button"
+                            onclick="document.getElementById('opcUsuarios').classList.toggle('w3-hide');"
+                            class="w3-button w3-round-large"
+                            style="background-color:#26F0EC;color:black;font-weight:bold;padding:6px;font-size:0.9rem;">
+                        Usuarios
+                    </button>
+
+                    <div id="opcUsuarios" class="w3-hide" style="margin-left:10px;display:flex;flex-direction:column;gap:5px;">
+
+                        <label class="w3-small" style="display:flex;align-items:center;gap:6px;">
+                            <input type="radio" name="opcion" value="País" required>
+                            País
+                        </label>
+
+                        <label class="w3-small" style="display:flex;align-items:center;gap:6px;">
+                            <input type="radio" name="opcion" value="Sexo">
+                            Sexo
+                        </label>
+
+                        <label class="w3-small" style="display:flex;align-items:center;gap:6px;">
+                            <input type="radio" name="opcion" value="Edad">
+                            Edad
+                        </label>
+
+                    </div>
+
+                    <!-- Juego -->
+                    <button type="button"
+                            onclick="document.getElementById('opcJuego').classList.toggle('w3-hide');"
+                            class="w3-button w3-round-large"
+                            style="background-color:#26F0EC;color:black;font-weight:bold;padding:6px;font-size:0.9rem;">
+                        Juego
+                    </button>
+
+                    <div id="opcJuego" class="w3-hide" style="margin-left:10px;display:flex;flex-direction:column;gap:5px;">
+
+                        <label class="w3-small" style="display:flex;align-items:center;gap:6px;">
+                            <input type="radio" name="opcion" value="Partidas" required>
+                            Cantidad de Partidas
+                        </label>
+
+                        <label class="w3-small" style="display:flex;align-items:center;gap:6px;">
+                            <input type="radio" name="opcion" value="Resultados">
+                            Cantidad de Respuestas
+                        </label>
+
+                        <label class="w3-small" style="display:flex;align-items:center;gap:6px;">
+                            <input type="radio" name="opcion" value="PreguntasSugeridas">
+                            Cantidad de Preguntas Sugeridas
+                        </label>
+
+                    </div>
+
+                    <!-- Último -->
+                    <div style="margin-top:10px;">
+                        <p style="font-weight:bold;margin:0;color:#005DF0;">Último</p>
+
+                        <label class="w3-small" style="display:flex;align-items:center;gap:6px;">
+                            <input type="radio" name="periodo" value="dia">
+                            Día
+                        </label>
+
+                        <label class="w3-small" style="display:flex;align-items:center;gap:6px;">
+                            <input type="radio" name="periodo" value="semana" checked>
+                            Semana
+                        </label>
+
+                        <label class="w3-small" style="display:flex;align-items:center;gap:6px;">
+                            <input type="radio" name="periodo" value="mes">
+                            Mes
+                        </label>
+
+                        <label class="w3-small" style="display:flex;align-items:center;gap:6px;">
+                            <input type="radio" name="periodo" value="anio">
+                            Año
+                        </label>
+                    </div>
+
+                    <button type="submit"
+                            class="w3-button w3-round-large"
+                            style="background-color:#00EF48;color:black;font-weight:bold;padding:10px;font-size:1rem;margin-top:10px;">
+                        Mostrar
+                    </button>
+
+                </form>
+            </div>
+
+            <!-- Botón lobby ahora fijo al fondo -->
+            <a href="{{BASE_URL}}usuario/lobby"
+               class="w3-button w3-round-large"
+               style="background-color:#005DF0;color:white;font-weight:bold;padding:10px;font-size:1rem;width:100%;display:block;text-align:center;margin-top:10px;">
+                Lobby
+            </a>
+
+        </div>
+
+        <!-- =========================== -->
+        <!--   CONTENIDO DERECHO         -->
+        <!-- =========================== -->
+
+        <div class="w3-col l9 m0 s12"
+             style="padding:15px;display:flex;flex-direction:column;gap:5px;overflow:auto;position:relative;">
+
+            <div class="w3-card"
+                 style="padding:10px;background-color:white;
+                 max-height:calc(100vh - 250px);
+                 display:flex;justify-content:center;align-items:center;">
+
+                {{#grafico}}
+                    <img src="{{BASE_URL}}{{grafico}}"
+                         style="max-width:100%;max-height:100%;object-fit:contain;">
+                {{/grafico}}
+
+                {{^grafico}}
+                    <img src="{{BASE_URL}}imagenes/Estadisticas.png"
+                         style="max-width:100%;max-height:100%;object-fit:contain;">
+                {{/grafico}}
+
+            </div>
+
+            {{#grafico}}
+                <a href="{{BASE_URL}}estadisticas/exportarPdf"
+                   class="w3-button w3-round-large"
+                   style="background-color:#26F0EC;color:black;font-weight:bold;padding:10px;font-size:1rem;width:200px;">
+                    Exportar a PDF
+                </a>
+            {{/grafico}}
+
+            {{#mensaje}}
+                <div style="
+                position:absolute;
+                right:10px;
+                bottom:5px;
+                padding:5px 8px;
+                background:red;
+                color:white;
+                border-radius:8px;
+                font-weight:bold;
+                z-index:10;">
+                    {{mensaje}}
+                </div>
+            {{/mensaje}}
+
+        </div>
+
+    </div>
 </div>
