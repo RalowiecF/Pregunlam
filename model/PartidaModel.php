@@ -195,9 +195,9 @@ class PartidaModel
 
     public function getPreguntasPendientes(){
         $idUsuario = (int)$_SESSION['usuarioLogueado']['idUsuario'];
-        $sql = "select ptp.idPregunta, max(p.fechaPartida) as fechaPartida, ptp.idPartida from resultado as r join partida_tiene_pregunta as ptp 
+        $sql = "select ptp.idPregunta, max(p.fechaRegistro) as fechaRegistro, ptp.idPartida from resultado as r join partida_tiene_pregunta as ptp 
         on r.idResultado = ptp.idResultado join partida as p on ptp.idPartida = p.idPartida join usuario_juega_partida as ujp 
-        on p.idPartida = ujp.idPartida where ujp.idUsuario = $idUsuario and r.descripcion = 'Pendiente' HAVING fechaPartida IS NOT NULL";
+        on p.idPartida = ujp.idPartida where ujp.idUsuario = $idUsuario and r.descripcion = 'Pendiente' HAVING fechaRegistro IS NOT NULL";
         $resultado = $this->conexion->query($sql);
         return $resultado ?? [];
     }
@@ -367,10 +367,10 @@ where ujp.idUsuario = $idUsuario) order by rand() limit $cantidad;";
     }
 
     public function actualizarDuracionPartida($idPartida){
-        $sql1 = "select fechaPartida from partida where idPartida = $idPartida";
+        $sql1 = "select fechaRegistro from partida where idPartida = $idPartida";
         $resultado = $this->conexion->query($sql1);
         $tz = new DateTimeZone('America/Argentina/Buenos_Aires');
-        $fechaCreacionPartida = new DateTime($resultado[0]['fechaPartida'], $tz);
+        $fechaCreacionPartida = new DateTime($resultado[0]['fechaRegistro'], $tz);
         $ahora = new DateTime('now', $tz);
         $diferencia = $ahora->diff($fechaCreacionPartida);
         $totalHoras = $diferencia->days * 24 + $diferencia->h;
