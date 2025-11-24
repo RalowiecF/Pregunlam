@@ -2,7 +2,7 @@
 
 require_once __DIR__ . '/../vendor/jpgraph/src/jpgraph.php';
 require_once __DIR__ . '/../vendor/jpgraph/src/jpgraph_bar.php';
-require_once __DIR__ . '/../helper/MyDomPdf.php';
+require_once __DIR__ . '/../helper/MyFPDF.php';
 
 class EstadisticasModel
 {
@@ -10,7 +10,7 @@ class EstadisticasModel
     private $mapaVariablesEnBaseDeDatos;
     private $mapaCasesSegunVariable;
     private $opcionesDeTablaUsuario;
-    private $domPdf;
+    private $fpdf;
 
     public function __construct($conexion){
         $this->conexion = $conexion;
@@ -37,7 +37,7 @@ class EstadisticasModel
 
         $this->opcionesDeTablaUsuario = ['País', 'Sexo', 'Edad'];
 
-        $this->domPdf = new MyDomPdf();
+        $this->fpdf = new MyFPDF();
     }
 
     public function getEstadistica($opcion, $periodo){
@@ -62,7 +62,7 @@ class EstadisticasModel
 
     public function exportarPdf($opcion, $periodo){
         $data = $this->getEstadistica($opcion, $periodo);
-        $this->domPdf->exportar($data);
+        $this->fpdf->exportar($data);
     }
 
     public function getFromUsuario($opcion, $periodo){
