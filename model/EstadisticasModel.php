@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '\..\vendor\jpgraph\src\jpgraph.php';
-require_once __DIR__ . '\..\vendor\jpgraph\src\jpgraph_bar.php';
+require_once __DIR__ . '/../vendor/jpgraph/src/jpgraph.php';
+require_once __DIR__ . '/../vendor/jpgraph/src/jpgraph_bar.php';
 
 class EstadisticasModel
 {
@@ -153,7 +153,7 @@ ORDER BY periodo ASC, cantidad DESC;";
         } return $queryPeriodo;
     }
 
-    public function generarGrafico($tabla, $opcion){
+    /*public function generarGrafico($tabla, $opcion){
         $datos = $this->procesarTabla($tabla, $opcion);
         $titulo = "Estadisticas por " . $opcion;
         $periodo = $datos['periodo'];   // eje X
@@ -209,12 +209,81 @@ ORDER BY periodo ASC, cantidad DESC;";
         $grafico->legend->SetColumns(3);
 
         // Salida del gráfico como imagen
-        $filename = 'imagenes/graficos/' . $_SESSION['usuarioLogueado']['idUsuario'] . '.png';
+        $filename = '{{BASE_URL}}imagenes/graficos/' . $_SESSION['usuarioLogueado']['idUsuario'] . '.png';
         if (file_exists($filename)) {
             unlink($filename);}
         $grafico->Stroke($filename);
 
         return $filename;
+    }
+*/
+    public function generarGrafico($tabla, $opcion){
+        $datos = $this->procesarTabla($tabla, $opcion);
+        $titulo = "Estadisticas por " . $opcion;
+        $periodo = $datos['periodo'];   // eje X
+        $varibleSeleccionada = $datos['variable'];   // leyenda
+        $valores = $datos['valores']; // valores por país
+
+        // Crear gráfico
+        $grafico = new Graph(900, 500);
+        $grafico->SetScale("textlin");
+
+        // Márgenes del gráfico
+        $grafico->img->SetMargin(60, 40, 40, 80);
+
+        // Título
+        $grafico->title->Set($titulo);
+        $grafico->title->SetFont(FF_FONT1, FS_BOLD);
+
+        // Etiquetas del eje X
+        $grafico->xaxis->SetTickLabels($periodo);
+        $grafico->xaxis->SetLabelAngle(50);
+        $grafico->xaxis->title->Set('Periodo de tiempo');
+
+        // Eje Y
+        $grafico->yaxis->title->Set('Cantidad');
+
+        // Colores personalizados para cada país
+        $colores = [
+            "#005DF0", "#00EF48", "#26F0EC",
+            "#F09D26", "#EF264D", "#8A26F0"
+        ];
+
+        // Crear barras
+        $barras = [];
+        $i = 0;
+        foreach ($varibleSeleccionada as $vs) {
+            $serie = new BarPlot($valores[$vs]);
+            $serie->SetLegend($vs);
+            $serie->SetFillColor($colores[$i % count($colores)]);
+            $barras[] = $serie;
+            $i++;
+        }
+
+        // Agrupar barras
+        $grupo = new GroupBarPlot($barras);
+        $grafico->Add($grupo);
+
+        // Estilo de la leyenda
+        $grafico->legend->SetFrameWeight(1);
+        $grafico->legend->SetColumns(3);
+
+        /** 🌟 NUEVO: guardar en directorio temporal permitido */
+        $tmp = sys_get_temp_dir();
+        $filename = $tmp . '/grafico_' . uniqid() . '.png';
+
+        // Generar archivo temporal
+        $grafico->Stroke($filename);
+
+        /** 🌟 NUEVO: convertir a base64 */
+        $imageData = file_get_contents($filename);
+        $imageBase64 = 'data:image/png;base64,' . base64_encode($imageData);
+
+        // Borrar archivo temporal
+        unlink($filename);
+
+        /** 🌟 DEVOLVER base64 en vez de ruta */
+        return $imageBase64;
     }
 
     public function procesarTabla($tabla, $opcionIngresada): array{

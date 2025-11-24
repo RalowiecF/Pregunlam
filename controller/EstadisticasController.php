@@ -23,7 +23,13 @@ class EstadisticasController
         if ($this->validarOpcion() && $this->validarPeriodo()){
             $data = $this->model->getEstadistica($_POST['opcion'], $_POST['periodo']);
             $this->renderer->render("seleccionEstadistica", $data);
+        } else {
+            $this->renderer->render("seleccionEstadistica", ["usuarioLogueado" => $_SESSION["usuarioLogueado"]]);
         }
+    }
+
+    public function exportarPdf(){
+
     }
 
     public function validarOpcion(){

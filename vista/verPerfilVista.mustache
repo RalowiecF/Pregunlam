@@ -144,7 +144,7 @@
         }).addTo(map);
         L.marker([lat, lng]).addTo(map);
 
-        const qrUrl = "https://pregunlam.page.gd/usuario/verPerfil/id={{usuario.idUsuario}}";
+        const qrUrl = "https://pregunlam.page.gd/usuario/verPerfil/idUsuario={{usuario.idUsuario}}";
         new QRCode(document.getElementById("qrCode"), {
             text: qrUrl,
             width: 100,

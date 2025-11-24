@@ -26,7 +26,7 @@
                     <button type="button"
                             onclick="document.getElementById('opcUsuarios').classList.toggle('w3-hide');"
                             class="w3-button w3-round-large"
-                            style="background-color:#26F0EC;color:black;font-weight:bold;padding:6px;font-size:0.9rem;">
+                            style="background-color:deepskyblue;color:black;font-weight:bold;padding:6px;font-size:0.9rem;">
                         Usuarios
                     </button>
 
@@ -132,7 +132,7 @@
                  display:flex;justify-content:center;align-items:center;">
 
                 {{#grafico}}
-                    <img src="{{BASE_URL}}{{grafico}}"
+                    <img src="{{grafico}}"
                          style="max-width:100%;max-height:100%;object-fit:contain;">
                 {{/grafico}}
 
@@ -144,7 +144,7 @@
             </div>
 
             {{#grafico}}
-                <a href="{{BASE_URL}}estadisticas/exportarPdf"
+                <a target="_blank" href="{{BASE_URL}}estadisticas/exportarPdf"
                    class="w3-button w3-round-large"
                    style="background-color:#26F0EC;color:black;font-weight:bold;padding:10px;font-size:1rem;width:200px;">
                     Exportar a PDF
