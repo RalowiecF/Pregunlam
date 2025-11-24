@@ -534,9 +534,10 @@ ORDER BY
 
     public function obtenerTodosLosUsuarios()
     {
-        $sql = "SELECT * FROM usuario";
-        $resultado = $this->conexion->query($sql);
-        return $resultado;
+        $sql = "SELECT idUsuario, nombreUsuario, mail, nombre, apellido, anioNacimiento, idSexo, fotoPerfil, fechaRegistro,latitud, 
+       longitud, ciudad, pais, cantidadTrampas, cantidadPreguntas, cantidadAciertos, idTipoUsuario, idNivel, idEntorno, puntaje, 
+       ultimoUsoRuleta FROM usuario";
+        return $this->conexion->query($sql);
     }
 
     public function cambiarTipoUsuario($idUsuario, $idTipoUsuario)
