@@ -1,6 +1,8 @@
 <?php
+
 require_once __DIR__ . '/../vendor/jpgraph/src/jpgraph.php';
 require_once __DIR__ . '/../vendor/jpgraph/src/jpgraph_bar.php';
+require_once __DIR__ . '/../helper/MyDomPdf.php';
 
 class EstadisticasModel
 {
@@ -8,6 +10,7 @@ class EstadisticasModel
     private $mapaVariablesEnBaseDeDatos;
     private $mapaCasesSegunVariable;
     private $opcionesDeTablaUsuario;
+    private $domPdf;
 
     public function __construct($conexion){
         $this->conexion = $conexion;
@@ -33,6 +36,8 @@ class EstadisticasModel
         ];
 
         $this->opcionesDeTablaUsuario = ['País', 'Sexo', 'Edad'];
+
+        $this->domPdf = new MyDomPdf();
     }
 
     public function getEstadistica($opcion, $periodo){
@@ -40,7 +45,7 @@ class EstadisticasModel
         if (in_array($opcion, $this->opcionesDeTablaUsuario)) {
             $tabla = $this->getFromUsuario($opcion, $periodo);
         } else {
-            $funcion = "getBy" . trim($opcion);
+            $funcion = "getBy" . $opcion;
             $tabla = $this->$funcion($opcion, $periodo);
         }
         if (!$tabla) {
@@ -50,7 +55,14 @@ class EstadisticasModel
         $grafico = $this->generarGrafico($tabla, $opcion);
         return ['usuarioLogueado' => $_SESSION['usuarioLogueado'],
             'tabla' => $tabla,
-            'grafico' => $grafico];
+            'grafico' => $grafico,
+            'opcion' => $opcion,
+            'periodo' => $periodo];
+    }
+
+    public function exportarPdf($opcion, $periodo){
+        $data = $this->getEstadistica($opcion, $periodo);
+        $this->domPdf->exportar($data);
     }
 
     public function getFromUsuario($opcion, $periodo){

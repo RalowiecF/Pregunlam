@@ -4,6 +4,7 @@
         "mustache/mustache": "^3.0",
         "endroid/qr-code": "^6.0",
       "ext-json": "*",
-        "jpgraph/jpgraph": "^4.0"
+        "jpgraph/jpgraph": "^4.0",
+        "dompdf/dompdf": "^3.1"
     }
 }
