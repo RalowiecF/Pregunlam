@@ -255,21 +255,21 @@ class PartidaModel
     public function getIdsPreguntasMismoNivelSinResponder($cantidad){
         $idUsuario = (INT)$_SESSION['usuarioLogueado']['idUsuario'];
         $sql = "select p.idPregunta as idPregunta FROM pregunta as p join usuario as u on p.idNivel = u.idNivel where u.idUsuario = $idUsuario
-and p.idPregunta not in (select distinct ptp.idPregunta from usuario_juega_partida ujp join partida_tiene_pregunta ptp
+and p.idEstado = 2 and p.idPregunta not in (select distinct ptp.idPregunta from usuario_juega_partida ujp join partida_tiene_pregunta ptp
 on ujp.idPartida = ptp.idPartida where ujp.idUsuario = $idUsuario) order by rand() limit $cantidad;";
         return $this->conexion->query($sql);
     }
 
     public function getIdsPreguntasSinResponder($cantidad){
         $idUsuario = (INT)$_SESSION['usuarioLogueado']['idUsuario'];
-        $sql = "select p.idpregunta as idPregunta from pregunta as p where p.idPregunta not in (select distinct ptp.idPregunta
+        $sql = "select p.idpregunta as idPregunta from pregunta as p where p.idEstado = 2 and p.idPregunta not in (select distinct ptp.idPregunta
 from usuario_juega_partida as ujp join partida_tiene_pregunta as ptp on ujp.idPartida = ptp.idPartida
 where ujp.idUsuario = $idUsuario) order by rand() limit $cantidad;";
         return $this->conexion->query($sql);
     }
 
     public function getIdsPreguntasCualesquiera($cantidad){
-        $sql = "select idPregunta as idPregunta from pregunta order by rand() limit $cantidad;";
+        $sql = "select idPregunta as idPregunta from pregunta where pregunta.idEstado = 2 order by rand() limit $cantidad;";
         return $this->conexion->query($sql);
     }
 
@@ -356,6 +356,7 @@ where ujp.idUsuario = $idUsuario) order by rand() limit $cantidad;";
         $this->conexion->query($sqlPregunta);
         $sqlUsuario = "update usuario set cantidadAciertos = (cantidadAciertos + 1) where idUsuario = $idUsuario;";
         $this->conexion->query($sqlUsuario);
+        $this->actualizarNivelPregunta($idPregunta);
     }
 
     public function actualizarContadoresEntregaPreguntas($idPregunta){
@@ -364,6 +365,30 @@ where ujp.idUsuario = $idUsuario) order by rand() limit $cantidad;";
         $this->conexion->query($sqlPregunta);
         $sqlUsuario = "update usuario set cantidadPreguntas = (cantidadPreguntas + 1) where idUsuario = $idUsuario;";
         $this->conexion->query($sqlUsuario);
+        $this->actualizarNivelPregunta($idPregunta);
+    }
+
+    public function actualizarNivelPregunta($idPregunta) {
+        $sql = "SELECT cantidadAciertos, cantidadApariciones FROM pregunta WHERE idPregunta = $idPregunta";
+        $resultado = $this->conexion->query($sql);
+        if (!$resultado || $resultado[0]['cantidadApariciones'] == 0) return;
+
+        $porcentaje = ($resultado[0]['cantidadAciertos'] * 100) / $resultado[0]['cantidadApariciones'];
+
+        if ($porcentaje == 100) {
+            $idNivel = 1;
+        } elseif ($porcentaje >= 90) {
+            $idNivel = 2;
+        } elseif ($porcentaje >= 70) {
+            $idNivel = 3;
+        } elseif ($porcentaje >= 30) {
+            $idNivel = 4;
+        } else {
+            $idNivel = 5;
+        }
+
+        $sqlUpdate = "UPDATE pregunta SET idNivel = $idNivel WHERE idPregunta = $idPregunta";
+        $this->conexion->query($sqlUpdate);
     }
 
     public function actualizarDuracionPartida($idPartida){
